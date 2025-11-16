@@ -3,6 +3,7 @@ const Penilaian = require("../models/penilaian");
 const Alternatif = require("../models/alternatif");
 const Kriteria = require("../models/kriteria");
 const Topsis = require("../models/topsis");
+const User = require("../models/users");
 const Borda = require("../models/borda");
 const { spawn } = require("child_process");
 
@@ -18,17 +19,20 @@ const getAllPenilaian = async (req, res) => {
   }
 };
 
-const getPenilaianByIdUserAndAlternatif=async (req,res)=>{
-  const {id_user,id_alternatif}=req.query
+const getPenilaianByIdUserAndAlternatif = async (req, res) => {
+  const { id_user, id_alternatif } = req.query;
 
-  try{
-    const response=await Penilaian.findOne({id_user:id_user,id_alternatif:id_alternatif})
+  try {
+    const response = await Penilaian.findOne({
+      id_user: id_user,
+      id_alternatif: id_alternatif,
+    });
 
-    res.status(200).json(response)
-  }catch(e){
-    res.status(500).json({message:`Error mengambil data penilaian`})
+    res.status(200).json(response);
+  } catch (e) {
+    res.status(500).json({ message: `Error mengambil data penilaian` });
   }
-}
+};
 
 const addPenilaian = async (req, res) => {
   const {
@@ -172,13 +176,16 @@ const perhitunganTopsis = async (req, res) => {
 };
 
 const perhitunganBorda = async (req, res) => {
-  const borda = await Borda.find({},{_id:0,__v:0});
+  const borda = await Borda.find({}, { _id: 0, __v: 0 });
 
-  if (borda.length>0) {
+  if (borda.length > 0) {
     return res.status(200).json(borda);
   }
 
-  const topsis = await Topsis.find({}, { id_user: 1, _id: 0, skor_akhir: 1, peringkat: 1 })
+  const topsis = await Topsis.find(
+    {},
+    { id_user: 1, _id: 0, skor_akhir: 1, peringkat: 1 }
+  )
     .populate("id_user", "peran")
     .exec();
 
@@ -221,18 +228,47 @@ const perhitunganBorda = async (req, res) => {
       const parsed = JSON.parse(results);
 
       await Borda.create({
-        ranking_alternatif_per_decision_maker: parsed['ranking_alternatif_per_decision_maker'],
-        perhitungan_skor_borda: parsed['perhitungan_skor_borda'],
+        ranking_alternatif_per_decision_maker:
+          parsed["ranking_alternatif_per_decision_maker"],
+        perhitungan_skor_borda: parsed["perhitungan_skor_borda"],
       });
 
       res.status(200).json({
-        ranking_alternatif_per_decision_maker: parsed['ranking_alternatif_per_decision_maker'],
-        perhitungan_skor_borda: parsed['perhitungan_skor_borda'],
+        ranking_alternatif_per_decision_maker:
+          parsed["ranking_alternatif_per_decision_maker"],
+        perhitungan_skor_borda: parsed["perhitungan_skor_borda"],
       });
     } catch (e) {
       res.status(500).json({ message: `Error parsing Python result: ${e}` });
     }
   });
+};
+
+const getInfoDecisionMakerLaporan = async (req, res) => {
+  try {
+    const dm = await User.find({}, { peran: 1 });
+
+    let data = await Promise.all(dm
+      .filter((item) => item.peran != "Admin")
+      .map(async (item) => {
+        const totalAlternatif = await Alternatif.countDocuments();
+        const totalKriteria=await Kriteria.countDocuments({id_user:item._id})
+        const tanggalPenilaian=await Penilaian.findOne({id_user:item._id},{_id:0,tanggal_penilaian:1})
+        return {
+          'id_user': item._id,
+          'peran': item.peran,
+          'total_alternatif': totalAlternatif,
+          'total_kriteria':totalKriteria,
+          'tanggal_penilaian':tanggalPenilaian?.tanggal_penilaian||null
+        };
+      }))
+
+    res.status(200).json(data);
+  } catch (e) {
+    res
+      .status(500)
+      .json({ message: `Error get info decision maker laporan ${e}` });
+  }
 };
 
 module.exports = {
@@ -241,5 +277,6 @@ module.exports = {
   getAllPenilaian,
   deletePenilaian,
   perhitunganBorda,
-  getPenilaianByIdUserAndAlternatif
+  getPenilaianByIdUserAndAlternatif,
+  getInfoDecisionMakerLaporan,
 };

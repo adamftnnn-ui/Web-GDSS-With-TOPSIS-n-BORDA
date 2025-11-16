@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh 
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2MzI5MTkwOSwiZXhwIjoxNzYzMjk1NTA5fQ.55ehM85Plw2LFL1PZkKRMXXto-QgLh7kEhveev50CxE
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2MzMwNDY5OCwiZXhwIjoxNzYzMzA4Mjk4fQ.uVbdwqeatIqH8nslscc91b-l4IyE65KxJNiFSP58ohQ
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -215,4 +215,8 @@ Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif
 GET http://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=69117ffc1088bc47c3a2e5fc
+Authorization: Bearer {{accessToken}}
+
+### Get Laporan Penilaian
+GET http://localhost:5000/api/penilaian/laporan
 Authorization: Bearer {{accessToken}}
