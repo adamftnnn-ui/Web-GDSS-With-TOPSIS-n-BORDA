@@ -206,7 +206,7 @@
             showAlert('Data **Laporan Akhir** berhasil diexport ke PDF.', 'success');
         });
     </script>
-    
+
     <script>
          window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
@@ -215,14 +215,13 @@
 
             if (!accessToken) {
                 console.warn("Tidak ada accessToken. Harap login terlebih dahulu.");
-                loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><h2 class="text-lg font-semibold text-red-600 mb-4">Akses Ditolak</h2><p class="text-red-600">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p></section>`;   return;
+                loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><h2 class="text-lg font-semibold text-red-600 mb-4">Akses Ditolak</h2><p class="text-red-600">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p></section>`;
+                return;
             }
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
-            
+            const LAPORAN_URL = `${API_PROD_URL}/penilaian/laporan`; 
             const BORDA_URL = `${API_PROD_URL}/penilaian/borda`;
-            const TOTAL_ALTERNATIF_URL = `${API_PROD_URL}/alternatif/total`;
-            const TOTAL_KRITERIA_URL = `${API_PROD_URL}/kriteria/total`;
             
             async function fetchWithToken(url, options = {}) {
                 const headers = { 'Authorization': `Bearer ${accessToken}`};
@@ -273,25 +272,29 @@
                     forceLogout();
                  }
             });
-            const TANGGAL_LAPORAN = new Date().toLocaleDateString('id-ID', {
+            const TANGGAL_LAPORAN_STRING = new Date().toLocaleDateString('id-ID', {
                 day: '2-digit', month: 'long', year: 'numeric'
             });
-            function renderInfoTable(dmHeaders, altTotal, kriteriaTotal) {
+            function renderInfoTable(laporanData) {
                 const tbody = document.getElementById('infoDmTableBody');
                 tbody.innerHTML = '';
                 
-                if (dmHeaders.length === 0) {
+                if (!laporanData || laporanData.length === 0) {
                      tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada Decision Maker yang melakukan penilaian.</td></tr>`;
                      return;
                 }
 
-                dmHeaders.forEach(dmName => {
+                laporanData.forEach(dm => {
+                    const tanggal = dm.tanggal_penilaian 
+                        ? new Date(dm.tanggal_penilaian).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
+                        : '<span class="text-gray-400">Belum Menilai</span>';
+                        
                     tbody.innerHTML += `
                         <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
-                            <td class="px-4 py-3 font-medium rounded-l-lg">${dmName}</td>
-                            <td class="px-4 py-3">${altTotal}</td>
-                            <td class="px-4 py-3">${kriteriaTotal}</td>
-                            <td class="px-4 py-3 rounded-r-lg">${TANGGAL_LAPORAN}</td>
+                            <td class="px-4 py-3 font-medium rounded-l-lg">${dm.peran}</td>
+                            <td class="px-4 py-3">${dm.total_alternatif}</td>
+                            <td class="px-4 py-3">${dm.total_kriteria}</td>
+                            <td class="px-4 py-3 rounded-r-lg">${tanggal}</td>
                         </tr>
                     `;
                 });
@@ -344,9 +347,13 @@
                         <td class="px-4 py-3 rounded-l-lg font-medium">${item.nama}</td>`;
                     
                     dmHeaders.forEach((dmName, index) => {
-                        const rank = rankingData[index][dmName][item.nama];
-                        const score = (m - rank) + 1;
-                         bodyHTML += `<td class="px-4 py-3 text-center">${score}</td>`;
+                        if (rankingData[index] && rankingData[index][dmName]) {
+                            const rank = rankingData[index][dmName][item.nama];
+                            const score = (m - rank) + 1;
+                            bodyHTML += `<td class="px-4 py-3 text-center">${score || 'N/A'}</td>`;
+                        } else {
+                            bodyHTML += `<td class="px-4 py-3 text-center">N/A</td>`;
+                        }
                     });
                     
                     bodyHTML += `<td class="px-4 py-3 text-center ${textClass}">${item.total_skor.toFixed(4)}</td>
@@ -387,7 +394,7 @@
                     }
                 });
             }
-            function renderKesimpulan(bordaData) {
+            function renderKesimpulan(bordaData, dmCount) {
                 const p = document.getElementById('kesimpulanText');
                 const tgl = document.getElementById('tanggalLaporan');
                 
@@ -410,38 +417,44 @@
                 }
 
                 p.innerHTML = `
-                    Berdasarkan hasil penggabungan metode <strong>TOPSIS</strong> (untuk ranking individu) dan <strong>BORDA</strong> (untuk agregasi kelompok) dari <strong>${pemenang.length} Decision Maker</strong>,
+                    Berdasarkan hasil penggabungan metode <strong>TOPSIS</strong> (untuk ranking individu) dan <strong>BORDA</strong> (untuk agregasi kelompok) dari <strong>${dmCount} Decision Maker</strong> yang telah melakukan penilaian,
                     ${pemenang.length > 1 ? 'terdapat <strong>' + pemenang.length + ' alternatif terbaik</strong>' : 'alternatif terbaik'}
                     wisata kuliner kelompok adalah ${namaPemenang}
                     yang ${pemenang.length > 1 ? 'sama-sama mendapatkan' : 'mendapatkan'}
                     total skor tertinggi (<strong>${skorTertinggi.toFixed(4)} poin</strong>)${runnerUpText}.
                 `;
                 
-                tgl.textContent = `Laporan dihasilkan secara otomatis oleh sistem GDSS pada ${TANGGAL_LAPORAN}.`;
+                tgl.textContent = `Laporan dihasilkan secara otomatis oleh sistem GDSS pada ${TANGGAL_LAPORAN_STRING}.`;
             }
             async function loadLaporanData() {
                 try {
-                    const [bordaResponse, altTotalData, kriteriaTotalData] = await Promise.all([
+                    const [bordaResponse, laporanData] = await Promise.all([
                         fetchWithToken(BORDA_URL),
-                        fetchWithToken(TOTAL_ALTERNATIF_URL),
-                        fetchWithToken(TOTAL_KRITERIA_URL)
+                        fetchWithToken(LAPORAN_URL)
                     ]);
                     
                     console.log("Data Borda:", bordaResponse);
-                    console.log("Total Alternatif:", altTotalData);
-                    console.log("Total Kriteria:", kriteriaTotalData);
+                    console.log("Data Laporan DM:", laporanData);
+
                     if (!bordaResponse || !Array.isArray(bordaResponse) || bordaResponse.length === 0 || !bordaResponse[0].ranking_alternatif_per_decision_maker || !bordaResponse[0].perhitungan_skor_borda) {
                          loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
+                         if (laporanData) {
+                            renderInfoTable(laporanData);
+                            hasilContainer.style.display = 'block';
+                         }
                          return;
                     }
+                    if (!laporanData || !Array.isArray(laporanData)) {
+                        throw new Error("Data Laporan Decision Maker tidak valid.");
+                    }
+                    
                     const payload = bordaResponse[0];
-                    const totalAlternatif = altTotalData.total || 0;
-                    const totalKriteria = kriteriaTotalData.total || 0;
-                    const rankingData = payload.ranking_alternatif_per_decision_maker;
-                    const bordaDataRaw = payload.perhitungan_skor_borda;
-                    const dmHeaders = rankingData.map(dmObj => Object.keys(dmObj)[0]);
-                    const altNames = Object.keys(rankingData[0][dmHeaders[0]]);
-                    const m = altNames.length;
+                    
+                    const rankingData = payload.ranking_alternatif_per_decision_maker; 
+                    const bordaDataRaw = payload.perhitungan_skor_borda;           
+                    const dmHeaders = rankingData.map(dmObj => Object.keys(dmObj)[0]); 
+                    const altNames = Object.keys(rankingData[0][dmHeaders[0]]); 
+                    const m = altNames.length; 
 
                     const bordaDataProcessed = bordaDataRaw.map(item => {
                         const altName = Object.keys(item)[0];
@@ -452,11 +465,12 @@
                             peringkat: values.ranking
                         };
                     }).sort((a, b) => a.peringkat - b.peringkat);
-                    renderInfoTable(dmHeaders, totalAlternatif, totalKriteria);
+                    
+                    renderInfoTable(laporanData);
                     renderRankingDM(rankingData, dmHeaders, altNames);
-                    renderSkorBorda(rankingData, bordaDataProcessed, dmHeaders, m);
+                    renderSkorBorda(rankingData, bordaDataProcessed, dmHeaders, m); 
                     renderBordaChart(bordaDataProcessed);
-                    renderKesimpulan(bordaDataProcessed);
+                    renderKesimpulan(bordaDataProcessed, dmHeaders.length);
 
                     loadingContainer.style.display = 'none';
                     hasilContainer.style.display = 'block';
