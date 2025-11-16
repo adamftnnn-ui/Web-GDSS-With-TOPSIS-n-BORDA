@@ -29,6 +29,10 @@
     <!-- Tambahkan library Chart.js untuk visualisasi -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="alert.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
 </head>
 
 <body class="min-h-screen bg-gray-50 flex text-sm antialiased">
@@ -160,6 +164,8 @@
 
         <div class="h-10"></div>
     </main>
+
+    
 
     <script>
         feather.replace();
@@ -312,7 +318,7 @@
             function renderHeaderCards(metadata) {
                 document.getElementById('totalAlternatif').textContent = metadata.total_alternatif || '0';
                 document.getElementById('totalKriteria').textContent = metadata.total_kriteria || '0';
-                document.getElementById('namaDM').textContent = metadata.nama_dm || tokenPayload.nama || 'N/A';
+                document.getElementById('namaDM').textContent = tokenPayload.peran || 'Tidak diketahui';
                 
                 let tanggal = 'Belum Ada';
                 // Gunakan tanggal dari _id jika ada, jika tidak, tanggal_penilaian (fallback)

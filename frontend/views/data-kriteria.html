@@ -177,6 +177,21 @@
     <script>
         feather.replace();
 
+        // Ambil token dan user
+            const accessToken = localStorage.getItem('accessToken');
+            const currentUser = accessToken ? parseJwt(accessToken) : null;
+            const isAdmin = currentUser?.peran === 'Admin';
+
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
+
         const dataKriteria = [
             { nama: "Biaya Transportasi", tipe: "Cost", bobot: 3.50, nilai: "1 - Sangat Murah,2 - Murah,3 - Cukup Murah,4 - Mahal,5 - Sangat Mahal" },
             { nama: "Harga Makanan", tipe: "Cost", bobot: 4.50, nilai: "1 - Sangat Murah,2 - Murah,3 - Cukup Murah,4 - Mahal,5 - Sangat Mahal" },
@@ -195,6 +210,12 @@
         const btnClose = document.getElementById("btnCloseModal");
         const btnCloseX = document.getElementById("btnCloseX");
         const form = document.getElementById("formKriteria");
+        const aksiHeader = document.querySelector('th:last-child'); // kolom aksi
+
+        if (!isAdmin && aksiHeader) {
+                aksiHeader.style.display = 'none';
+            }
+        if (!isAdmin && btnTambah) btnTambah.style.display = 'none';
 
         let editingIndex = null;
 
@@ -218,14 +239,14 @@
                             ${nilaiOptions}
                         </select>
                     </td>
-                    <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
-                        <button class="p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition editBtn" title="Edit" data-index="${index}">
-                            <i data-feather="edit" class="w-4 h-4"></i>
-                        </button>
-                        <button class="p-1.5 text-red-500 hover:text-red-700 rounded-md transition deleteBtn" title="Hapus" data-index="${index}">
-                            <i data-feather="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </td>
+${isAdmin ? `<td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+    <button class="p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition editBtn" title="Edit" data-index="${index}">
+        <i data-feather="edit" class="w-4 h-4"></i>
+    </button>
+    <button class="p-1.5 text-red-500 hover:text-red-700 rounded-md transition deleteBtn" title="Hapus" data-index="${index}">
+        <i data-feather="trash-2" class="w-4 h-4"></i>
+    </button>
+</td>` : ''}
                 `;
                 tableBody.appendChild(row);
             });
@@ -235,6 +256,7 @@
         }
 
         function attachRowEvents() {
+            if (!isAdmin) return;
             document.querySelectorAll(".editBtn").forEach(btn => {
                 btn.onclick = (e) => {
                     const idx = e.currentTarget.dataset.index;
@@ -260,13 +282,15 @@
             });
         }
 
-        btnTambah.onclick = () => {
-            editingIndex = null;
-            modalTitle.textContent = "Tambah Kriteria";
-            form.reset();
-            modal.classList.remove("hidden"); modal.classList.add("flex");
+        if (isAdmin) {
+            btnTambah.onclick = () => {
+                editingIndex = null;
+                modalTitle.textContent = "Tambah Kriteria";
+                form.reset();
+                modal.classList.remove("hidden"); modal.classList.add("flex");
+            }
+            btnClose.onclick = btnCloseX.onclick = () => { modal.classList.add("hidden"); }
         }
-        btnClose.onclick = btnCloseX.onclick = () => { modal.classList.add("hidden"); }
 
         form.onsubmit = (e) => {
             e.preventDefault();

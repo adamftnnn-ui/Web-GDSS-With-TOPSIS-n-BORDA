@@ -96,7 +96,7 @@
         </div>
     </aside>
 
-    
+
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
@@ -106,7 +106,7 @@
                 <img src="https://i.pravatar.cc/40" alt="avatar" class="h-8 w-8 rounded-full border border-gray-200">
             </div>
         </header>
-        
+
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
                 <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Alternatif</h2>
@@ -124,15 +124,15 @@
 
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
-                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                    <div class="h-full bg-primary" style="width: 75%;"></div>
-                </div>
-                <p class="text-sm text-gray-600 mt-2">
-                    <strong class="text-primary">75%</strong> penilaian telah selesai.
-                </p>
-            </div>
+<div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+    <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
+    <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+        <div class="progress-bar h-full bg-primary" style="width: 0%;"></div>
+    </div>
+    <p class="text-sm text-gray-600 mt-2">
+        <strong class="progress-text text-primary">0%</strong>
+    </p>
+</div>
 
             <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-3">Ringkasan Aktivitas Terakhir</h2>
@@ -171,19 +171,19 @@
                 if (welcomeText) {
                     welcomeText.innerHTML = '<span class="text-red-600 font-medium">Anda harus login untuk melihat halaman ini. Token tidak ditemukan.</span>';
                 }
-                return; 
+                return;
             }
             const API_BASE_URL = 'https://web-gdss.vercel.app/api';
             const TOTAL_ALTERNATIF_URL = `${API_BASE_URL}/alternatif/total`;
             const TOTAL_KRITERIA_URL = `${API_BASE_URL}/kriteria/total`;
             const TOTAL_USER_URL = `${API_BASE_URL}/user/total`;
             const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
-            
+
             const altDisplay = document.getElementById('totalAlternatif');
             const kriteriaDisplay = document.getElementById('totalKriteria');
             const userDisplay = document.getElementById('totalUser');
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-            
+
             async function fetchWithToken(url) {
                 const response = await fetch(url, {
                     method: 'GET',
@@ -200,7 +200,7 @@
                 }
                 return response.json();
             }
-            
+
             function findTotal(data) {
                 if (data.total !== undefined) return data.total;
                 if (data.count !== undefined) return data.count;
@@ -224,7 +224,7 @@
                     altDisplay.textContent = 'Err';
                     kriteriaDisplay.textContent = 'Err';
                     userDisplay.textContent = 'Err';
-                    
+
                     if (error.message === 'Unauthorized') {
                         forceLogout();
                     }
@@ -232,7 +232,7 @@
             }
             async function handleLogout(e) {
                 e.preventDefault();
-                
+
                 try {
                     await fetch(LOGOUT_URL, {
                         method: 'POST',
@@ -246,19 +246,79 @@
                     forceLogout();
                 }
             }
-            
+
             function forceLogout() {
                 localStorage.removeItem('accessToken');
                 window.location.href = window.location.origin + '/index.html';
             }
             loadDashboardData();
-            
+
             if (logoutButton) {
                 logoutButton.addEventListener('click', handleLogout);
             }
 
         });
     </script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) return;
+
+            const API_BASE = 'https://web-gdss.vercel.app/api';
+            const TOTAL_ALTERNATIF_URL = `${API_BASE}/alternatif/total`;
+            const PENILAIAN_USER_URL = `${API_BASE}/penilaian/individu`; // harus pakai query ?id_user=...&id_alternatif=...
+
+            // Ambil ID user dari token
+            function parseJwt(token) {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                return JSON.parse(atob(base64));
+            }
+            const tokenPayload = parseJwt(accessToken);
+            const ID_USER = tokenPayload.id_user;
+
+            const bar = document.querySelector('.progress-bar');
+            const barText = document.querySelector('.progress-text');
+
+            try {
+                // 1. Ambil total alternatif
+                const altResponse = await fetch(TOTAL_ALTERNATIF_URL, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const totalAltData = await altResponse.json();
+                const totalAlternatif = totalAltData.total || totalAltData.count || 0;
+
+                // 2. Ambil penilaian user per alternatif
+                // Asumsikan API penilaian/individu harus dipanggil per alternatif
+                const penilaianPromises = [];
+                for (let i = 0; i < totalAlternatif; i++) {
+                    // Ganti dengan id_alternatif sebenarnya dari API alternatif
+                    const id_alternatif = i; // sementara pakai index, nanti ganti dari list id
+                    penilaianPromises.push(
+                        fetch(`${PENILAIAN_USER_URL}?id_user=${ID_USER}&id_alternatif=${id_alternatif}`, {
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        }).then(r => r.json())
+                    );
+                }
+                const penilaianResults = await Promise.all(penilaianPromises);
+
+                // 3. Hitung jumlah alternatif yang sudah dinilai
+                const dinilai = penilaianResults.filter(r => r && Object.keys(r).length > 0).length;
+
+                // 4. Hitung persentase
+                const progress = totalAlternatif ? (dinilai / totalAlternatif) * 100 : 0;
+
+                // 5. Update bar progress
+                bar.style.width = `${progress}%`;
+                barText.textContent = `${progress.toFixed(0)}% penilaian telah selesai.`;
+
+            } catch (error) {
+                console.error("Gagal menghitung progress penilaian:", error);
+            }
+        });
+    </script>
+
 </body>
 
 </html>
