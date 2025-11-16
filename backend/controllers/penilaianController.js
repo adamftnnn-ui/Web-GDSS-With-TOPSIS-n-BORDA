@@ -18,6 +18,18 @@ const getAllPenilaian = async (req, res) => {
   }
 };
 
+const getPenilaianByIdUserAndAlternatif=async (req,res)=>{
+  const {id_user,id_alternatif}=req.query
+
+  try{
+    const response=await Penilaian.findOne({id_user:id_user,id_alternatif:id_alternatif})
+
+    res.status(200).json(response)
+  }catch(e){
+    res.status(500).json({message:`Error mengambil data penilaian`})
+  }
+}
+
 const addPenilaian = async (req, res) => {
   const {
     id_user,
@@ -229,4 +241,5 @@ module.exports = {
   getAllPenilaian,
   deletePenilaian,
   perhitunganBorda,
+  getPenilaianByIdUserAndAlternatif
 };
