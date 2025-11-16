@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Profil Saya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="#"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Profil Saya</h1>
+            <div class="flex gap-3">
+                <button id="changePasswordBtn"
+                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="lock" class="w-4 h-4"></i>
+                    <span>Ubah Password</span>
+                </button>
+                <button id="editProfileBtn"
+                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="edit" class="w-4 h-4"></i>
+                    <span>Edit Profil</span>
+                </button>
+            </div>
+        </header>
+
+        <section
+            class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8">
+            <div class="flex-shrink-0">
+                <img src="https://via.placeholder.com/150" alt="Foto Profil"
+                    class="rounded-full w-32 h-32 object-cover border-4 border-primary shadow-md">
+            </div>
+
+            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Lengkap</h2>
+                    <p id="profileCardName" class="font-semibold text-gray-800">Adam Pratama</p>
+                </div>
+                <div>
+                    <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Email</h2>
+                    <p id="profileCardEmail" class="font-semibold text-gray-800">adam@example.com</p>
+                </div>
+                <div>
+                    <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Peran</h2>
+                    <p id="profileCardRole" class="font-semibold text-gray-800">Decision Maker 1</p>
+                </div>
+                <div>
+                    <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Tanggal Bergabung</h2>
+                    <p class="font-semibold text-gray-800">04 November 2025</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="h-10"></div>
+    </main>
+
+    <div id="modalProfile" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 relative">
+            <h2 id="modalProfileTitle" class="text-lg font-semibold text-gray-800 mb-4">Edit Profil</h2>
+            <form id="modalProfileForm" class="space-y-4">
+                <div class="text-sm">
+                    <label for="profileName" class="block text-gray-700 font-medium mb-1">Nama Lengkap</label>
+                    <input type="text" id="profileName" name="profileName"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                        placeholder="Masukkan nama lengkap" required>
+                </div>
+                <div class="text-sm">
+                    <label for="profileEmail" class="block text-gray-700 font-medium mb-1">Email</label>
+                    <input type="email" id="profileEmail" name="profileEmail"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                        placeholder="Masukkan email" required>
+                </div>
+                <div class="text-sm">
+                    <label for="profileRole" class="block text-gray-700 font-medium mb-1">Peran</label>
+                    <select id="profileRole" name="profileRole"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                        required>
+                        <option value="">Pilih peran</option>
+                        <option value="Decision Maker 1">Decision Maker 1</option>
+                        <option value="Decision Maker 2">Decision Maker 2</option>
+                        <option value="Decision Maker 3">Decision Maker 3</option>
+                        <option value="Decision Maker 4">Decision Maker 4</option>
+                    </select>
+                </div>
+
+                <div id="passwordFields" class="space-y-4 hidden">
+                    <div class="text-sm">
+                        <label for="currentPassword" class="block text-gray-700 font-medium mb-1">Password Lama</label>
+                        <input type="password" id="currentPassword" name="currentPassword"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                            placeholder="Masukkan password lama">
+                    </div>
+                    <div class="text-sm">
+                        <label for="newPassword" class="block text-gray-700 font-medium mb-1">Password Baru</label>
+                        <input type="password" id="newPassword" name="newPassword"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                            placeholder="Masukkan password baru">
+                    </div>
+                    <div class="text-sm">
+                        <label for="confirmPassword" class="block text-gray-700 font-medium mb-1">Konfirmasi
+                            Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-gray-700"
+                            placeholder="Konfirmasi password baru">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="btnCloseProfileModal"
+                        class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-700 transition text-sm">Simpan</button>
+                </div>
+            </form>
+            <button id="btnCloseProfileX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        const modalProfile = document.getElementById('modalProfile');
+        const modalTitle = document.getElementById('modalProfileTitle');
+        const passwordFields = document.getElementById('passwordFields');
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const btnCloseProfileModal = document.getElementById('btnCloseProfileModal');
+        const btnCloseProfileX = document.getElementById('btnCloseProfileX');
+        const modalProfileForm = document.getElementById('modalProfileForm');
+
+        const profileNameInput = document.getElementById('profileName');
+        const profileEmailInput = document.getElementById('profileEmail');
+        const profileRoleInput = document.getElementById('profileRole');
+
+        const profileCard = {
+            name: document.getElementById('profileCardName').textContent,
+            email: document.getElementById('profileCardEmail').textContent,
+            role: document.getElementById('profileCardRole').textContent
+        };
+
+        editProfileBtn.addEventListener('click', () => {
+            modalProfile.classList.remove('hidden');
+            modalProfile.classList.add('flex');
+            modalTitle.textContent = 'Edit Profil';
+            passwordFields.classList.add('hidden');
+
+            profileNameInput.closest('div').classList.remove('hidden');
+            profileEmailInput.closest('div').classList.remove('hidden');
+            profileRoleInput.closest('div').classList.remove('hidden');
+
+            profileNameInput.value = profileCard.name;
+            profileEmailInput.value = profileCard.email;
+            profileRoleInput.value = profileCard.role;
+
+            feather.replace();
+        });
+
+        changePasswordBtn.addEventListener('click', () => {
+            modalProfile.classList.remove('hidden');
+            modalProfile.classList.add('flex');
+            modalTitle.textContent = 'Ubah Password';
+            passwordFields.classList.remove('hidden');
+
+            profileNameInput.closest('div').classList.add('hidden');
+            profileEmailInput.closest('div').classList.add('hidden');
+            profileRoleInput.closest('div').classList.add('hidden');
+
+            modalProfileForm.reset();
+
+            feather.replace();
+        });
+
+        function closeProfileModal() {
+            modalProfile.classList.add('hidden');
+            modalProfile.classList.remove('flex');
+            modalProfileForm.reset();
+
+            profileNameInput.closest('div').classList.remove('hidden');
+            profileEmailInput.closest('div').classList.remove('hidden');
+            profileRoleInput.closest('div').classList.remove('hidden');
+        }
+
+        btnCloseProfileModal.addEventListener('click', closeProfileModal);
+        btnCloseProfileX.addEventListener('click', closeProfileModal);
+
+        modalProfileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (modalTitle.textContent === 'Edit Profil') {
+                profileCard.name = profileNameInput.value;
+                profileCard.email = profileEmailInput.value;
+                profileCard.role = profileRoleInput.value;
+
+                document.getElementById('profileCardName').textContent = profileCard.name;
+                document.getElementById('profileCardEmail').textContent = profileCard.email;
+                document.getElementById('profileCardRole').textContent = profileCard.role;
+
+                showAlert('Data **profil** berhasil diperbarui!', 'success');
+            } else if (modalTitle.textContent === 'Ubah Password') {
+                showAlert('**Password** berhasil diubah!', 'success');
+            }
+
+            closeProfileModal();
+        });
+    </script>
+</body>
+
+</html>
