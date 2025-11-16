@@ -219,6 +219,18 @@
         window.addEventListener('DOMContentLoaded', () => {
 
             const accessToken = localStorage.getItem('accessToken');
+            const currentUser = parseJwt(accessToken);
+            const isAdmin = currentUser?.peran === 'Admin';
+
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
 
             if (!accessToken) {
                 console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
@@ -257,6 +269,10 @@
             const btnKonfirmasiBatal = document.getElementById("btnKonfirmasiBatal");
             const btnKonfirmasiX = document.getElementById("btnKonfirmasiX");
             const logoutButton = document.querySelector('nav a[href="index.html"]');
+
+if (!isAdmin && btnTambahAlternatif) {
+                btnTambahAlternatif.style.display = 'none';
+            }
 
             let editingId = null;
             let idToDelete = null;
@@ -347,30 +363,39 @@
                 data.forEach((item, index) => {
                     const row = document.createElement("tr");
                     row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
-                    
-                    row.innerHTML = `
-                        <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
-                        <td class="px-4 py-3 font-medium">${item.nama}</td>
-                        <td class="px-4 py-3 text-gray-600">${item.deskripsi}</td>
-                        <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
-                            <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit" 
-                                data-id="${item._id}" 
-                                data-nama="${item.nama}" 
-                                data-deskripsi="${item.deskripsi}">
-                                <i data-feather="edit" class="w-4 h-4" style="pointer-events: none;"></i>
-                            </button>
-                            <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete" 
-                                data-id="${item._id}" 
-                                data-nama="${item.nama}">
-                                <i data-feather="trash-2" class="w-4 h-4" style="pointer-events: none;"></i>
-                            </button>
-                            <button class="detailBtn p-1.5 text-gray-600 hover:text-gray-800 rounded-md transition" title="Detail" 
+
+                    // Tombol sesuai role
+                    let tombolAksi = `<button class="detailBtn p-1.5 text-gray-600 hover:text-gray-800 rounded-md transition" title="Detail" 
                                 data-nama="${item.nama}" 
                                 data-deskripsi="${item.deskripsi}">
                                 <i data-feather="eye" class="w-4 h-4" style="pointer-events: none;"></i>
-                            </button>
-                        </td>
-                    `;
+                            </button>`;
+
+                    if (isAdmin) {
+                        tombolAksi = `
+                <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit" 
+                    data-id="${item._id}" 
+                    data-nama="${item.nama}" 
+                    data-deskripsi="${item.deskripsi}">
+                    <i data-feather="edit" class="w-4 h-4" style="pointer-events: none;"></i>
+                </button>
+                <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete" 
+                    data-id="${item._id}" 
+                    data-nama="${item.nama}">
+                    <i data-feather="trash-2" class="w-4 h-4" style="pointer-events: none;"></i>
+                </button>
+                ${tombolAksi}`;
+                    }
+
+                    row.innerHTML = `
+            <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
+            <td class="px-4 py-3 font-medium">${item.nama}</td>
+            <td class="px-4 py-3 text-gray-600">${item.deskripsi}</td>
+            <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+                ${tombolAksi}
+            </td>
+        `;
+
                     tableBody.appendChild(row);
                 });
                 feather.replace();

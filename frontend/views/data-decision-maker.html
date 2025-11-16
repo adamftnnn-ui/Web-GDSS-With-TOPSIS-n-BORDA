@@ -189,7 +189,8 @@
                 </div>
                 <h2 class="text-lg font-semibold text-gray-900 mb-2">Konfirmasi Penghapusan</h2>
                 <p id="konfirmasiText" class="text-sm text-gray-600 mb-6">Anda yakin ingin menghapus Decision Maker
-                    <strong>[Nama DM]</strong>? Aksi ini tidak dapat dibatalkan.</p>
+                    <strong>[Nama DM]</strong>? Aksi ini tidak dapat dibatalkan.
+                </p>
             </div>
             <div class="flex justify-center gap-3">
                 <button type="button" id="btnKonfirmasiBatal"
@@ -207,6 +208,18 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
+            const currentUser = parseJwt(accessToken);
+            const isAdmin = currentUser?.peran === 'Admin';
+
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
 
             if (!accessToken) {
                 console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
@@ -223,7 +236,7 @@
                 return;
             }
             const API_BASE_URL = 'https://web-gdss.vercel.app/api';
-            const USER_URL = `${API_BASE_URL}/user`; 
+            const USER_URL = `${API_BASE_URL}/user`;
             const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
             const tableBody = document.getElementById("dmTable");
             const btnTambah = document.getElementById("btnTambahDM");
@@ -243,9 +256,19 @@
             const btnKonfirmasiBatal = document.getElementById("btnKonfirmasiBatal");
             const btnKonfirmasiX = document.getElementById("btnKonfirmasiX");
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-            
+
             let editingId = null;
             let idToDelete = null;
+
+            // Sembunyikan header "Aksi" jika bukan admin
+            const aksiHeader = document.querySelector('th:last-child');
+            if (!isAdmin && aksiHeader) {
+                aksiHeader.style.display = 'none';
+            }
+            if (!isAdmin && btnTambah) {
+                btnTambah.style.display = 'none';
+            }
+
 
             async function fetchWithToken(url, options = {}) {
                 const headers = {
@@ -266,14 +289,14 @@
                     throw new Error('Unauthorized');
                 }
                 if (response.status === 204) {
-                    return null; 
+                    return null;
                 }
                 let data;
                 try {
-                     data = await response.json();
+                    data = await response.json();
                 } catch (e) {
                     if (!response.ok) {
-                         throw new Error(`API Error: ${response.statusText}`);
+                        throw new Error(`API Error: ${response.statusText}`);
                     }
                     return null;
                 }
@@ -308,7 +331,7 @@
                     const data = await fetchWithToken(USER_URL, { method: 'GET' });
 
                     if (!Array.isArray(data)) {
-                         throw new Error("Format data tidak terduga dari server.");
+                        throw new Error("Format data tidak terduga dari server.");
                     }
 
                     renderTable(data);
@@ -323,18 +346,18 @@
             }
             function renderTable(data) {
                 tableBody.innerHTML = "";
-                
+
                 if (data.length === 0) {
-                     tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data decision maker.</td></tr>`;
-                     return;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data decision maker.</td></tr>`;
+                    return;
                 }
-                
+
                 data.forEach((item, index) => {
                     const row = document.createElement("tr");
                     row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
-                    
+
                     const peranClass = item.peran === 'Admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
-                    
+
                     row.innerHTML = `
                         <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
                         <td class="px-4 py-3 font-medium">${item.nama}</td>
@@ -344,19 +367,22 @@
                                 ${item.peran}
                             </span>
                         </td>
-                        <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
-                            <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit" 
-                                data-id="${item._id}" 
-                                data-nama="${item.nama}" 
-                                data-email="${item.email}" 
-                                data-peran="${item.peran}">
-                                <i data-feather="edit" class="w-4 h-4" style="pointer-events: none;"></i>
-                            </button>
-                            <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete" 
-                                data-id="${item._id}" 
-                                data-nama="${item.nama}">
-                                <i data-feather="trash-2" class="w-4 h-4" style="pointer-events: none;"></i>
-                            </button>
+                        ${isAdmin ? `
+<td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+    <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit"
+        data-id="${item._id}" 
+        data-nama="${item.nama}" 
+        data-email="${item.email}" 
+        data-peran="${item.peran}">
+        <i data-feather="edit" class="w-4 h-4" style="pointer-events: none;"></i>
+    </button>
+    <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete"
+        data-id="${item._id}" 
+        data-nama="${item.nama}">
+        <i data-feather="trash-2" class="w-4 h-4" style="pointer-events: none;"></i>
+    </button>
+</td>` : ''}
+
                         </td>
                     `;
                     tableBody.appendChild(row);
@@ -380,11 +406,11 @@
                         namaInput.value = btn.dataset.nama;
                         emailInput.value = btn.dataset.email;
                         peranInput.value = btn.dataset.peran;
-                        
+
                         emailInput.readOnly = true;
                         passwordWrapper.style.display = 'none';
                         passwordInput.required = false;
-                        
+
                         openModal(modal);
                     };
                 });
@@ -401,8 +427,8 @@
 
                 if (editingId) {
                     if (!nama || !email || !peran) {
-                         showAlert('Gagal menyimpan. Mohon lengkapi nama, email, dan peran.', 'error');
-                         return;
+                        showAlert('Gagal menyimpan. Mohon lengkapi nama, email, dan peran.', 'error');
+                        return;
                     }
                     method = 'PUT';
                     body = { id_user: editingId, nama, email, peran };
@@ -437,13 +463,13 @@
 
                 try {
                     const url = `${USER_URL}?id_user=${idToDelete}`;
-                    
+
                     await fetchWithToken(url, { method: 'DELETE' });
-                    
+
                     showAlert('Data berhasil dihapus.', 'success');
                     closeModal(modalKonfirmasi);
                     await loadDecisionMakers();
-                    
+
                 } catch (error) {
                     console.error('Gagal menghapus DM:', error);
                     showAlert(`Gagal menghapus: ${error.message}`, 'error');
@@ -457,11 +483,11 @@
                 modalElement.classList.remove("hidden");
                 modalElement.classList.add("flex");
             }
-            
+
             function closeModal(modalElement) {
                 modalElement.classList.add("hidden");
                 modalElement.classList.remove("flex");
-                
+
                 if (modalElement === modal) {
                     form.reset();
                     editingId = null;
@@ -481,14 +507,14 @@
                 editingId = null;
                 modalTitle.textContent = "Tambah Decision Maker";
                 form.reset();
-                
+
                 emailInput.readOnly = false;
                 passwordWrapper.style.display = 'block';
                 passwordInput.required = true;
-                
+
                 openModal(modal);
             });
-            
+
             btnClose.addEventListener("click", () => closeModal(modal));
             btnCloseX.addEventListener("click", () => closeModal(modal));
             btnKonfirmasiBatal.addEventListener("click", () => closeModal(modalKonfirmasi));
