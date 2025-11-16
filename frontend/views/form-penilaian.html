@@ -113,13 +113,11 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Identitas Penilai</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="decisionMaker" class="block text-gray-700 font-medium text-sm mb-1">Nama Penilai
-                            (Decision Maker)</label>
-                        <select id="decisionMaker"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
-                            required>
-                            <option value="">Memuat DM...</option>
-                        </select>
+                        <label for="decisionMaker" class="block text-gray-700 font-medium text-sm mb-1">Decision
+                            Maker</label>
+                        <input type="text" id="decisionMaker"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-sm text-gray-700 cursor-not-allowed"
+                            readonly value="Memuat Peran...">
                     </div>
                     <div>
                         <label for="tanggalPenilaian" class="block text-gray-700 font-medium text-sm mb-1">Tanggal
@@ -161,9 +159,9 @@
                             </tr>
                         </thead>
                         <tbody id="penilaianTableBody" class="text-gray-700 text-sm">
-                             <tr>
+                            <tr>
                                 <td colspan="5" class="text-center p-4 text-gray-500">Memuat kriteria...</td>
-                             </tr>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -178,9 +176,35 @@
     </script>
 
     <script>
-         window.addEventListener('DOMContentLoaded', () => {
-
+        window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
+            const dmInput = document.getElementById('decisionMaker');
+
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
+
+            function loadUserInfo() {
+                if (!accessToken) {
+                    dmInput.value = 'Tidak diketahui';
+                    return;
+                }
+                try {
+                    const userData = parseJwt(accessToken);
+                    dmInput.value = userData.peran || 'Tidak diketahui';
+                    dmInput.dataset.id_user = userData.id_user || '';
+                } catch (e) {
+                    console.error('Gagal mengambil data user dari token:', e);
+                    dmInput.value = 'Tidak diketahui';
+                }
+            }
+
 
             if (!accessToken) {
                 console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
@@ -229,7 +253,7 @@
                 if (response.status === 401 || response.status === 403) {
                     throw new Error('Unauthorized');
                 }
-                
+
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -275,15 +299,15 @@
             }
             function generateNilaiOptions(nilaiArray) {
                 if (!Array.isArray(nilaiArray) || nilaiArray.length === 0) {
-                     if (typeof nilaiArray === 'string' && nilaiArray.includes('-')) {
-                         return nilaiArray.split(',').map(pair => {
-                             const parts = pair.split('-');
-                             const key = parts[0].trim();
-                             const value = parts.slice(1).join('-').trim();
-                             return `<option value="${key}">${key} - ${value}</option>`;
-                         }).join('');
-                     }
-                     return '<option value="">Nilai tidak terdefinisi</option>';
+                    if (typeof nilaiArray === 'string' && nilaiArray.includes('-')) {
+                        return nilaiArray.split(',').map(pair => {
+                            const parts = pair.split('-');
+                            const key = parts[0].trim();
+                            const value = parts.slice(1).join('-').trim();
+                            return `<option value="${key}">${key} - ${value}</option>`;
+                        }).join('');
+                    }
+                    return '<option value="">Nilai tidak terdefinisi</option>';
                 }
 
                 let optionsHTML = '<option value="">Pilih Nilai</option>';
@@ -328,7 +352,7 @@
                 feather.replace();
             }
             async function loadInitialData() {
-                 try {
+                try {
                     const [users, alternatif, kriteria] = await Promise.all([
                         fetchWithToken(USER_URL),
                         fetchWithToken(ALTERNATIF_URL),
@@ -338,7 +362,7 @@
                     populateSelect(alternatifSelect, alternatif, 'id_alternatif', 'nama', 'Pilih Alternatif');
                     renderKriteriaTable(kriteria);
 
-                 } catch (error) {
+                } catch (error) {
                     console.error('Gagal memuat data awal:', error);
                     tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data kriteria: ${error.message}</td></tr>`;
                     dmSelect.innerHTML = '<option value="">Gagal muat DM</option>';
@@ -346,11 +370,11 @@
                     if (error.message === 'Unauthorized') {
                         forceLogout();
                     }
-                 }
+                }
             }
             async function handleSubmitPenilaian(e) {
                 e.preventDefault();
-                const id_user = dmSelect.value;
+                const id_user = document.getElementById('decisionMaker').dataset.id_user;
                 const id_alternatif = alternatifSelect.value;
                 const rawDate = tanggalInput.value;
                 const keterangan = keteranganInput.value.trim();
@@ -381,7 +405,7 @@
                 feather.replace();
 
                 const promises = [];
-                
+
                 penilaianSelects.forEach(select => {
                     const payload = {
                         id_user: id_user,
@@ -398,13 +422,13 @@
                         })
                     );
                 });
-                
+
                 try {
                     await Promise.all(promises);
-                    
+
                     const altText = alternatifSelect.options[alternatifSelect.selectedIndex].text;
                     const dmText = dmSelect.options[dmSelect.selectedIndex].text;
-                    
+
                     showAlert(`Penilaian untuk <strong>${altText}</strong> oleh <strong>${dmText}</strong> berhasil disimpan.`, 'success');
 
                     formPenilaian.reset();
@@ -421,10 +445,11 @@
             }
             btnKirim.addEventListener("click", handleSubmitPenilaian);
             logoutButton.addEventListener('click', handleLogout);
-            
-            loadInitialData();
 
-         });
+            loadInitialData();
+            loadUserInfo();
+
+        });
     </script>
 </body>
 
