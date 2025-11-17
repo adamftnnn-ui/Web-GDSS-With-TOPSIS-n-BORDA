@@ -179,6 +179,22 @@
         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
             const dmInput = document.getElementById('decisionMaker');
+            
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api'; 
+            const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
+            const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
+            const PENILAIAN_URL = `${API_BASE_URL}/penilaian`;
+            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+            const INDIVIDU_URL = `${API_BASE_URL}/penilaian/individu`; 
+
+            const btnKirim = document.getElementById("btnKirimPenilaian");
+            const formPenilaian = document.getElementById("formPenilaian");
+            const alternatifSelect = document.getElementById('alternatif');
+            const tanggalInput = document.getElementById('tanggalPenilaian');
+            const keteranganInput = document.getElementById('keterangan');
+            const tableBody = document.getElementById('penilaianTableBody');
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+
 
             function parseJwt(token) {
                 if (!token) return null;
@@ -198,16 +214,15 @@
                 try {
                     const userData = parseJwt(accessToken);
                     dmInput.value = userData.peran || 'Tidak diketahui';
-                    dmInput.dataset.id_user = userData.id_user || '';
+                    dmInput.dataset.id_user = userData.id_user || ''; 
                 } catch (e) {
                     console.error('Gagal mengambil data user dari token:', e);
                     dmInput.value = 'Tidak diketahui';
                 }
             }
 
-
             if (!accessToken) {
-                console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
+                console.warn("Tidak ada accessToken.");
                 const headerTitle = document.querySelector('main header h1');
                 if (headerTitle) {
                     headerTitle.textContent = 'Akses Ditolak';
@@ -219,21 +234,6 @@
                 }
                 return;
             }
-
-            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
-            const USER_URL = `${API_BASE_URL}/user/`;
-            const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
-            const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
-            const PENILAIAN_URL = `${API_BASE_URL}/penilaian`;
-            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
-            const btnKirim = document.getElementById("btnKirimPenilaian");
-            const formPenilaian = document.getElementById("formPenilaian");
-            const dmSelect = document.getElementById('decisionMaker');
-            const alternatifSelect = document.getElementById('alternatif');
-            const tanggalInput = document.getElementById('tanggalPenilaian');
-            const keteranganInput = document.getElementById('keterangan');
-            const tableBody = document.getElementById('penilaianTableBody');
-            const logoutButton = document.querySelector('nav a[href="index.html"]');
 
             async function fetchWithToken(url, options = {}) {
                 const headers = {
@@ -254,18 +254,22 @@
                     throw new Error('Unauthorized');
                 }
 
-                const data = await response.json();
+                const text = await response.text(); 
+                if (!text) return null; 
 
-                if (!response.ok) {
-                    const errorMessage = data.message || data.error || `API Error: ${response.statusText}`;
-                    throw new Error(errorMessage);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error("Response bukan JSON:", text);
+                    throw new Error("Response server tidak valid");
                 }
-                return data;
             }
+
             function forceLogout() {
                 localStorage.removeItem('accessToken');
                 window.location.href = window.location.origin + '/index.html';
             }
+            
             async function handleLogout(e) {
                 e.preventDefault();
                 try {
@@ -274,51 +278,51 @@
                         headers: { 'Authorization': `Bearer ${accessToken}` }
                     });
                 } catch (error) {
-                    console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
+                    console.warn("Logout lokal.", error);
                 } finally {
                     forceLogout();
                 }
             }
 
-            /**
-             * Mengisi elemen <select> dengan data dari API
-             * @param {HTMLSelectElement} selectElement
-             * @param {Array} data
-             * @param {string} valueKey
-             * @param {string} textKey
-             * @param {string} defaultOptionText
-             */
             function populateSelect(selectElement, data, valueKey, textKey, defaultOptionText) {
                 selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
-                data.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item[valueKey];
-                    option.textContent = item[textKey];
-                    selectElement.appendChild(option);
-                });
-            }
-            function generateNilaiOptions(nilaiArray) {
-                if (!Array.isArray(nilaiArray) || nilaiArray.length === 0) {
-                    if (typeof nilaiArray === 'string' && nilaiArray.includes('-')) {
-                        return nilaiArray.split(',').map(pair => {
-                            const parts = pair.split('-');
-                            const key = parts[0].trim();
-                            const value = parts.slice(1).join('-').trim();
-                            return `<option value="${key}">${key} - ${value}</option>`;
-                        }).join('');
-                    }
-                    return '<option value="">Nilai tidak terdefinisi</option>';
+                if(Array.isArray(data)){
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        const val = item[valueKey] || item._id;
+                        
+                        option.value = val;
+                        option.textContent = item[textKey];
+                        selectElement.appendChild(option);
+                    });
                 }
-
-                let optionsHTML = '<option value="">Pilih Nilai</option>';
-                nilaiArray.forEach(nilai => {
-                    optionsHTML += `<option value="${nilai.key}">${nilai.key} - ${nilai.value}</option>`;
-                });
-                return optionsHTML;
             }
+
+            function generateNilaiOptions(nilaiRaw) {
+                if (typeof nilaiRaw === 'string') {
+                    const items = nilaiRaw.includes(';') ? nilaiRaw.split(';') : nilaiRaw.split(',');
+                    return `<option value="">Pilih Nilai</option>` + items.map(item => {
+                        const parts = item.split('-');
+                        if (parts.length >= 2) {
+                            const key = parts[0].trim();
+                            const label = parts.slice(1).join('-').trim();
+                            return `<option value="${key}">${key} - ${label}</option>`;
+                        }
+                        return '';
+                    }).join('');
+                } else if (Array.isArray(nilaiRaw)) {
+                    let optionsHTML = '<option value="">Pilih Nilai</option>';
+                    nilaiRaw.forEach(n => {
+                         optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
+                    });
+                    return optionsHTML;
+                }
+                return '<option value="">Nilai tidak valid</option>';
+            }
+
             function renderKriteriaTable(kriteriaData) {
                 tableBody.innerHTML = "";
-                if (kriteriaData.length === 0) {
+                if (!kriteriaData || kriteriaData.length === 0) {
                     tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data kriteria.</td></tr>`;
                     return;
                 }
@@ -330,6 +334,7 @@
                     const tipeText = kriteria.tipe || 'N/A';
                     const bobotText = typeof kriteria.bobot === 'number' ? kriteria.bobot.toFixed(2) : 'N/A';
                     const selectOptions = generateNilaiOptions(kriteria.nilai);
+                    const kriteriaId = kriteria.id_kriteria || kriteria._id;
 
                     row.innerHTML = `
                         <td class="px-4 py-3 font-medium">C${index + 1}</td>
@@ -339,8 +344,8 @@
                         </td>
                         <td class="px-4 py-3">${bobotText}</td>
                         <td class="px-4 py-3">
-                            <select name="kriteria_${kriteria.id_kriteria}" 
-                                    data-id_kriteria="${kriteria.id_kriteria}"
+                            <select name="kriteria_${kriteriaId}" 
+                                    data-id_kriteria="${kriteriaId}"
                                     class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
                                     required>
                                 ${selectOptions}
@@ -353,47 +358,97 @@
             }
             async function loadInitialData() {
                 try {
-                    const [users, alternatif, kriteria] = await Promise.all([
-                        fetchWithToken(USER_URL),
+                    const [alternatif, kriteria] = await Promise.all([
                         fetchWithToken(ALTERNATIF_URL),
                         fetchWithToken(KRITERIA_URL)
                     ]);
-                    populateSelect(dmSelect, users, 'id_user', 'nama', 'Pilih DM');
+                    
+                    console.log("Data Alternatif Loaded:", alternatif);
+                    console.log("Data Kriteria Loaded:", kriteria);
+
                     populateSelect(alternatifSelect, alternatif, 'id_alternatif', 'nama', 'Pilih Alternatif');
                     renderKriteriaTable(kriteria);
 
                 } catch (error) {
                     console.error('Gagal memuat data awal:', error);
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data kriteria: ${error.message}</td></tr>`;
-                    dmSelect.innerHTML = '<option value="">Gagal muat DM</option>';
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data: ${error.message}</td></tr>`;
                     alternatifSelect.innerHTML = '<option value="">Gagal muat Alternatif</option>';
-                    if (error.message === 'Unauthorized') {
-                        forceLogout();
-                    }
+                    if (error.message === 'Unauthorized') forceLogout();
                 }
             }
+            async function handleAlternatifChange(e) {
+                const id_alternatif = e.target.value;
+                const id_user = dmInput.dataset.id_user;
+
+                console.log("Alternatif Selected Value:", id_alternatif);
+
+                tanggalInput.value = "";
+                keteranganInput.value = "";
+                const allSelects = document.querySelectorAll('#penilaianTableBody select');
+                allSelects.forEach(s => s.value = "");
+
+                if (!id_alternatif || id_alternatif === "undefined" || !id_user) {
+                    console.warn("ID Alternatif atau User tidak valid:", id_alternatif, id_user);
+                    return;
+                }
+                const url = `${INDIVIDU_URL}?id_user=${id_user}&id_alternatif=${id_alternatif}`;
+                console.log("Mencari data penilaian:", url);
+
+                try {
+                    const data = await fetchWithToken(url);
+                    
+                    if (data && !data.message) {
+                        console.log("Data ditemukan, mengisi form...", data);
+
+                        if (data.tanggal_penilaian) {
+                            const dateObj = new Date(data.tanggal_penilaian);
+                            const formattedDate = dateObj.toISOString().split('T')[0];
+                            tanggalInput.value = formattedDate;
+                        }
+                        if (data.keterangan) {
+                            keteranganInput.value = data.keterangan;
+                        }
+                        if (Array.isArray(data.nilai)) {
+                            data.nilai.forEach(item => {
+                                const dropdown = document.querySelector(`select[data-id_kriteria="${item.key}"]`);
+                                if (dropdown) {
+                                    dropdown.value = item.value;
+                                } else {
+                                    console.warn(`Dropdown untuk kriteria ID ${item.key} tidak ditemukan.`);
+                                }
+                            });
+                        }
+
+                        showAlert('Data penilaian sebelumnya berhasil dimuat.', 'success');
+                    } else {
+                        console.log("Belum ada data penilaian untuk kombinasi ini (atau API mengembalikan pesan error).");
+                    }
+
+                } catch (error) {
+                    console.warn("Info: Tidak ada data penilaian tersimpan atau gagal fetch.", error.message);
+                }
+            }
+
             async function handleSubmitPenilaian(e) {
                 e.preventDefault();
-                const id_user = document.getElementById('decisionMaker').dataset.id_user;
+                const id_user = dmInput.dataset.id_user;
                 const id_alternatif = alternatifSelect.value;
                 const rawDate = tanggalInput.value;
                 const keterangan = keteranganInput.value.trim();
                 const penilaianSelects = document.querySelectorAll('#penilaianTableBody select');
 
                 if (!id_user || !id_alternatif || !rawDate) {
-                    showAlert('Gagal mengirim. Mohon lengkapi **Nama Penilai**, **Tanggal**, dan **Alternatif**.', 'error');
+                    showAlert('Gagal mengirim. Mohon lengkapi **Tanggal** dan **Alternatif**.', 'error');
                     return;
                 }
 
                 let allRated = true;
                 penilaianSelects.forEach(select => {
-                    if (select.value === "") {
-                        allRated = false;
-                    }
+                    if (select.value === "") allRated = false;
                 });
 
                 if (!allRated) {
-                    showAlert('Gagal mengirim. Mohon isi **semua nilai kriteria** di tabel.', 'error');
+                    showAlert('Gagal mengirim. Mohon isi **semua nilai kriteria**.', 'error');
                     return;
                 }
 
@@ -404,36 +459,31 @@
                 btnKirim.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>&nbsp; Mengirim...';
                 feather.replace();
 
-                const promises = [];
-
+                const nilaiPairs = [];
                 penilaianSelects.forEach(select => {
-                    const payload = {
-                        id_user: id_user,
-                        tanggal_penilaian: tanggal_penilaian,
-                        id_alternatif: id_alternatif,
-                        keterangan: keterangan,
-                        id_kriteria: select.dataset.id_kriteria,
-                        nilai: parseInt(select.value, 10)
-                    };
-                    promises.push(
-                        fetchWithToken(PENILAIAN_URL, {
-                            method: 'POST',
-                            body: payload
-                        })
-                    );
+                    nilaiPairs.push(`${select.dataset.id_kriteria} - ${select.value}`);
                 });
+                const nilaiString = nilaiPairs.join(';');
+
+                const payload = {
+                    id_user: id_user,
+                    tanggal_penilaian: tanggal_penilaian,
+                    id_alternatif: id_alternatif,
+                    nilai: nilaiString,
+                    keterangan: keterangan
+                };
+
+                console.log("Mengirim payload penilaian:", payload);
 
                 try {
-                    await Promise.all(promises);
+                    const result = await fetchWithToken(PENILAIAN_URL, {
+                        method: 'POST',
+                        body: payload
+                    });
 
                     const altText = alternatifSelect.options[alternatifSelect.selectedIndex].text;
-                    const dmText = dmSelect.options[dmSelect.selectedIndex].text;
-
-                    showAlert(`Penilaian untuk <strong>${altText}</strong> oleh <strong>${dmText}</strong> berhasil disimpan.`, 'success');
-
-                    formPenilaian.reset();
-                    penilaianSelects.forEach(select => select.value = "");
-
+                    showAlert(`Penilaian untuk <strong>${altText}</strong> berhasil disimpan.`, 'success');
+                    
                 } catch (error) {
                     console.error('Gagal mengirim penilaian:', error);
                     showAlert(`Gagal mengirim: ${error.message}`, 'error');
@@ -445,10 +495,10 @@
             }
             btnKirim.addEventListener("click", handleSubmitPenilaian);
             logoutButton.addEventListener('click', handleLogout);
-
-            loadInitialData();
+            alternatifSelect.addEventListener('change', handleAlternatifChange);
+            
             loadUserInfo();
-
+            loadInitialData();
         });
     </script>
 </body>
