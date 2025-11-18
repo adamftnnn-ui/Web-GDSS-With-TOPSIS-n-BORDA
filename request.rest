@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh 
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2MzMwNDY5OCwiZXhwIjoxNzYzMzA4Mjk4fQ.uVbdwqeatIqH8nslscc91b-l4IyE65KxJNiFSP58ohQ
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2MzQzNjQwOCwiZXhwIjoxNzYzNDQwMDA4fQ.L1wuSQl3kK5XHs8aSw0dQaoVe-5x7uov9utABn44U90
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -122,7 +122,7 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 ### Get Kriteria By Id User
-GET https://web-gdss.vercel.app/api/kriteria/id/6910cb902e5b13934a3a9b67
+GET https://web-gdss.vercel.app/api/kriteria/id/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Get Kriteria By Tipe
@@ -161,7 +161,7 @@ Content-Type: application/json
 }
 
 ### Delete Kriteria
-DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=69147bdae8ff8e90ee22be6b
+DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=69148060e8ff8e90ee22be85,
 Authorization: Bearer {{accessToken}}
 
 ### Get All Penilaian

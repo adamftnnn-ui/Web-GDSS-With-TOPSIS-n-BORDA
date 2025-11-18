@@ -17,7 +17,11 @@ const penilaianSchema=new mongoose.Schema({
     },
     nilai:[
         {
-            key:String,
+            id_kriteria:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'Kriteria',
+                required:true
+            },
             value:mongoose.Schema.Types.Mixed
         }
     ],

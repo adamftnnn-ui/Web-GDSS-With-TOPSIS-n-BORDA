@@ -26,11 +26,11 @@ const getPenilaianByIdUserAndAlternatif = async (req, res) => {
     const response = await Penilaian.findOne({
       id_user: id_user,
       id_alternatif: id_alternatif,
-    });
+  }).populate('nilai.id_kriteria');
 
     res.status(200).json(response);
   } catch (e) {
-    res.status(500).json({ message: `Error mengambil data penilaian` });
+    res.status(500).json({ message: `Error mengambil data penilaian${e}` });
   }
 };
 
@@ -46,9 +46,9 @@ const addPenilaian = async (req, res) => {
 
   const clearedComma = nilai.split(";").map((item) => item.trim());
   const nilaiPenilaian = clearedComma.map((item) => {
-    const [key, value] = item.split(" - ");
+    const [id_kriteria, value] = item.split(" - ");
     return {
-      key: key.trim(),
+      id_kriteria: id_kriteria.trim(),
       value: value.trim(),
     };
   });
