@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh 
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwiZW1haWwiOiJhcmhhbUBnbWFpbC5jb20iLCJpYXQiOjE3NjM0NDEwMDQsImV4cCI6MTc2MzQ0NDYwNH0.Q8sOqyzEWaz2PAdS7YlnVJ_xPJvQsirUZikA5US4hHk
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwiZW1haWwiOiJhcmhhbUBnbWFpbC5jb20iLCJpYXQiOjE3NjM0NTAwMDIsImV4cCI6MTc2MzQ1MzYwMn0.xdoOxtMtW6MUTXQ25PPNhmpefQw85uYSpG-MsMfBsMs
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -134,12 +134,11 @@ GET https://web-gdss.vercel.app/api/kriteria/total
 Authorization: Bearer {{accessToken}}
 
 ### Add Kriteria
-POST https://web-gdss.vercel.app/api/kriteria
+POST http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-     "id_user": "69109c6a6a0c7a5786f4c696",
   "nama": "Biaya Transportasi",
   "tipe": "Cost",
   "bobot": 3.50,
@@ -161,7 +160,7 @@ Content-Type: application/json
 }
 
 ### Delete Kriteria
-DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=69148060e8ff8e90ee22be85,
+DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=691c26a5b49778c74b7d7d6e
 Authorization: Bearer {{accessToken}}
 
 ### Get All Penilaian
@@ -205,12 +204,12 @@ GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User
-GET https://web-gdss.vercel.app/api/penilaian/topsis/6910cb902e5b13934a3a9b67
+GET http://localhost:5000/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 
 ### Perhitungan Borda
-GET https://web-gdss.vercel.app/api/penilaian/borda
+GET http://localhost:5000/api/penilaian/borda
 Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif

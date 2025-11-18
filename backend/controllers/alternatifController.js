@@ -1,4 +1,5 @@
 const Alternatif = require("../models/alternatif");
+const Penilaian=require('../models/penilaian')
 
 const getAllAlternatif = async (req, res) => {
   try {
@@ -58,6 +59,14 @@ const deleteAlternatif=async (req,res)=>{
     const {id_alternatif}=req.body
     
     try{
+        await Penilaian.deleteMany({id_alternatif:id_alternatif})
+
+        // const allExistingPenilaian=await Penilaian.find({id_alternatif:id_alternatif})
+
+        // for(const item of allExistingPenilaian){
+        //   await item.deleteOne()
+        // }
+
         await Alternatif.findByIdAndDelete(id_alternatif)
 
         res.sendStatus(200)

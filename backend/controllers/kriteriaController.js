@@ -1,4 +1,5 @@
 const Kriteria = require("../models/kriteria");
+const Penilaian = require("../models/penilaian");
 const mongoose = require("mongoose");
 
 const toTitleCase = (str) => {
@@ -10,7 +11,7 @@ const toTitleCase = (str) => {
 };
 
 const addKriteria = async (req, res) => {
-  const { id_user, nama, tipe, bobot, nilai } = req.body;
+  const {  nama, tipe, bobot, nilai } = req.body;
   const clearedComma = nilai.split(";").map((item) => item.trim());
   const nilaiKriteria = clearedComma.map((item) => {
     const [key, value] = item.split(" - ");
@@ -21,13 +22,23 @@ const addKriteria = async (req, res) => {
   });
 
   try {
-    await Kriteria.create({
-      id_user: id_user,
+    const newKriteria = await Kriteria.create({
       nama: nama,
       tipe: tipe,
       bobot: bobot,
       nilai: nilaiKriteria,
     });
+
+    const allExistingPenilaian = await Penilaian.find();
+
+    for (const item of allExistingPenilaian) {
+      item.nilai.push({
+        id_kriteria: newKriteria._id,
+        value: null,
+      });
+
+      await item.save();
+    }
 
     res.sendStatus(201);
   } catch (e) {
@@ -41,6 +52,29 @@ const deleteKriteria = async (req, res) => {
   const { id_kriteria } = req.query;
 
   try {
+    const allExistingPenilaian = await Penilaian.find();
+
+    for (const item of allExistingPenilaian) {
+      const updatedNilai = item.nilai.filter(
+        (itemNilai) => itemNilai.id_kriteria != id_kriteria
+      );
+
+      item.nilai = updatedNilai;
+      await item.save();
+
+      // if(updatedNilai.length!=item.nilai.length){
+      //   item.nilai=updatedNilai
+      //   await item.save()
+      // }
+    }
+    // for(const item of allExistingPenilaian){
+    //   for(const itemNilai of item.nilai){
+    //     if(itemNilai.id_kriteria==id_kriteria){
+    //       await itemNilai.deleteOne()
+    //     }
+    //   }
+    // }
+
     await Kriteria.findByIdAndDelete(id_kriteria);
 
     res.sendStatus(200);
@@ -52,7 +86,7 @@ const deleteKriteria = async (req, res) => {
 };
 
 const updateKriteria = async (req, res) => {
-  const { id_kriteria, id_user, nama, tipe, bobot, nilai } = req.body;
+  const { id_kriteria, nama, tipe, bobot, nilai } = req.body;
   const clearedComma = nilai.split(";").map((item) => item.trim());
   const nilaiKriteria = clearedComma.map((item) => {
     const [key, value] = item.split(" - ");
@@ -72,7 +106,6 @@ const updateKriteria = async (req, res) => {
     }
 
     existingKriteria.nama = nama;
-    existingKriteria.id_user = id_user;
     existingKriteria.tipe = tipe;
     existingKriteria.bobot = bobot;
     existingKriteria.nilai = nilaiKriteria;
@@ -93,32 +126,28 @@ const getAllKriteria = async (req, res) => {
 
     res.status(200).json(response);
   } catch (e) {
-    res
-      .status(500)
-      .json({
-        message: "Error menampilkan semua data kriteria dari database: ",
-        e,
-      });
-  }
-};
-
-const getKriteriaById = async (req, res) => {
-  const { id_user } = req.params;
-
-  try {
-    const response = await Kriteria.find({ id_user: id_user }).sort({
-      tipe: -1,
+    res.status(500).json({
+      message: "Error menampilkan semua data kriteria dari database: ",
+      e,
     });
-
-    res.status(200).json(response);
-  } catch (e) {
-    res
-      .status(500)
-      .json({
-        message: `Error mengambil data kriteria id:${id_user}: ${e}`,
-      });
   }
 };
+
+// const getKriteriaById = async (req, res) => {
+//   const { id_user } = req.params;
+
+//   try {
+//     const response = await Kriteria.find({ id_user: id_user }).sort({
+//       tipe: -1,
+//     });
+
+//     res.status(200).json(response);
+//   } catch (e) {
+//     res.status(500).json({
+//       message: `Error mengambil data kriteria id:${id_user}: ${e}`,
+//     });
+//   }
+// };
 
 const getKriteriaByTipe = async (req, res) => {
   let { tipe } = req.params;
@@ -151,7 +180,6 @@ const getTotalKriteria = async (req, res) => {
 module.exports = {
   addKriteria,
   getAllKriteria,
-  getKriteriaById,
   getKriteriaByTipe,
   updateKriteria,
   deleteKriteria,

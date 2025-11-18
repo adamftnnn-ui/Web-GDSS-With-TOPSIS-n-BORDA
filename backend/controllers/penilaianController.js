@@ -101,6 +101,7 @@ const deletePenilaian = async (req, res) => {
 };
 
 const perhitunganTopsis = async (req, res) => {
+  console.log("perhitunganTopsis function called"); // Log awal untuk memastikan fungsi dipanggil
   const { id_user } = req.params;
 
   const response = await Topsis.findOne({ id_user: id_user });
@@ -108,9 +109,9 @@ const perhitunganTopsis = async (req, res) => {
   if (response) {
     res.status(200).json(response);
   } else {
+    // Log data alternatif dan kriteria sebelum diproses
     const alternatifGet = await Alternatif.find({}, { nama: 1, _id: 0 });
-    const kriteriaGet = await Kriteria.find(
-      { id_user: id_user },
+    const kriteriaGet = await Kriteria.find({},
       { nama: 1, tipe: 1, bobot: 1, _id: 0 }
     );
     const penilaianGet = await Penilaian.find({ id_user: id_user });
@@ -148,7 +149,7 @@ const perhitunganTopsis = async (req, res) => {
 
     python.on("close", async (code) => {
       if (code !== 0) {
-        return res.status(500).json({ message: "Python access failed" });
+        return res.status(500).json({ message: `Python access failed ${code}` });
       }
 
       try {
@@ -263,7 +264,7 @@ const getInfoDecisionMakerLaporan = async (req, res) => {
       .filter((item) => item.peran != "Admin")
       .map(async (item) => {
         const totalAlternatif = await Alternatif.countDocuments();
-        const totalKriteria=await Kriteria.countDocuments({id_user:item._id})
+        const totalKriteria=await Kriteria.countDocuments()
         const tanggalPenilaian=await Penilaian.findOne({id_user:item._id},{_id:0,tanggal_penilaian:1})
         return {
           'id_user': item._id,

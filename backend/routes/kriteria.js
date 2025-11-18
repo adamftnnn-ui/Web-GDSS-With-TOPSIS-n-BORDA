@@ -3,7 +3,7 @@ const { addKriteria, getAllKriteria, getKriteriaById, getKriteriaByTipe, updateK
 const router=express.Router()
 
 router.route('/').post(addKriteria).get(getAllKriteria).put(updateKriteria).delete(deleteKriteria)
-router.get('/id/:id_user',getKriteriaById)
+// router.get('/id/:id_user',getKriteriaById)
 router.route('/tipe/:tipe').get(getKriteriaByTipe)
 router.get('/total',getTotalKriteria)
 
