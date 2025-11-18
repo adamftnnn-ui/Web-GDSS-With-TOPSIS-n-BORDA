@@ -179,7 +179,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
             const dmInput = document.getElementById('decisionMaker');
-            
+
             const API_BASE_URL = 'https://web-gdss.vercel.app/api'; 
             const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
             const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
@@ -194,7 +194,6 @@
             const keteranganInput = document.getElementById('keterangan');
             const tableBody = document.getElementById('penilaianTableBody');
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-
 
             function parseJwt(token) {
                 if (!token) return null;
@@ -290,7 +289,6 @@
                     data.forEach(item => {
                         const option = document.createElement('option');
                         const val = item[valueKey] || item._id;
-                        
                         option.value = val;
                         option.textContent = item[textKey];
                         selectElement.appendChild(option);
@@ -327,13 +325,21 @@
                     return;
                 }
 
-                kriteriaData.forEach((kriteria, index) => {
+                // Filter DUPLIKASI KRITERIA berdasarkan nama
+                const uniqueKriteria = kriteriaData.filter((item, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.nama === item.nama 
+                    ))
+                );
+                
+                uniqueKriteria.forEach((kriteria, index) => {
                     const row = document.createElement('tr');
                     row.className = 'bg-gray-50 hover:bg-blue-50 transition-all';
                     const tipeClass = kriteria.tipe === 'Cost' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
                     const tipeText = kriteria.tipe || 'N/A';
                     const bobotText = typeof kriteria.bobot === 'number' ? kriteria.bobot.toFixed(2) : 'N/A';
                     const selectOptions = generateNilaiOptions(kriteria.nilai);
+
                     const kriteriaId = kriteria.id_kriteria || kriteria._id;
 
                     row.innerHTML = `
@@ -346,6 +352,7 @@
                         <td class="px-4 py-3">
                             <select name="kriteria_${kriteriaId}" 
                                     data-id_kriteria="${kriteriaId}"
+                                    data-nama_kriteria="${kriteria.nama}"
                                     class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
                                     required>
                                 ${selectOptions}
@@ -356,6 +363,7 @@
                 });
                 feather.replace();
             }
+
             async function loadInitialData() {
                 try {
                     const [alternatif, kriteria] = await Promise.all([
@@ -363,9 +371,6 @@
                         fetchWithToken(KRITERIA_URL)
                     ]);
                     
-                    console.log("Data Alternatif Loaded:", alternatif);
-                    console.log("Data Kriteria Loaded:", kriteria);
-
                     populateSelect(alternatifSelect, alternatif, 'id_alternatif', 'nama', 'Pilih Alternatif');
                     renderKriteriaTable(kriteria);
 
@@ -376,21 +381,21 @@
                     if (error.message === 'Unauthorized') forceLogout();
                 }
             }
+
             async function handleAlternatifChange(e) {
                 const id_alternatif = e.target.value;
                 const id_user = dmInput.dataset.id_user;
 
-                console.log("Alternatif Selected Value:", id_alternatif);
-
+                // Reset form
                 tanggalInput.value = "";
                 keteranganInput.value = "";
-                const allSelects = document.querySelectorAll('#penilaianTableBody select');
+                const allSelects = Array.from(document.querySelectorAll('#penilaianTableBody select'));
                 allSelects.forEach(s => s.value = "");
 
                 if (!id_alternatif || id_alternatif === "undefined" || !id_user) {
-                    console.warn("ID Alternatif atau User tidak valid:", id_alternatif, id_user);
                     return;
                 }
+
                 const url = `${INDIVIDU_URL}?id_user=${id_user}&id_alternatif=${id_alternatif}`;
                 console.log("Mencari data penilaian:", url);
 
@@ -398,31 +403,64 @@
                     const data = await fetchWithToken(url);
                     
                     if (data && !data.message) {
-                        console.log("Data ditemukan, mengisi form...", data);
+                        console.log("Data ditemukan:", data);
 
                         if (data.tanggal_penilaian) {
                             const dateObj = new Date(data.tanggal_penilaian);
                             const formattedDate = dateObj.toISOString().split('T')[0];
                             tanggalInput.value = formattedDate;
                         }
+
                         if (data.keterangan) {
                             keteranganInput.value = data.keterangan;
                         }
+
+                        // LOGIKA MAPPING CERDAS (Disesuaikan dengan struktur API JSON Terbaru)
                         if (Array.isArray(data.nilai)) {
                             data.nilai.forEach(item => {
-                                const dropdown = document.querySelector(`select[data-id_kriteria="${item.key}"]`);
+                                // API mengembalikan item.id_kriteria sebagai OBJEK
+                                // Jadi ID yang benar ada di item.id_kriteria._id
+                                
+                                let targetId = null;
+                                let targetNama = null;
+
+                                if (typeof item.id_kriteria === 'object' && item.id_kriteria !== null) {
+                                    targetId = item.id_kriteria._id;
+                                    targetNama = item.id_kriteria.nama;
+                                } else {
+                                    // Fallback jika id_kriteria masih berupa string (seperti struktur lama)
+                                    targetId = item.id_kriteria;
+                                }
+
+                                // Strategi 1: Cari dropdown by ID
+                                let dropdown = null;
+                                if (targetId) {
+                                    dropdown = document.querySelector(`select[data-id_kriteria="${targetId}"]`);
+                                }
+
+                                // Strategi 2: Cari dropdown by Nama (Fallback jika ID beda)
+                                if (!dropdown && targetNama) {
+                                    console.log(`Fallback mapping by Name: ${targetNama}`);
+                                    // Cari dropdown yang punya nama sama dan value masih kosong
+                                    const candidates = Array.from(document.querySelectorAll(`select[data-nama_kriteria="${targetNama}"]`));
+                                    dropdown = candidates.find(el => el.value === "") || candidates[0];
+                                }
+                                
+                                // Strategi 3: Fallback ke item.key (jika ada di struktur API lama/campuran)
+                                if (!dropdown && item.key) {
+                                    dropdown = document.querySelector(`select[data-id_kriteria="${item.key}"]`);
+                                }
+
                                 if (dropdown) {
                                     dropdown.value = item.value;
                                 } else {
-                                    console.warn(`Dropdown untuk kriteria ID ${item.key} tidak ditemukan.`);
+                                    console.warn("Gagal mapping nilai untuk item:", item);
                                 }
                             });
                         }
 
                         showAlert('Data penilaian sebelumnya berhasil dimuat.', 'success');
-                    } else {
-                        console.log("Belum ada data penilaian untuk kombinasi ini (atau API mengembalikan pesan error).");
-                    }
+                    } 
 
                 } catch (error) {
                     console.warn("Info: Tidak ada data penilaian tersimpan atau gagal fetch.", error.message);
@@ -493,6 +531,7 @@
                     feather.replace();
                 }
             }
+
             btnKirim.addEventListener("click", handleSubmitPenilaian);
             logoutButton.addEventListener('click', handleLogout);
             alternatifSelect.addEventListener('change', handleAlternatifChange);
