@@ -58,16 +58,27 @@ const addPenilaian = async (req, res) => {
   const formattedDate = `${tahun}-${bulan}-${hari}`;
 
   try {
-    await Penilaian.create({
-      id_user: id_user,
-      tanggal_penilaian: formattedDate,
-      id_alternatif: id_alternatif,
-      id_kriteria: id_kriteria,
-      nilai: nilaiPenilaian,
-      keterangan: keterangan,
-    });
+    const existingPenilaian=await Penilaian.findOne({id_user:id_user,id_alternatif:id_alternatif})
 
-    res.sendStatus(201);
+    if(existingPenilaian){
+      existingPenilaian.tanggal_penilaian=formattedDate,
+      existingPenilaian.keterangan=keterangan
+      existingPenilaian.nilai=nilaiPenilaian
+
+      await existingPenilaian.save()
+
+      return res.sendStatus(200);
+    }else{
+      await Penilaian.create({
+        id_user: id_user,
+        tanggal_penilaian: formattedDate,
+        id_alternatif: id_alternatif,
+        id_kriteria: id_kriteria,
+        nilai: nilaiPenilaian,
+        keterangan: keterangan,
+      });
+      return res.sendStatus(201);
+    }
   } catch (e) {
     res.status(500).json({
       message: "Error dalam memasukkan data penilaian ke database: ",
