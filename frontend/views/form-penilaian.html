@@ -180,12 +180,12 @@
             const accessToken = localStorage.getItem('accessToken');
             const dmInput = document.getElementById('decisionMaker');
 
-            const API_BASE_URL = 'https://web-gdss.vercel.app/api'; 
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
             const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
             const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
             const PENILAIAN_URL = `${API_BASE_URL}/penilaian`;
             const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
-            const INDIVIDU_URL = `${API_BASE_URL}/penilaian/individu`; 
+            const INDIVIDU_URL = `${API_BASE_URL}/penilaian/individu`;
 
             const btnKirim = document.getElementById("btnKirimPenilaian");
             const formPenilaian = document.getElementById("formPenilaian");
@@ -213,7 +213,7 @@
                 try {
                     const userData = parseJwt(accessToken);
                     dmInput.value = userData.peran || 'Tidak diketahui';
-                    dmInput.dataset.id_user = userData.id_user || ''; 
+                    dmInput.dataset.id_user = userData.id_user || '';
                 } catch (e) {
                     console.error('Gagal mengambil data user dari token:', e);
                     dmInput.value = 'Tidak diketahui';
@@ -234,6 +234,7 @@
                 return;
             }
 
+            // --- PERBAIKAN FETCH UNTUK MENANGANI RESPONSE TEXT (NON-JSON) ---
             async function fetchWithToken(url, options = {}) {
                 const headers = {
                     'Authorization': `Bearer ${accessToken}`,
@@ -253,14 +254,18 @@
                     throw new Error('Unauthorized');
                 }
 
-                const text = await response.text(); 
-                if (!text) return null; 
+                const text = await response.text();
+                if (!text) return {}; // Return empty object jika response kosong
 
                 try {
                     return JSON.parse(text);
                 } catch (e) {
+                    // JIKA PARSE JSON GAGAL, TAPI STATUS SUKSES (misal response "OK")
+                    if (response.ok) {
+                        return { message: text }; // Return sebagai objek message agar tidak error
+                    }
                     console.error("Response bukan JSON:", text);
-                    throw new Error("Response server tidak valid");
+                    throw new Error("Response server tidak valid: " + text);
                 }
             }
 
@@ -311,7 +316,7 @@
                 } else if (Array.isArray(nilaiRaw)) {
                     let optionsHTML = '<option value="">Pilih Nilai</option>';
                     nilaiRaw.forEach(n => {
-                         optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
+                          optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
                     });
                     return optionsHTML;
                 }
@@ -325,10 +330,9 @@
                     return;
                 }
 
-                // Filter DUPLIKASI KRITERIA berdasarkan nama
                 const uniqueKriteria = kriteriaData.filter((item, index, self) =>
                     index === self.findIndex((t) => (
-                        t.nama === item.nama 
+                        t.nama === item.nama
                     ))
                 );
                 
@@ -351,7 +355,7 @@
                         <td class="px-4 py-3">${bobotText}</td>
                         <td class="px-4 py-3">
                             <select name="kriteria_${kriteriaId}" 
-                                    data-id_kriteria="${kriteriaId}"
+                                    data-id_kriteria="${kriteriaId}" 
                                     data-nama_kriteria="${kriteria.nama}"
                                     class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
                                     required>
@@ -397,14 +401,11 @@
                 }
 
                 const url = `${INDIVIDU_URL}?id_user=${id_user}&id_alternatif=${id_alternatif}`;
-                console.log("Mencari data penilaian:", url);
-
+                
                 try {
                     const data = await fetchWithToken(url);
                     
                     if (data && !data.message) {
-                        console.log("Data ditemukan:", data);
-
                         if (data.tanggal_penilaian) {
                             const dateObj = new Date(data.tanggal_penilaian);
                             const formattedDate = dateObj.toISOString().split('T')[0];
@@ -415,12 +416,8 @@
                             keteranganInput.value = data.keterangan;
                         }
 
-                        // LOGIKA MAPPING CERDAS (Disesuaikan dengan struktur API JSON Terbaru)
                         if (Array.isArray(data.nilai)) {
                             data.nilai.forEach(item => {
-                                // API mengembalikan item.id_kriteria sebagai OBJEK
-                                // Jadi ID yang benar ada di item.id_kriteria._id
-                                
                                 let targetId = null;
                                 let targetNama = null;
 
@@ -428,39 +425,28 @@
                                     targetId = item.id_kriteria._id;
                                     targetNama = item.id_kriteria.nama;
                                 } else {
-                                    // Fallback jika id_kriteria masih berupa string (seperti struktur lama)
                                     targetId = item.id_kriteria;
                                 }
 
-                                // Strategi 1: Cari dropdown by ID
                                 let dropdown = null;
                                 if (targetId) {
                                     dropdown = document.querySelector(`select[data-id_kriteria="${targetId}"]`);
                                 }
-
-                                // Strategi 2: Cari dropdown by Nama (Fallback jika ID beda)
                                 if (!dropdown && targetNama) {
-                                    console.log(`Fallback mapping by Name: ${targetNama}`);
-                                    // Cari dropdown yang punya nama sama dan value masih kosong
                                     const candidates = Array.from(document.querySelectorAll(`select[data-nama_kriteria="${targetNama}"]`));
                                     dropdown = candidates.find(el => el.value === "") || candidates[0];
                                 }
-                                
-                                // Strategi 3: Fallback ke item.key (jika ada di struktur API lama/campuran)
                                 if (!dropdown && item.key) {
                                     dropdown = document.querySelector(`select[data-id_kriteria="${item.key}"]`);
                                 }
 
                                 if (dropdown) {
                                     dropdown.value = item.value;
-                                } else {
-                                    console.warn("Gagal mapping nilai untuk item:", item);
                                 }
                             });
                         }
-
                         showAlert('Data penilaian sebelumnya berhasil dimuat.', 'success');
-                    } 
+                    }
 
                 } catch (error) {
                     console.warn("Info: Tidak ada data penilaian tersimpan atau gagal fetch.", error.message);
@@ -490,6 +476,7 @@
                     return;
                 }
 
+                // Format Tanggal: MM/DD/YYYY sesuai request
                 const [year, month, day] = rawDate.split('-');
                 const tanggal_penilaian = `${month}/${day}/${year}`;
 
@@ -497,6 +484,7 @@
                 btnKirim.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>&nbsp; Mengirim...';
                 feather.replace();
 
+                // Format Nilai: id - value; id - value
                 const nilaiPairs = [];
                 penilaianSelects.forEach(select => {
                     nilaiPairs.push(`${select.dataset.id_kriteria} - ${select.value}`);
@@ -511,9 +499,8 @@
                     keterangan: keterangan
                 };
 
-                console.log("Mengirim payload penilaian:", payload);
-
                 try {
+                    // API ini mungkin mengembalikan text "OK" bukan JSON
                     const result = await fetchWithToken(PENILAIAN_URL, {
                         method: 'POST',
                         body: payload
