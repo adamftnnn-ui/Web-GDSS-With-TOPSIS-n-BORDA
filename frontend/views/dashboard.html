@@ -96,7 +96,6 @@
         </div>
     </aside>
 
-
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
@@ -123,16 +122,15 @@
         </section>
 
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-<div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-    <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
-    <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-        <div class="progress-bar h-full bg-primary" style="width: 0%;"></div>
-    </div>
-    <p class="text-sm text-gray-600 mt-2">
-        <strong class="progress-text text-primary">0%</strong>
-    </p>
-</div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-primary" style="width: 0%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                    <strong class="progress-text text-primary">0%</strong>
+                </p>
+            </div>
 
             <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-3">Ringkasan Aktivitas Terakhir</h2>
@@ -152,12 +150,11 @@
                 </ul>
             </div>
         </section>
-
     </main>
 
     <script>feather.replace()</script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             const accessToken = localStorage.getItem('accessToken');
 
             if (!accessToken) {
@@ -165,16 +162,26 @@
                 window.location.href = "views/index.html";
                 return;
             }
-            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
-            const TOTAL_ALTERNATIF_URL = `${API_BASE_URL}/alternatif/total`;
-            const TOTAL_KRITERIA_URL = `${API_BASE_URL}/kriteria/total`;
-            const TOTAL_USER_URL = `${API_BASE_URL}/user/total`;
-            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+
+            const API_BASE = 'https://web-gdss.vercel.app/api';
+            const TOTAL_ALTERNATIF_URL = `${API_BASE}/alternatif/total`;
+            const TOTAL_KRITERIA_URL = `${API_BASE}/kriteria/total`;
+            const TOTAL_USER_URL = `${API_BASE}/user/total`;
+            const LOGOUT_URL = `${API_BASE}/auth/logout`;
 
             const altDisplay = document.getElementById('totalAlternatif');
             const kriteriaDisplay = document.getElementById('totalKriteria');
             const userDisplay = document.getElementById('totalUser');
             const logoutButton = document.querySelector('nav a[href="views/index.html"]');
+            const bar = document.querySelector('.progress-bar');
+            const barText = document.querySelector('.progress-text');
+            const welcomeText = document.querySelector("header span strong");
+
+            function parseJwt(token) {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                return JSON.parse(atob(base64));
+            }
 
             async function fetchWithToken(url) {
                 const response = await fetch(url, {
@@ -200,37 +207,18 @@
                 console.warn("Struktur respons total tidak dikenal:", data);
                 return "N/A";
             }
-            async function loadDashboardData() {
-                try {
-                    const [altData, kriteriaData, userData] = await Promise.all([
-                        fetchWithToken(TOTAL_ALTERNATIF_URL),
-                        fetchWithToken(TOTAL_KRITERIA_URL),
-                        fetchWithToken(TOTAL_USER_URL)
-                    ]);
-                    altDisplay.textContent = findTotal(altData);
-                    kriteriaDisplay.textContent = findTotal(kriteriaData);
-                    userDisplay.textContent = findTotal(userData);
 
-                } catch (error) {
-                    console.error('Gagal memuat data dashboard:', error);
-                    altDisplay.textContent = 'Err';
-                    kriteriaDisplay.textContent = 'Err';
-                    userDisplay.textContent = 'Err';
-
-                    if (error.message === 'Unauthorized') {
-                        forceLogout();
-                    }
-                }
+            async function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + 'views/index.html';
             }
+
             async function handleLogout(e) {
                 e.preventDefault();
-
                 try {
                     await fetch(LOGOUT_URL, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`
-                        }
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
                     });
                 } catch (error) {
                     console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
@@ -239,78 +227,69 @@
                 }
             }
 
-            function forceLogout() {
-                localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + 'views/index.html';
-            }
-            loadDashboardData();
+            if (logoutButton) logoutButton.addEventListener('click', handleLogout);
 
-            if (logoutButton) {
-                logoutButton.addEventListener('click', handleLogout);
-            }
-
-        });
-    </script>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', async () => {
-            const accessToken = localStorage.getItem('accessToken');
-            if (!accessToken) return;
-
-            const API_BASE = 'https://web-gdss.vercel.app/api';
-            const TOTAL_ALTERNATIF_URL = `${API_BASE}/alternatif/total`;
-            const PENILAIAN_USER_URL = `${API_BASE}/penilaian/individu`; // harus pakai query ?id_user=...&id_alternatif=...
-
-            // Ambil ID user dari token
-            function parseJwt(token) {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                return JSON.parse(atob(base64));
-            }
             const tokenPayload = parseJwt(accessToken);
             const ID_USER = tokenPayload.id_user;
 
-            const bar = document.querySelector('.progress-bar');
-            const barText = document.querySelector('.progress-text');
+            try {
+                const [altData, kriteriaData, userData] = await Promise.all([
+                    fetchWithToken(TOTAL_ALTERNATIF_URL),
+                    fetchWithToken(TOTAL_KRITERIA_URL),
+                    fetchWithToken(TOTAL_USER_URL)
+                ]);
+                altDisplay.textContent = findTotal(altData);
+                kriteriaDisplay.textContent = findTotal(kriteriaData);
+                userDisplay.textContent = findTotal(userData);
+            } catch (error) {
+                console.error('Gagal memuat data dashboard:', error);
+                altDisplay.textContent = 'Err';
+                kriteriaDisplay.textContent = 'Err';
+                userDisplay.textContent = 'Err';
+                if (error.message === 'Unauthorized') forceLogout();
+            }
 
             try {
-                // 1. Ambil total alternatif
-                const altResponse = await fetch(TOTAL_ALTERNATIF_URL, {
+                const userRes = await fetch(`${API_BASE}/user/find?id_user=${ID_USER}`, {
                     headers: { 'Authorization': `Bearer ${accessToken}` }
                 });
-                const totalAltData = await altResponse.json();
-                const totalAlternatif = totalAltData.total || totalAltData.count || 0;
+                const userData = await userRes.json();
+                if (welcomeText) welcomeText.textContent = userData.peran || "User";
+            } catch (error) {
+                console.error("Gagal memuat peran user:", error);
+                if (welcomeText) welcomeText.textContent = "User";
+            }
 
-                // 2. Ambil penilaian user per alternatif
-                // Asumsikan API penilaian/individu harus dipanggil per alternatif
-                const penilaianPromises = [];
-                for (let i = 0; i < totalAlternatif; i++) {
-                    // Ganti dengan id_alternatif sebenarnya dari API alternatif
-                    const id_alternatif = i; // sementara pakai index, nanti ganti dari list id
-                    penilaianPromises.push(
-                        fetch(`${PENILAIAN_USER_URL}?id_user=${ID_USER}&id_alternatif=${id_alternatif}`, {
+            try {
+                const altResponse = await fetch(`${API_BASE}/alternatif`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const allAlternatif = await altResponse.json();
+
+                if (!Array.isArray(allAlternatif) || allAlternatif.length === 0) {
+                    bar.style.width = '0%';
+                    barText.textContent = '0% penilaian telah selesai.';
+                } else {
+                    const penilaianPromises = allAlternatif.map(a =>
+                        fetch(`${API_BASE}/penilaian/individu?id_user=${ID_USER}&id_alternatif=${a.id_alternatif}`, {
                             headers: { 'Authorization': `Bearer ${accessToken}` }
                         }).then(r => r.json())
                     );
+
+                    const penilaianResults = await Promise.all(penilaianPromises);
+                    const dinilai = penilaianResults.filter(r => r && Object.keys(r).length > 0).length;
+                    const totalAlternatif = allAlternatif.length;
+                    const progress = totalAlternatif ? (dinilai / totalAlternatif) * 100 : 0;
+
+                    bar.style.width = `${progress}%`;
+                    barText.textContent = `${progress.toFixed(0)}% penilaian telah selesai.`;
                 }
-                const penilaianResults = await Promise.all(penilaianPromises);
-
-                // 3. Hitung jumlah alternatif yang sudah dinilai
-                const dinilai = penilaianResults.filter(r => r && Object.keys(r).length > 0).length;
-
-                // 4. Hitung persentase
-                const progress = totalAlternatif ? (dinilai / totalAlternatif) * 100 : 0;
-
-                // 5. Update bar progress
-                bar.style.width = `${progress}%`;
-                barText.textContent = `${progress.toFixed(0)}% penilaian telah selesai.`;
-
             } catch (error) {
                 console.error("Gagal menghitung progress penilaian:", error);
             }
+
         });
     </script>
-
 </body>
 
 </html>
