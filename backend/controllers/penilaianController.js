@@ -64,26 +64,21 @@ const addPenilaian = async (req, res) => {
     });
 
     if (existingPenilaian) {
-      (existingPenilaian.tanggal_penilaian = formattedDate),
-        (existingPenilaian.keterangan = keterangan);
-      existingPenilaian.nilai = nilaiPenilaian;
-
-      await existingPenilaian.save();
-
-      return res.sendStatus(200);
-    } else {
-      await Penilaian.create({
-        id_user: id_user,
-        tanggal_penilaian: formattedDate,
-        id_alternatif: id_alternatif,
-        id_kriteria: id_kriteria,
-        nilai: nilaiPenilaian,
-        keterangan: keterangan,
-      });
-      return res.sendStatus(201);
+      await existingPenilaian.deleteOne();
     }
+    
+    await Penilaian.create({
+      id_user: id_user,
+      tanggal_penilaian: formattedDate,
+      id_alternatif: id_alternatif,
+      id_kriteria: id_kriteria,
+      nilai: nilaiPenilaian,
+      keterangan: keterangan,
+    });
 
-    const response = await Topsis.findByIdAndDelete({ id_user: id_user });
+    await Topsis.findByIdAndDelete({ id_user: id_user });
+
+    return res.sendStatus(201);
   } catch (e) {
     res.status(500).json({
       message: "Error dalam memasukkan data penilaian ke database: ",
@@ -138,6 +133,8 @@ const perhitunganTopsis = async (req, res) => {
     );
 
     const dataToPython = { alternatif, kriteria, bobot, nilai };
+
+    console.log(dataToPython);
 
     const python = spawn("python", ["./services/topsis.py"]);
 

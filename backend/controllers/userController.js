@@ -1,10 +1,13 @@
 const express = require("express");
 const User = require("../models/users");
+const Penilaian=require("../models/penilaian")
+const Topsis=require("../models/topsis")
+const Borda=require("../models/borda")
 const bcrypt = require("bcryptjs");
 
 const getAllUser = async (req, res) => {
   try {
-    const response = await User.find();
+    const response = await User.find().sort({peran:1});
 
     if (!response) {
       return res
@@ -109,6 +112,10 @@ const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
+
+    await Penilaian.deleteMany({id_user:id_user})
+    await Topsis.findByIdAndDelete(id_user)
+    await Borda.deleteMany({})
 
     res.sendStatus(200);
   } catch (e) {
