@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Data Kriteria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Data Kriteria</h1>
+            <button id="btnTambahKriteria"
+                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="plus-circle" class="w-4"></i>
+                <span>Tambah Kriteria</span>
+            </button>
+        </header>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">No</th>
+                            <th class="px-4 py-2">Nama Kriteria</th>
+                            <th class="px-4 py-2">Tipe</th>
+                            <th class="px-4 py-2">Bobot</th>
+                            <th class="px-4 py-2 w-1/4">Nilai</th>
+                            <th class="px-4 py-2 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kriteriaTable" class="text-gray-700 text-sm">
+                        <tr>
+                            <td colspan="6" class="text-center py-4">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalKriteria" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
+            <h2 id="modalKriteriaTitle" class="text-lg font-semibold text-gray-900 mb-4">Tambah Kriteria</h2>
+            <form id="formKriteria" class="space-y-4">
+                <input type="hidden" id="idKriteria"> <div>
+                    <label for="namaKriteria" class="block text-gray-700 font-medium text-sm mb-1">Nama Kriteria</label>
+                    <input type="text" id="namaKriteria" name="namaKriteria"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan nama kriteria" required>
+                </div>
+                <div>
+                    <label for="tipeKriteria" class="block text-gray-700 font-medium text-sm mb-1">Tipe</label>
+                    <select id="tipeKriteria" name="tipeKriteria"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm">
+                        <option value="Benefit">Benefit</option>
+                        <option value="Cost">Cost</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="bobotKriteria" class="block text-gray-700 font-medium text-sm mb-1">Bobot</label>
+                    <input type="number" step="0.01" id="bobotKriteria" name="bobotKriteria"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan bobot kriteria (cth: 4.5)" required>
+                </div>
+                <div>
+                    <label for="nilaiKriteria" class="block text-gray-700 font-medium text-sm mb-1">Nilai (Format: 1-Buruk, 2-Baik)</label>
+                    <input type="text" id="nilaiKriteria" name="nilaiKriteria"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Contoh: 1-Sangat Murah, 2-Murah, 3-Sedang" required>
+                    <p class="text-xs text-gray-500 mt-1">Pisahkan setiap opsi dengan koma (,)</p>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="btnCloseModal"
+                        class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-700 transition text-sm">Simpan</button>
+                </div>
+            </form>
+            <button id="btnCloseX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const accessToken = localStorage.getItem('accessToken');
+            
+            // --- KONFIGURASI API ---
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
+            const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
+            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+
+            // --- USER & AUTH CHECK ---
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
+
+            const currentUser = accessToken ? parseJwt(accessToken) : null;
+            const isAdmin = currentUser?.peran === 'Admin';
+
+            if (!accessToken) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // --- DOM ELEMENTS ---
+            const tableBody = document.getElementById("kriteriaTable");
+            const modal = document.getElementById("modalKriteria");
+            const modalTitle = document.getElementById("modalKriteriaTitle");
+            const btnTambah = document.getElementById("btnTambahKriteria");
+            const btnClose = document.getElementById("btnCloseModal");
+            const btnCloseX = document.getElementById("btnCloseX");
+            const form = document.getElementById("formKriteria");
+            const idKriteriaInput = document.getElementById("idKriteria");
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            const aksiHeader = document.querySelector('th:last-child');
+
+            // --- HIDE/SHOW ADMIN FEATURES ---
+            if (!isAdmin) {
+                if (btnTambah) btnTambah.style.display = 'none';
+                if (aksiHeader) aksiHeader.style.display = 'none';
+            }
+
+            // --- DATA STATE ---
+            let dataKriteria = [];
+
+            // --- FETCH DATA FROM API ---
+            async function fetchKriteria() {
+                try {
+                    const response = await fetch(KRITERIA_URL, {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error("Gagal mengambil data kriteria");
+
+                    dataKriteria = await response.json();
+                    renderTable();
+                } catch (error) {
+                    console.error(error);
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">Error: ${error.message}</td></tr>`;
+                    if (error.message.includes('Unauthorized')) {
+                        forceLogout();
+                    }
+                }
+            }
+
+            // --- RENDER TABLE ---
+            function renderTable() {
+                tableBody.innerHTML = "";
+
+                if (dataKriteria.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Tidak ada data kriteria.</td></tr>`;
+                    return;
+                }
+
+                dataKriteria.forEach((item, index) => {
+                    const tipeBadge = `<span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${item.tipe === 'Benefit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${item.tipe}</span>`;
+
+                    // Handle Nilai (Array of Objects from API)
+                    let nilaiOptions = "";
+                    let nilaiStringForEdit = "";
+                    
+                    if (Array.isArray(item.nilai)) {
+                        // Untuk dropdown display
+                        nilaiOptions = item.nilai.map(n => `<option value="${n.value}">${n.key} - ${n.value}</option>`).join('');
+                        // Untuk string edit form (Format: 1-A, 2-B)
+                        nilaiStringForEdit = item.nilai.map(n => `${n.key}-${n.value}`).join(', ');
+                    } else if (typeof item.nilai === 'string') {
+                        // Fallback jika API masih string
+                        const parts = item.nilai.split(',');
+                        nilaiOptions = parts.map(p => `<option>${p.trim()}</option>`).join('');
+                        nilaiStringForEdit = item.nilai;
+                    }
+
+                    const row = document.createElement("tr");
+                    row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
+                    
+                    // Kolom Aksi (hanya admin)
+                    const aksiCell = isAdmin ? `
+                        <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+                            <button class="p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition editBtn" title="Edit" data-id="${item._id}">
+                                <i data-feather="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-1.5 text-red-500 hover:text-red-700 rounded-md transition deleteBtn" title="Hapus" data-id="${item._id}" data-nama="${item.nama}">
+                                <i data-feather="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>` : '';
+
+                    row.innerHTML = `
+                        <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
+                        <td class="px-4 py-3 font-medium">${item.nama}</td>
+                        <td class="px-4 py-3">${tipeBadge}</td>
+                        <td class="px-4 py-3 text-gray-600">${item.bobot}</td>
+                        <td class="px-4 py-3 w-1/4">
+                            <select class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                <option value="">Lihat Nilai</option>
+                                ${nilaiOptions}
+                            </select>
+                        </td>
+                        ${aksiCell}
+                    `;
+                    tableBody.appendChild(row);
+                });
+                feather.replace();
+                attachRowEvents();
+            }
+
+            function attachRowEvents() {
+                if (!isAdmin) return;
+
+                document.querySelectorAll(".editBtn").forEach(btn => {
+                    btn.onclick = (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const item = dataKriteria.find(k => k._id === id);
+                        if (item) {
+                            idKriteriaInput.value = item._id;
+                            document.getElementById("namaKriteria").value = item.nama;
+                            document.getElementById("tipeKriteria").value = item.tipe;
+                            document.getElementById("bobotKriteria").value = item.bobot;
+                            
+                            // Format ulang array nilai ke string input (1-Murah, 2-Mahal)
+                            if (Array.isArray(item.nilai)) {
+                                document.getElementById("nilaiKriteria").value = item.nilai.map(n => `${n.key}-${n.value}`).join(', ');
+                            } else {
+                                document.getElementById("nilaiKriteria").value = item.nilai;
+                            }
+
+                            modalTitle.textContent = "Edit Kriteria";
+                            modal.classList.remove("hidden");
+                            modal.classList.add("flex");
+                        }
+                    }
+                });
+
+                document.querySelectorAll(".deleteBtn").forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const nama = e.currentTarget.dataset.nama;
+                        if (confirm(`Hapus kriteria ${nama}?`)) {
+                            try {
+                                const response = await fetch(`${KRITERIA_URL}/${id}`, {
+                                    method: 'DELETE',
+                                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                                });
+                                if (response.ok) {
+                                    showAlert(`Kriteria **${nama}** berhasil dihapus.`, 'success');
+                                    fetchKriteria();
+                                } else {
+                                    throw new Error('Gagal menghapus');
+                                }
+                            } catch (err) {
+                                showAlert(`Gagal menghapus: ${err.message}`, 'error');
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- MODAL & FORM HANDLERS ---
+            if (isAdmin) {
+                btnTambah.onclick = () => {
+                    idKriteriaInput.value = "";
+                    modalTitle.textContent = "Tambah Kriteria";
+                    form.reset();
+                    modal.classList.remove("hidden");
+                    modal.classList.add("flex");
+                }
+                btnClose.onclick = btnCloseX.onclick = () => {
+                    modal.classList.add("hidden");
+                    modal.classList.remove("flex");
+                }
+            }
+
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const id = idKriteriaInput.value;
+                const nama = document.getElementById("namaKriteria").value.trim();
+                const tipe = document.getElementById("tipeKriteria").value;
+                const bobot = parseFloat(document.getElementById("bobotKriteria").value);
+                const nilaiRaw = document.getElementById("nilaiKriteria").value.trim();
+
+                // Parse string input "1-A, 2-B" menjadi Array Object [{key:'1', value:'A'}, ...]
+                const nilaiArray = nilaiRaw.split(',').map(item => {
+                    const parts = item.split('-');
+                    if (parts.length >= 2) {
+                        return { 
+                            key: parts[0].trim(), 
+                            value: parts.slice(1).join('-').trim() // Handle jika value mengandung dash
+                        };
+                    }
+                    return null;
+                }).filter(i => i !== null);
+
+                if (!nama || !tipe || isNaN(bobot) || nilaiArray.length === 0) {
+                    showAlert("Mohon lengkapi semua field dengan format yang benar!", "error");
+                    return;
+                }
+
+                const payload = { nama, tipe, bobot, nilai: nilaiArray };
+                const method = id ? 'PUT' : 'POST';
+                const url = id ? `${KRITERIA_URL}/${id}` : KRITERIA_URL;
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        showAlert(`Kriteria **${nama}** berhasil ${id ? 'diperbarui' : 'ditambahkan'}.`, 'success');
+                        modal.classList.add("hidden");
+                        modal.classList.remove("flex");
+                        fetchKriteria();
+                    } else {
+                        const errData = await response.json();
+                        throw new Error(errData.message || 'Gagal menyimpan data');
+                    }
+                } catch (err) {
+                    showAlert(`Error: ${err.message}`, 'error');
+                }
+            }
+
+            // --- LOGOUT LOGIC ---
+            function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = 'index.html';
+            }
+
+            async function handleLogout(e) {
+                e.preventDefault();
+                try {
+                    await fetch(LOGOUT_URL, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                } catch (error) {
+                    console.warn("Logout lokal.", error);
+                } finally {
+                    forceLogout();
+                }
+            }
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+            }
+
+            // --- INITIAL LOAD ---
+            fetchKriteria();
+        });
+    </script>
+</body>
+
+</html>

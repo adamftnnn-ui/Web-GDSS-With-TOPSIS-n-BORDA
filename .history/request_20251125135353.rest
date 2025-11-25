@@ -146,7 +146,7 @@ Content-Type: application/json
 }
 
 ### Update Kriteria
-PUT http://web-gdss.vercel.app/api/kriteria
+PUT http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 

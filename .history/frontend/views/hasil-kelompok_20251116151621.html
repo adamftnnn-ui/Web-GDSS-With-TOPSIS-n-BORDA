@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Hasil Kelompok (BORDA)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Tambahkan library Chart.js untuk visualisasi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+    <!-- Sidebar (Desain Asli Tidak Diubah) -->
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Kelompok (BORDA)</h1>
+            <div class="flex gap-3">
+                <button id="btnExportExcel"
+                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file-text" class="w-4 h-4"></i>
+                    <span>Export Excel</span>
+                </button>
+                <button id="btnExportPDF"
+                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file" class="w-4 h-4"></i>
+                    <span>Export PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Placeholder Pemuatan -->
+        <div id="loadingContainer">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                 <p class="text-center text-gray-500 py-8">
+                    <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
+                    <span class="ml-2">Memuat hasil perhitungan kelompok...</span>
+                </p>
+            </section>
+        </div>
+        
+        <!-- Konten Hasil (Awalnya tersembunyi) -->
+        <div id="hasilContainer" class="hidden space-y-6">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Alternatif per Decision Maker</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead id="rankingDmTableHead" class="text-gray-600 text-xs uppercase tracking-wider">
+                            <!-- Header dinamis akan dimuat di sini -->
+                        </thead>
+                        <tbody id="rankingDmTableBody" class="text-gray-700 text-sm">
+                            <!-- Isi tabel dinamis akan dimuat di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider">
+                            <!-- Header dinamis akan dimuat di sini -->
+                        </thead>
+                        <tbody id="skorBordaTableBody" class="text-gray-700 text-sm">
+                            <!-- Isi tabel dinamis akan dimuat di sini -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi Total Skor BORDA</h2>
+                <div id="bordaChartContainer" class="w-full h-64 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+                    <!-- Canvas Chart akan dimasukkan di sini -->
+                </div>
+                <p class="text-sm text-gray-500 mt-3">
+                    Grafik ini akan menampilkan perbandingan total <strong>skor BORDA</strong> dari setiap alternatif untuk
+                    menentukan
+                    hasil keputusan kelompok akhir.
+                </p>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Kesimpulan Akhir</h2>
+                <p id="kesimpulanText" class="text-gray-700 text-sm leading-relaxed">
+                    <!-- Teks kesimpulan dinamis akan dimuat di sini -->
+                </p>
+            </section>
+        </div>
+        <!-- Akhir Konten Hasil -->
+
+        <div class="h-10"></div>
+    </main>
+
+    <script>
+        feather.replace();
+
+        // Logika Ekspor (Tetap statis)
+        const btnExportExcel = document.getElementById('btnExportExcel');
+        const btnExportPDF = document.getElementById('btnExportPDF');
+
+        btnExportExcel.addEventListener('click', () => {
+            // Logika ekspor Excel Anda akan ada di sini
+            showAlert('Data **Hasil Kelompok (BORDA)** berhasil diexport ke Excel.', 'success');
+        });
+
+        btnExportPDF.addEventListener('click', () => {
+            // Logika ekspor PDF Anda akan ada di sini
+            showAlert('Data **Hasil Kelompok (BORDA)** berhasil diexport ke PDF.', 'success');
+        });
+    </script>
+    
+    <!-- 
+        ==================================================================
+        SCRIPT DINAMIS BARU
+        Direvisi untuk struktur API Borda yang baru
+        ==================================================================
+    -->
+    <script>
+         window.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. OTENTIKASI & KEAMANAN ---
+            const accessToken = localStorage.getItem('accessToken');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const hasilContainer = document.getElementById('hasilContainer');
+
+            if (!accessToken) {
+                console.warn("Tidak ada accessToken. Harap login terlebih dahulu.");
+                loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><h2 class="text-lg font-semibold text-red-600 mb-4">Akses Ditolak</h2><p class="text-red-600">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p></section>`;
+                return;
+            }
+
+            // --- 2. FUNGSI HELPER (Fetch, Logout) ---
+            
+            const API_PROD_URL = 'https://web-gdss.vercel.app/api';
+            const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
+            
+            // API Borda sesuai request.rest
+            const BORDA_URL = `${API_PROD_URL}/penilaian/borda`;
+            
+            async function fetchWithToken(url, options = {}) {
+                const headers = { 'Authorization': `Bearer ${accessToken}`};
+                // Hanya tambahkan Content-Type jika ada body
+                if (options.body) {
+                    headers['Content-Type'] = 'application/json';
+                }
+                const config = { ...options, headers: { ...headers, ...options.headers } };
+
+                const response = await fetch(url, config);
+                if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
+                
+                const text = await response.text();
+                if (!text) {
+                     if (!response.ok) throw new Error(`API Error: ${response.statusText} (No Content)`);
+                     return null; // Respons OK tapi kosong
+                }
+                
+                let data;
+                try { data = JSON.parse(text); } 
+                catch(e) { 
+                    console.error("Gagal parse JSON:", text);
+                    throw new Error("Respons server bukan JSON yang valid.");
+                }
+
+                if (!response.ok) {
+                    const errorMessage = data.message || data.error || `API Error: ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+                return data;
+            }
+
+            function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + '/index.html';
+            }
+            
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            logoutButton.addEventListener('click', async (e) => {
+                 e.preventDefault();
+                 try {
+                    await fetch(LOGOUT_URL, { 
+                        method: 'POST', 
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                 } catch (error) {
+                    console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
+                 } finally {
+                    forceLogout();
+                 }
+            });
+
+            // --- 3. FUNGSI RENDER DATA BORDA (Direvisi total) ---
+
+            /**
+             * Render Tabel 1: Ranking per DM
+             * @param {Array} rankingData - Array dari API: [{ "DM1": {...} }, { "DM2": {...} }]
+             * @param {Array} dmHeaders - Array nama DM: ["DM1", "DM2"]
+             * @param {Array} altNames - Array nama Alternatif: ["Sop Saudara", "Coto Maros"]
+             */
+            function renderRankingDM(rankingData, dmHeaders, altNames) {
+                const thead = document.getElementById('rankingDmTableHead');
+                const tbody = document.getElementById('rankingDmTableBody');
+                
+                let headHTML = '<tr><th class="px-4 py-2">Alternatif</th>';
+                dmHeaders.forEach(h => {
+                    headHTML += `<th class="px-4 py-2 text-center">${h}</th>`;
+                });
+                headHTML += '</tr>';
+                thead.innerHTML = headHTML;
+
+                let bodyHTML = '';
+                altNames.forEach(altName => {
+                    bodyHTML += `<tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                        <td class="px-4 py-3 font-medium rounded-l-lg">${altName}</td>`;
+                    
+                    // Loop header DM untuk mencari ranking
+                    dmHeaders.forEach((dmName, index) => {
+                        // Ambil data rank dari objek yang sesuai
+                        // rankingData[index] = { "DM1": {...} }
+                        // rankingData[index][dmName] = { "Sop Saudara Irian": 1, ... }
+                        // rankingData[index][dmName][altName] = 1
+                        const rank = rankingData[index][dmName][altName] || 'N/A';
+                        bodyHTML += `<td class="px-4 py-3 text-center">${rank}</td>`;
+                    });
+                    
+                    bodyHTML += `<td class="rounded-r-lg"></td></tr>`; // Penutup
+                });
+                tbody.innerHTML = bodyHTML || `<tr><td colspan="${dmHeaders.length + 1}" class="text-center p-4 text-gray-500">Data ranking tidak tersedia.</td></tr>`;
+            }
+            
+            /**
+             * Render Tabel 2: Skor Borda
+             * @param {Array} rankingData - Array dari API: [{ "DM1": {...} }, { "DM2": {...} }]
+             * @param {Array} bordaData - Array hasil olahan: [{ nama: "...", total_skor: ..., peringkat: ...}]
+             * @param {Array} dmHeaders - Array nama DM: ["DM1", "DM2"]
+             * @param {Number} m - Jumlah total alternatif
+             */
+            function renderSkorBorda(rankingData, bordaData, dmHeaders, m) {
+                const thead = document.getElementById('skorBordaTableHead');
+                const tbody = document.getElementById('skorBordaTableBody');
+
+                // Buat Header
+                let headHTML = '<tr><th class="px-4 py-2">Alternatif</th>';
+                dmHeaders.forEach(h => {
+                    headHTML += `<th class="px-4 py-2 text-center">Skor ${h}</th>`;
+                });
+                headHTML += `<th class="px-4 py-2 text-center">Total Skor</th>
+                             <th class="px-4 py-2 text-center">Peringkat</th></tr>`;
+                thead.innerHTML = headHTML;
+                
+                let bodyHTML = '';
+                
+                // Loop data borda yang sudah diolah (sort by peringkat)
+                bordaData.forEach(item => {
+                    const isWinner = item.peringkat === 1;
+                    const rowClass = isWinner ? "bg-primary-light hover:bg-blue-100" : "bg-gray-50 hover:bg-blue-50";
+                    const textClass = isWinner ? "font-bold text-primary" : "font-semibold";
+
+                    bodyHTML += `<tr class="${rowClass} transition-all">
+                        <td class="px-4 py-3 rounded-l-lg font-medium">${item.nama}</td>`;
+                    
+                    // Hitung ulang skor individu untuk ditampilkan
+                    dmHeaders.forEach((dmName, index) => {
+                        const rank = rankingData[index][dmName][item.nama];
+                        const score = (m - rank) + 1; // Rumus Borda
+                         bodyHTML += `<td class="px-4 py-3 text-center">${score}</td>`;
+                    });
+                    
+                    // Ambil total skor dan peringkat dari data
+                    bodyHTML += `<td class="px-4 py-3 text-center ${textClass}">${item.total_skor.toFixed(4)}</td>
+                                 <td class="px-4 py-3 text-center rounded-r-lg ${textClass}">${item.peringkat}</td>
+                                 </tr>`;
+                });
+                tbody.innerHTML = bodyHTML || `<tr><td colspan="${dmHeaders.length + 3}" class="text-center p-4 text-gray-500">Data skor tidak tersedia.</td></tr>`;
+            }
+            
+            /**
+             * Render Grafik
+             * @param {Array} bordaData - Array hasil olahan: [{ nama: "...", total_skor: ..., peringkat: ...}]
+             */
+            function renderBordaChart(bordaData) {
+                const container = document.getElementById('bordaChartContainer');
+                container.innerHTML = '<canvas id="bordaChartCanvas"></canvas>';
+                container.classList.remove('bg-gray-100');
+                
+                const ctx = document.getElementById('bordaChartCanvas').getContext('2d');
+                
+                const sortedData = [...bordaData].sort((a, b) => b.total_skor - a.total_skor);
+                const labels = sortedData.map(item => item.nama);
+                const scores = sortedData.map(item => item.total_skor);
+                
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Skor BORDA',
+                            data: scores,
+                            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                            borderColor: 'rgba(37, 99, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y', // Bar horizontal
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            /**
+             * Render Kesimpulan
+             * @param {Array} bordaData - Array hasil olahan: [{ nama: "...", total_skor: ..., peringkat: ...}]
+             */
+            function renderKesimpulan(bordaData) {
+                const p = document.getElementById('kesimpulanText');
+                if (!bordaData || bordaData.length === 0) {
+                    p.innerHTML = 'Data perhitungan tidak tersedia.';
+                    return;
+                }
+                
+                const skorTertinggi = Math.max(...bordaData.map(item => item.total_skor));
+                const pemenang = bordaData.filter(item => item.total_skor === skorTertinggi);
+                const namaPemenang = pemenang.map(item => `<strong>${item.nama}</strong>`).join(' dan ');
+                
+                const skorLain = bordaData.filter(item => item.total_skor < skorTertinggi);
+                let runnerUpText = '';
+                if (skorLain.length > 0) {
+                    const skorRunnerUp = Math.max(...skorLain.map(item => item.total_skor));
+                    const runnerUp = skorLain.filter(item => item.total_skor === skorRunnerUp);
+                    const namaRunnerUp = runnerUp.map(item => `<strong>${item.alternatif}</strong>`).join(' dan ');
+                    runnerUpText = `, diikuti oleh ${namaRunnerUp} dengan total ${skorRunnerUp.toFixed(4)} poin`;
+                }
+
+                p.innerHTML = `
+                    Berdasarkan hasil agregasi menggunakan metode <strong>BORDA</strong>, 
+                    ${pemenang.length > 1 ? 'terdapat <strong>' + pemenang.length + ' alternatif terbaik</strong>' : 'alternatif terbaik'}
+                    wisata kuliner kelompok adalah ${namaPemenang}
+                    yang ${pemenang.length > 1 ? 'sama-sama mendapatkan' : 'mendapatkan'}
+                    total skor tertinggi (<strong>${skorTertinggi.toFixed(4)} poin</strong>)${runnerUpText}.
+                `;
+            }
+            async function loadBordaResults() {
+                try {
+                    const data = await fetchWithToken(BORDA_URL);
+                    console.log("Data Borda Diterima:", data);
+                    if (!data || !Array.isArray(data) || data.length === 0) {
+                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
+                         return;
+                    }
+                    
+                    const payload = data[0];
+                    
+                    if (!payload.ranking_alternatif_per_decision_maker || !payload.perhitungan_skor_borda || payload.ranking_alternatif_per_decision_maker.length === 0) {
+                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Data Borda tidak lengkap atau tidak ada penilaian.</p></section>`;
+                         return;
+                    }
+                    const rankingData = payload.ranking_alternatif_per_decision_maker;
+                    const bordaDataRaw = payload.perhitungan_skor_borda;
+                    const dmHeaders = rankingData.map(dmObj => Object.keys(dmObj)[0]);
+                    const altNames = Object.keys(rankingData[0][dmHeaders[0]]);
+                    const m = altNames.length;
+                    const bordaDataProcessed = bordaDataRaw.map(item => {
+                        const altName = Object.keys(item)[0];
+                        const values = item[altName];
+                        return {
+                            nama: altName,
+                            total_skor: values.skor_akhir,
+                            peringkat: values.ranking
+                        };
+                    }).sort((a, b) => a.peringkat - b.peringkat);
+                    renderRankingDM(rankingData, dmHeaders, altNames);
+                    renderSkorBorda(rankingData, bordaDataProcessed, dmHeaders, m);
+                    renderBordaChart(bordaDataProcessed);
+                    renderKesimpulan(bordaDataProcessed);
+                    
+                    loadingContainer.style.display = 'none';
+                    hasilContainer.style.display = 'block';
+                    feather.replace();
+
+                } catch (error) {
+                    console.error('Gagal memuat hasil BORDA:', error);
+                    let errorMsg = `Gagal memuat hasil: ${error.message}`;
+                    if (error.message === 'Unauthorized') {
+                        errorMsg = "Sesi Anda telah berakhir. Harap login kembali.";
+                        forceLogout();
+                    }
+                    loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-red-500 py-8">${errorMsg}</p></section>`;
+                }
+            }
+            loadBordaResults();
+         });
+    </script>
+</body>
+
+</html>

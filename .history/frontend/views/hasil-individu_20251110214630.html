@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Hasil Individu (TOPSIS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Individu (TOPSIS)</h1>
+            <div class="flex gap-3">
+                <button id="btnExportExcel"
+                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file-text" class="w-4 h-4"></i>
+                    <span>Export Excel</span>
+                </button>
+                <button id="btnExportPDF"
+                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file" class="w-4 h-4"></i>
+                    <span>Export PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Decision Maker</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Total Alternatif</h3>
+                    <p class="text-2xl font-semibold text-gray-800">5</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Kriteria Penilaian</h3>
+                    <p class="text-2xl font-semibold text-gray-800">8</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Decision Maker</h3>
+                    <p class="text-2xl font-semibold text-gray-800">DM1</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Tanggal Penilaian</h3>
+                    <p class="text-2xl font-semibold text-gray-800">04 Nov 2025</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Matriks Normalisasi (R)</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">Alternatif</th>
+                            <th class="px-4 py-2 text-center">C1</th>
+                            <th class="px-4 py-2 text-center">C2</th>
+                            <th class="px-4 py-2 text-center">C3</th>
+                            <th class="px-4 py-2 text-center">C4</th>
+                            <th class="px-4 py-2 text-center">C5</th>
+                            <th class="px-4 py-2 text-center">C6</th>
+                            <th class="px-4 py-2 text-center">C7</th>
+                            <th class="px-4 py-2 text-center">C8</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Sop Saudara Irian</td>
+                            <td class="text-center">0.23</td>
+                            <td class="text-center">0.12</td>
+                            <td class="text-center">0.56</td>
+                            <td class="text-center">0.67</td>
+                            <td class="text-center">0.78</td>
+                            <td class="text-center">0.70</td>
+                            <td class="text-center">0.55</td>
+                            <td class="text-center rounded-r-lg">0.60</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Coto Maros</td>
+                            <td class="text-center">0.21</td>
+                            <td class="text-center">0.14</td>
+                            <td class="text-center">0.49</td>
+                            <td class="text-center">0.61</td>
+                            <td class="text-center">0.72</td>
+                            <td class="text-center">0.68</td>
+                            <td class="text-center">0.48</td>
+                            <td class="text-center rounded-r-lg">0.57</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Pallubasa Serigala</td>
+                            <td class="text-center">0.25</td>
+                            <td class="text-center">0.15</td>
+                            <td class="text-center">0.52</td>
+                            <td class="text-center">0.63</td>
+                            <td class="text-center">0.74</td>
+                            <td class="text-center">0.66</td>
+                            <td class="text-center">0.50</td>
+                            <td class="text-center rounded-r-lg">0.59</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Matriks Ternormalisasi Terbobot (Y)</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">Alternatif</th>
+                            <th class="px-4 py-2 text-center">C1</th>
+                            <th class="px-4 py-2 text-center">C2</th>
+                            <th class="px-4 py-2 text-center">C3</th>
+                            <th class="px-4 py-2 text-center">C4</th>
+                            <th class="px-4 py-2 text-center">C5</th>
+                            <th class="px-4 py-2 text-center">C6</th>
+                            <th class="px-4 py-2 text-center">C7</th>
+                            <th class="px-4 py-2 text-center">C8</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Sop Saudara Irian</td>
+                            <td class="text-center">0.09</td>
+                            <td class="text-center">0.04</td>
+                            <td class="text-center">0.22</td>
+                            <td class="text-center">0.27</td>
+                            <td class="text-center">0.31</td>
+                            <td class="text-center">0.28</td>
+                            <td class="text-center">0.22</td>
+                            <td class="text-center rounded-r-lg">0.24</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Coto Maros</td>
+                            <td class="text-center">0.08</td>
+                            <td class="text-center">0.05</td>
+                            <td class="text-center">0.19</td>
+                            <td class="text-center">0.24</td>
+                            <td class="text-center">0.29</td>
+                            <td class="text-center">0.27</td>
+                            <td class="text-center">0.19</td>
+                            <td class="text-center rounded-r-lg">0.23</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Pallubasa Serigala</td>
+                            <td class="text-center">0.10</td>
+                            <td class="text-center">0.05</td>
+                            <td class="text-center">0.20</td>
+                            <td class="text-center">0.25</td>
+                            <td class="text-center">0.30</td>
+                            <td class="text-center">0.26</td>
+                            <td class="text-center">0.20</td>
+                            <td class="text-center rounded-r-lg">0.23</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Jarak ke Solusi Ideal (D⁺ & D⁻)</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-4 py-2">Alternatif</th>
+                                <th class="px-4 py-2 text-center">D⁺</th>
+                                <th class="px-4 py-2 text-center">D⁻</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm">
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium rounded-l-lg">Sop Saudara Irian</td>
+                                <td class="px-4 py-3 text-center">0.13</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.82</td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium rounded-l-lg">Coto Maros</td>
+                                <td class="px-4 py-3 text-center">0.16</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.79</td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium rounded-l-lg">Pallubasa Serigala</td>
+                                <td class="px-4 py-3 text-center">0.20</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.73</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Nilai Preferensi (Vᵢ) & Ranking Akhir</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-4 py-2">Peringkat</th>
+                                <th class="px-4 py-2">Alternatif</th>
+                                <th class="px-4 py-2 text-center">Nilai Preferensi (Vᵢ)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm">
+                            <tr class="bg-primary-light hover:bg-blue-100 transition-all font-semibold">
+                                <td class="px-4 py-3 text-primary rounded-l-lg">1</td>
+                                <td class="px-4 py-3">Sop Saudara Irian</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.812</td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-semibold rounded-l-lg">2</td>
+                                <td class="px-4 py-3 font-medium">Coto Maros</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.786</td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-semibold rounded-l-lg">3</td>
+                                <td class="px-4 py-3 font-medium">Pallubasa Serigala</td>
+                                <td class="px-4 py-3 text-center rounded-r-lg">0.743</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi Nilai Preferensi (Vᵢ)</h2>
+            <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+
+            </div>
+            <p class="text-sm text-gray-500 mt-3">
+                Grafik ini akan menampilkan perbandingan nilai preferensi (Vᵢ) setiap alternatif berdasarkan hasil
+                perhitungan metode TOPSIS.
+            </p>
+        </section>
+
+        <div class="h-10"></div>
+    </main>
+
+    <script>
+        feather.replace();
+
+        const btnExportExcel = document.getElementById('btnExportExcel');
+        const btnExportPDF = document.getElementById('btnExportPDF');
+
+        btnExportExcel.addEventListener('click', () => {
+            showAlert('Data **Hasil Individu (DM1)** berhasil diexport ke Excel.', 'success');
+        });
+
+        btnExportPDF.addEventListener('click', () => {
+            showAlert('Data **Hasil Individu (DM1)** berhasil diexport ke PDF.', 'success');
+        });
+    </script>
+</body>
+
+</html>

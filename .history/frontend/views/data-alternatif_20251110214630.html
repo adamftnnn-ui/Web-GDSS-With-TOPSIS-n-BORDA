@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Data Alternatif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <script src="alert.js"></script>
+
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Data Alternatif</h1>
+            <button id="btnTambahAlternatif"
+                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="plus-circle" class="w-4"></i>
+                <span>Tambah Alternatif</span>
+            </button>
+        </header>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">No</th>
+                            <th class="px-4 py-2">Nama Alternatif</th>
+                            <th class="px-4 py-2">Deskripsi</th>
+                            <th class="px-4 py-2 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alternatifTable" class="text-gray-700 text-sm">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalAlternatif" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
+            <h2 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-4">Tambah Alternatif</h2>
+            <form id="formAlternatif" class="space-y-4">
+                <div>
+                    <label for="namaAlternatif" class="block text-gray-700 font-medium text-sm mb-1">Nama
+                        Alternatif</label>
+                    <input type="text" id="namaAlternatif" name="namaAlternatif"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan nama alternatif" required>
+                </div>
+                <div>
+                    <label for="deskripsiAlternatif"
+                        class="block text-gray-700 font-medium text-sm mb-1">Deskripsi</label>
+                    <textarea id="deskripsiAlternatif" name="deskripsiAlternatif" rows="3"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan deskripsi alternatif" required></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="btnCloseModal"
+                        class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-700 transition text-sm">Simpan</button>
+                </div>
+            </form>
+            <button id="btnCloseX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="modalDetailAlternatif" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Detail Alternatif</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 font-medium text-sm mb-1">Nama Alternatif</label>
+                    <input type="text" id="detailNamaAlternatif"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed text-sm"
+                        readonly>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium text-sm mb-1">Deskripsi</label>
+                    <textarea id="detailDeskripsiAlternatif" rows="3"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed text-sm"
+                        readonly></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="btnCloseDetail"
+                    class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Tutup</button>
+            </div>
+            <button id="btnCloseDetailX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="modalKonfirmasiHapus" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs p-6 relative">
+            <div class="flex flex-col items-center text-center">
+                <div class="p-3 bg-red-100 rounded-full mb-4">
+                    <i data-feather="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                </div>
+                <h2 class="text-lg font-semibold text-gray-900 mb-2">Konfirmasi Penghapusan</h2>
+                <p id="konfirmasiText" class="text-sm text-gray-600 mb-6">Anda yakin ingin menghapus alternatif
+                    <strong>[Nama Alternatif]</strong>? Aksi ini tidak dapat dibatalkan.
+                </p>
+            </div>
+            <div class="flex justify-center gap-3">
+                <button type="button" id="btnKonfirmasiBatal"
+                    class="flex-1 px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                <button type="button" id="btnKonfirmasiHapus"
+                    class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition text-sm">Ya,
+                    Hapus</button>
+            </div>
+            <button id="btnKonfirmasiX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const dataAlternatif = [
+            { nama: "Sop Saudara Irian", deskripsi: "Menyajikan sop khas Makassar dengan cita rasa gurih." },
+            { nama: "Coto Maros", deskripsi: "Coto khas daerah Maros, kuah kental rempah." },
+            { nama: "Coto Nusantara", deskripsi: "Coto legendaris di pusat kota Makassar, rasa otentik." },
+            { nama: "Pallubasa Serigala", deskripsi: "Pallubasa populer dengan aroma rempah kuat." },
+            { nama: "Mie Titi Panakkukang", deskripsi: "Mie kering khas Makassar favorit wisatawan." }
+        ];
+
+        const tableBody = document.getElementById("alternatifTable");
+        const btnTambah = document.getElementById("btnTambahAlternatif");
+        const modal = document.getElementById("modalAlternatif");
+        const modalTitle = document.getElementById("modalTitle");
+        const btnClose = document.getElementById("btnCloseModal");
+        const btnCloseX = document.getElementById("btnCloseX");
+        const form = document.getElementById("formAlternatif");
+        const modalDetail = document.getElementById("modalDetailAlternatif");
+        const detailNama = document.getElementById("detailNamaAlternatif");
+        const detailDeskripsi = document.getElementById("detailDeskripsiAlternatif");
+        const btnCloseDetail = document.getElementById("btnCloseDetail");
+        const btnCloseDetailX = document.getElementById("btnCloseDetailX");
+        const modalKonfirmasi = document.getElementById("modalKonfirmasiHapus");
+        const konfirmasiText = document.getElementById("konfirmasiText");
+        const btnKonfirmasiHapus = document.getElementById("btnKonfirmasiHapus");
+        const btnKonfirmasiBatal = document.getElementById("btnKonfirmasiBatal");
+        const btnKonfirmasiX = document.getElementById("btnKonfirmasiX");
+
+        let editingIndex = null;
+        let indexToDelete = null;
+
+        function showDeleteConfirm(namaAlternatif, index) {
+            const messageText = `Anda yakin ingin menghapus alternatif <strong>${namaAlternatif}</strong>? Aksi ini tidak dapat dibatalkan.`;
+
+            konfirmasiText.innerHTML = messageText;
+
+            indexToDelete = index;
+            modalKonfirmasi.classList.remove("hidden");
+            modalKonfirmasi.classList.add("flex");
+        }
+
+        function closeConfirmModal() {
+            modalKonfirmasi.classList.add("hidden");
+            modalKonfirmasi.classList.remove("flex");
+            indexToDelete = null;
+        }
+
+        btnKonfirmasiHapus.addEventListener("click", () => {
+            if (indexToDelete !== null) {
+                const itemNama = dataAlternatif[indexToDelete].nama;
+
+                dataAlternatif.splice(indexToDelete, 1);
+                renderTable();
+                closeConfirmModal();
+
+                showAlert(`Alternatif **${itemNama}** berhasil dihapus.`, 'success');
+            }
+        });
+
+        btnKonfirmasiBatal.addEventListener("click", () => {
+            if (indexToDelete !== null) {
+                const itemNama = dataAlternatif[indexToDelete].nama;
+                showAlert(`Penghapusan alternatif **${itemNama}** dibatalkan.`, 'info', 3000);
+            }
+            closeConfirmModal();
+        });
+        btnKonfirmasiX.addEventListener("click", closeConfirmModal);
+
+        function renderTable() {
+            tableBody.innerHTML = "";
+            dataAlternatif.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
+                row.innerHTML = `
+                    <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
+                    <td class="px-4 py-3 font-medium">${item.nama}</td>
+                    <td class="px-4 py-3 text-gray-600">${item.deskripsi}</td>
+                    <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+                        <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit" data-index="${index}">
+                            <i data-feather="edit" class="w-4 h-4"></i>
+                        </button>
+                        <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete" data-index="${index}">
+                            <i data-feather="trash-2" class="w-4 h-4"></i>
+                        </button>
+                        <button class="detailBtn p-1.5 text-gray-600 hover:text-gray-800 rounded-md transition" title="Detail" data-index="${index}">
+                            <i data-feather="eye" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            feather.replace();
+            attachRowEvents();
+        }
+
+        function attachRowEvents() {
+            document.querySelectorAll(".deleteBtn").forEach((btn, idx) => {
+                btn.onclick = () => {
+                    const itemNama = dataAlternatif[idx].nama;
+                    showDeleteConfirm(itemNama, idx);
+                };
+            });
+
+            document.querySelectorAll(".editBtn").forEach((btn, idx) => {
+                btn.onclick = () => {
+                    editingIndex = idx;
+                    modalTitle.textContent = "Edit Alternatif";
+                    document.getElementById("namaAlternatif").value = dataAlternatif[idx].nama;
+                    document.getElementById("deskripsiAlternatif").value = dataAlternatif[idx].deskripsi;
+                    modal.classList.remove("hidden");
+                    modal.classList.add("flex");
+                };
+            });
+
+            document.querySelectorAll(".detailBtn").forEach((btn, idx) => {
+                btn.onclick = () => {
+                    detailNama.value = dataAlternatif[idx].nama;
+                    detailDeskripsi.value = dataAlternatif[idx].deskripsi;
+                    modalDetail.classList.remove("hidden");
+                    modalDetail.classList.add("flex");
+                };
+            });
+        }
+
+        btnTambah.addEventListener("click", () => {
+            editingIndex = null;
+            modalTitle.textContent = "Tambah Alternatif";
+            form.reset();
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        });
+
+        function closeModal() {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            form.reset();
+            editingIndex = null;
+        }
+
+        btnClose.addEventListener("click", closeModal);
+        btnCloseX.addEventListener("click", closeModal);
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const nama = document.getElementById("namaAlternatif").value.trim();
+            const deskripsi = document.getElementById("deskripsiAlternatif").value.trim();
+
+            if (!nama || !deskripsi) {
+                showAlert('Gagal menyimpan. Mohon lengkapi semua data alternatif.', 'error');
+                return;
+            }
+
+            let alertMessage = "";
+            let alertType = 'success';
+
+            if (editingIndex !== null) {
+                dataAlternatif[editingIndex] = { nama, deskripsi };
+                alertMessage = `Data **${nama}** berhasil diperbarui.`;
+            } else {
+                dataAlternatif.push({ nama, deskripsi });
+                alertMessage = `Alternatif **${nama}** berhasil ditambahkan.`;
+            }
+
+            renderTable();
+            closeModal();
+            showAlert(alertMessage, alertType);
+        });
+
+        function closeDetailModal() {
+            modalDetail.classList.add("hidden");
+            modalDetail.classList.remove("flex");
+        }
+
+        btnCloseDetail.addEventListener("click", closeDetailModal);
+        btnCloseDetailX.addEventListener("click", closeDetailModal);
+
+        renderTable();
+    </script>
+</body>
+
+</html>

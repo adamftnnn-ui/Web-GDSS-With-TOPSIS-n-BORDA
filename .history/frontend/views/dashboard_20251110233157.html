@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antased">
+
+    <!-- Sidebar (Desain Asli Tidak Diubah) -->
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Konten Utama (Desain Asli Tidak Diubah) -->
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <span class="text-gray-600 text-sm">Welcome, <strong class="text-gray-800">Decision
+                        Maker</strong></span>
+                <img src="https://i.pravatar.cc/40" alt="avatar" class="h-8 w-8 rounded-full border border-gray-200">
+            </div>
+        </header>
+
+        <!-- Card Statistik (HTML Tidak Diubah, hanya ID dan placeholder) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Alternatif</h2>
+                <!-- ID ditambahkan, nilai statis diubah ke '...' -->
+                <p id="totalAlternatif" class="text-3xl font-bold text-gray-900 mt-1">...</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Kriteria Penilaian</h2>
+                <!-- ID ditambahkan, nilai statis diubah ke '...' -->
+                <p id="totalKriteria" class="text-3xl font-bold text-gray-900 mt-1">...</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Decision Maker</h2>
+                <!-- ID ditambahkan, nilai statis diubah ke '...' -->
+                <p id="totalUser" class="text-3xl font-bold text-gray-900 mt-1">...</p>
+            </div>
+        </section>
+        <!-- AKHIR BAGIAN CARD STATISTIK -->
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary" style="width: 75%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                    <strong class="text-primary">75%</strong> penilaian telah selesai.
+                </p>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Ringkasan Aktivitas Terakhir</h2>
+                <ul class="divide-y divide-gray-100">
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM1 menilai Alternatif A</span>
+                        <span class="text-gray-400 text-xs">2 jam lalu</span>
+                    </li>
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM2 menyelesaikan penilaian</span>
+                        <span class="text-gray-400 text-xs">5 jam lalu</span>
+                    </li>
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM4 melihat hasil BORDA</span>
+                        <span class="text-gray-400 text-xs">Kemarin</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <script>feather.replace()</script>
+
+    <!-- SCRIPT BARU UNTUK MEMBUAT CARD DINAMIS SESUAI API -->
+    <script>
+        // Jalankan skrip setelah seluruh konten halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. OTENTIKASI ---
+            // Diasumsikan 'accessToken' disimpan di localStorage
+            // setelah proses login (misal di 'index.html').
+            const accessToken = localStorage.getItem('accessToken');
+
+            // --- PERBAIKAN: Hentikan redirect, tampilkan error di UI ---
+            // Jika tidak ada token, jangan redirect, tapi tampilkan error di halaman.
+            if (!accessToken) {
+                console.error("Tidak ada accessToken. Harap login terlebih dahulu.");
+                
+                // Hentikan redirect agar user bisa melihat error.
+                // window.location.href = window.location.origin + '/index.html'; 
+                
+                // Ubah header untuk menampilkan pesan error
+                const headerTitle = document.querySelector('main header h1');
+                if (headerTitle) {
+                    headerTitle.textContent = 'Akses Ditolak';
+                    headerTitle.classList.add('text-red-600');
+                }
+                const welcomeText = document.querySelector('main header .flex.items-center.gap-3');
+                if (welcomeText) {
+                    welcomeText.innerHTML = '<span class="text-red-600 font-medium">Anda harus login untuk melihat halaman ini. Token tidak ditemukan.</span>';
+                }
+                
+                // Hentikan eksekusi skrip
+                return; 
+            }
+            // --- AKHIR PERBAIKAN ---
+
+            // --- 2. DEFINISI API & ELEMEN ---
+            // URL API berdasarkan file .rest yang Anda berikan
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
+            const TOTAL_ALTERNATIF_URL = `${API_BASE_URL}/alternatif/total`;
+            const TOTAL_KRITERIA_URL = `${API_BASE_URL}/kriteria/total`;
+            const TOTAL_USER_URL = `${API_BASE_URL}/user/total`;
+            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+
+            // Dapatkan referensi ke elemen <p> yang akan diubah
+            const altDisplay = document.getElementById('totalAlternatif');
+            const kriteriaDisplay = document.getElementById('totalKriteria');
+            const userDisplay = document.getElementById('totalUser');
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            
+            async function fetchWithToken(url) {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Unauthorized');
+                }
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                return response.json();
+            }
+            
+            function findTotal(data) {
+                if (data.total !== undefined) return data.total;
+                if (data.count !== undefined) return data.count;
+                if (typeof data === 'number') return data;
+                console.warn("Struktur respons total tidak dikenal:", data);
+                return "N/A";
+            }
+            async function loadDashboardData() {
+                try {
+                    const [altData, kriteriaData, userData] = await Promise.all([
+                        fetchWithToken(TOTAL_ALTERNATIF_URL),
+                        fetchWithToken(TOTAL_KRITERIA_URL),
+                        fetchWithToken(TOTAL_USER_URL)
+                    ]);
+                    altDisplay.textContent = findTotal(altData);
+                    kriteriaDisplay.textContent = findTotal(kriteriaData);
+                    userDisplay.textContent = findTotal(userData);
+
+                } catch (error) {
+                    console.error('Gagal memuat data dashboard:', error);
+                    altDisplay.textContent = 'Err';
+                    kriteriaDisplay.textContent = 'Err';
+                    userDisplay.textContent = 'Err';
+                    
+                    if (error.message === 'Unauthorized') {
+                        forceLogout();
+                    }
+                }
+            }
+            
+            async function handleLogout(e) {
+                e.preventDefault();
+                
+                try {
+                    await fetch(LOGOUT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                } catch (error) {
+                    console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
+                } finally {
+                    forceLogout();
+                }
+            }
+            
+            function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + '/index.html';
+            }
+            
+            loadDashboardData();
+            
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+            }
+
+        });
+    </script>
+</body>
+
+</html>
