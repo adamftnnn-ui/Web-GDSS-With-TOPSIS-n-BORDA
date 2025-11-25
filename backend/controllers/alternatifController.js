@@ -1,4 +1,6 @@
 const Alternatif = require("../models/alternatif");
+const Kriteria = require("../models/kriteria");
+const User=require("../models/users")
 const Penilaian=require('../models/penilaian')
 
 const getAllAlternatif = async (req, res) => {
@@ -44,14 +46,36 @@ const addAlternatif = async (req, res) => {
   const { nama, deskripsi } = req.body;
 
   try {
-    await Alternatif.create({
+    const newAlternatif=await Alternatif.create({
       nama: nama,
       deskripsi: deskripsi,
     });
 
+    const existingKriteria=await Kriteria.find({},{_id:1}).sort({tipe:-1})
+
+    const nilai = existingKriteria.map(k => ({
+      id_kriteria: k._id,
+      value: 0
+    }));
+
+    const idDMDocs = await User.find(
+      { peran: { $ne: "Admin" } },
+      { _id: 1 }
+    );
+    
+    const idDM = idDMDocs.map(u => u._id);
+
+    const penilaianData=idDM.map(idUser=>({
+      id_alternatif:newAlternatif._id,
+      id_user:idUser,
+      nilai:nilai
+    }))
+
+    await Penilaian.insertMany(penilaianData)
+
     res.sendStatus(201);
   } catch (e) {
-    res.status(500).json({ message: "Error menambahkan alternatif ", e });
+    res.status(500).json({ message: `Error menambahkan alternatif ${e.message}` });
   }
 };
 

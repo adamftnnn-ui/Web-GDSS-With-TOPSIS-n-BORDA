@@ -7,29 +7,23 @@ def topsis(data):
     alternatives = data['alternatif']
     benefit = [x['item'] for x in data['kriteria']]
 
-    weights = np.array(data['bobot'], dtype=float)
+    weights = np.array(data['bobot'])
     X = np.array(data['nilai'], dtype=float)
 
-    # --- SKIP kolom yang semua nilainya 0 ---
-    valid_cols = ~(np.all(X == 0, axis=0))
+    if np.all(X == 0):
+        return {
+            "status": "error",
+            "message": "Semua nilai kriteria bernilai 0. TOPSIS tidak dapat dihitung sebelum ada penilaian minimal 1 nilai."
+        }
 
-    X = X[:, valid_cols]
-    weights = weights[valid_cols]
-    benefit = [b for i, b in enumerate(benefit) if valid_cols[i]]
-
-    # --- Normalisasi ---
     divisors = np.sqrt(np.sum(X**2, axis=0))
-    divisors[divisors == 0] = 1   # jaga-jaga
-    R = X / divisors
+    R = X / divisors  # Matriks ternormalisasi
 
-    # --- Matriks terbobot ---
-    Y = R * weights
+    Y = R * weights  # Matriks terbobot
 
-    # --- Tentukan benefit & cost ---
     benefit_cols = [i for i, t in enumerate(benefit) if t == "Benefit"]
     cost_cols = [i for i, t in enumerate(benefit) if t == "Cost"]
 
-    # --- Solusi ideal ---
     A_plus = np.zeros(Y.shape[1])
     A_plus[benefit_cols] = np.max(Y[:, benefit_cols], axis=0)
     A_plus[cost_cols] = np.min(Y[:, cost_cols], axis=0)
@@ -38,13 +32,10 @@ def topsis(data):
     A_minus[benefit_cols] = np.min(Y[:, benefit_cols], axis=0)
     A_minus[cost_cols] = np.max(Y[:, cost_cols], axis=0)
 
-    # --- Jarak ke solusi ideal ---
-    D_plus = np.sqrt(np.sum((A_plus - R)**2, axis=1))
-    D_minus = np.sqrt(np.sum((R - A_minus)**2, axis=1))
+    D_plus = np.sqrt(np.sum((A_plus - R)**2, axis=1))  # Jarak ke solusi ideal positif
+    D_minus = np.sqrt(np.sum((R - A_minus)**2, axis=1))  # Jarak ke solusi ideal negatif
 
-    # --- Nilai preferensi ---
     V = D_minus / (D_minus + D_plus)
-    V = np.nan_to_num(V, nan=0.0)
 
     V_series = pd.Series(V, index=alternatives)
     ranking = V_series.rank(method='first', ascending=False).astype(int)
@@ -59,12 +50,12 @@ def topsis(data):
         "Alternatif Terbaik": ranking.idxmin()
     }
 
-# Ambil input
+# Membaca input dari stdin
 input_data = sys.stdin.read()
-data = json.loads(input_data)
+data = json.loads(input_data)  # Mengonversi JSON string menjadi Python dict
 
-# Jalankan TOPSIS
+# Memanggil fungsi topsis dan mendapatkan hasil
 result = topsis(data)
 
-# Output JSON
+# Mengirimkan hasil kembali ke stdout dalam format JSON
 print(json.dumps(result))

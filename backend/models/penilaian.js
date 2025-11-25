@@ -7,8 +7,7 @@ const penilaianSchema=new mongoose.Schema({
         required:true
     },
     tanggal_penilaian:{
-        type:Date,
-        required:true
+        type:Date
     },
     id_alternatif:{
         type:mongoose.Schema.Types.ObjectId,
