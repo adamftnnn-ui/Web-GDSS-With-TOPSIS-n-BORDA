@@ -23,7 +23,7 @@ Content-Type: application/json
 POST https://web-gdss.vercel.app/api/auth/logout
 
 ### Refresh Access Token
-POST https://web-gdss.vercel.app/api/auth/refresh
+POST https://web-gdss.vercel.app/api/auth/refresh 
 
 ### Token
 @accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA3OTgyNSwiZXhwIjoxNzY0MDgzNDI1fQ.Mjt8hNJfsl6OG6rnwFPGF04ZJcCe4VPNKA5dFfDuVNQ
@@ -113,11 +113,11 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_alternatif":"6925b19c9cceee509fbe7219"
+    "id_alternatif":"691180fb65de5d03ecbd1f40"
 }
 
 ### Get All Kriteria
-GET http://web-gdss.vercel.app/api/kriteria
+GET http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -146,20 +146,20 @@ Content-Type: application/json
 }
 
 ### Update Kriteria
-PUT https://web-gdss.vercel.app/api/kriteria
+PUT http://web-gdss.vercel.app/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_kriteria":"69121869082657540b47d552",
-    "nama":"Waktu Operasional",
-    "tipe":"Benefit",
-    "bobot":12.50,
-    "nilai":"1-Pagi; 2-Pagi & Siang; 3-Pagi, Siang & Sore; 4-Pagi, Siang, Sore & Malam"
+    "id_kriteria":"69121798082657540b47d52d",
+    "nama":"Harga Makanan",
+    "tipe":"Cost",
+    "bobot":4.50,
+    "nilai":"1 - Sangat Murah;2 - Murah;3 - Cukup Murah;4 - Mahal;5 - Sangat Mahal"
 }
 
 ### Delete Kriteria
-DELETE http://localhost:5000/api/kriteria?id_kriteria=692559d5341a5e194f7131f6
+DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=691c26a5b49778c74b7d7d6e
 Authorization: Bearer {{accessToken}}
 
 ### Get All Penilaian
@@ -188,7 +188,7 @@ Content-Type: application/json
 }
 
 ### Delete Penilaian
-DELETE http://localhost:5000/api/penilaian
+DELETE https://web-gdss.vercel.app/api/penilaian
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -212,7 +212,7 @@ GET http://localhost:5000/api/penilaian/borda
 Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif
-GET http://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=6925ac709de0ba2224f04605
+GET http://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=691181ba3ef5b13486fe838d
 Authorization: Bearer {{accessToken}}
 
 ### Get Laporan Penilaian
