@@ -63,18 +63,20 @@ const addPenilaian = async (req, res) => {
       id_alternatif: id_alternatif,
     });
 
-    if (existingPenilaian) {
-      await existingPenilaian.deleteOne();
-    }
-    
-    await Penilaian.create({
-      id_user: id_user,
-      tanggal_penilaian: formattedDate,
-      id_alternatif: id_alternatif,
-      id_kriteria: id_kriteria,
-      nilai: nilaiPenilaian,
-      keterangan: keterangan,
-    });
+    existingPenilaian.tanggal_penilaian = formattedDate;
+    existingPenilaian.keterangan = keterangan;
+    existingPenilaian.nilai = nilaiPenilaian;
+
+    await existingPenilaian.save();
+
+    // await Penilaian.create({
+    //   id_user: id_user,
+    //   tanggal_penilaian: formattedDate,
+    //   id_alternatif: id_alternatif,
+    //   id_kriteria: id_kriteria,
+    //   nilai: nilaiPenilaian,
+    //   keterangan: keterangan,
+    // });
 
     await Topsis.findByIdAndDelete({ id_user: id_user });
 
@@ -159,6 +161,11 @@ const perhitunganTopsis = async (req, res) => {
 
       try {
         const parsed = JSON.parse(result);
+
+        if (parsed.status === "error") {
+          return res.status(400).json(parsed);
+        }
+
         await Topsis.create({
           id_user: id_user,
           matriks_keputusan_ternormalisasi:

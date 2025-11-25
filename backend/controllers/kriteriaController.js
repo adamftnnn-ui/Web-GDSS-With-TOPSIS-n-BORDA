@@ -2,6 +2,7 @@ const borda = require("../models/borda");
 const Kriteria = require("../models/kriteria");
 const Penilaian = require("../models/penilaian");
 const Topsis=require("../models/topsis")
+const Borda=require("../models/borda")
 const mongoose = require("mongoose");
 
 const toTitleCase = (str) => {
@@ -33,8 +34,12 @@ const addKriteria = async (req, res) => {
 
     const allExistingPenilaian = await Penilaian.find();
 
+    const UrutanKriteria=await Kriteria.find().sort({tipe:-1})
+
+    const indexKriteria=UrutanKriteria.findIndex(k=>k.nama===nama)
+
     for (const item of allExistingPenilaian) {
-      item.nilai.push({
+      item.nilai.splice(indexKriteria,0,{
         id_kriteria: newKriteria._id,
         value: 0,
       });
@@ -49,7 +54,7 @@ const addKriteria = async (req, res) => {
   } catch (e) {
     res
       .status(500)
-      .json({ message: "Error menambah kriteria ke database: ", e });
+      .json({ message: "Error menambah kriteria ke database: ", error:e.message });
   }
 };
 
@@ -66,12 +71,15 @@ const deleteKriteria = async (req, res) => {
 
       item.nilai = updatedNilai;
       await item.save();
+      
 
       // if(updatedNilai.length!=item.nilai.length){
       //   item.nilai=updatedNilai
       //   await item.save()
       // }
     }
+
+
     // for(const item of allExistingPenilaian){
     //   for(const itemNilai of item.nilai){
     //     if(itemNilai.id_kriteria==id_kriteria){
@@ -118,6 +126,7 @@ const updateKriteria = async (req, res) => {
     await existingKriteria.save();
 
     await Topsis.deleteMany({})
+    await Borda.deleteMany({})
 
     res.sendStatus(200);
   } catch (e) {
