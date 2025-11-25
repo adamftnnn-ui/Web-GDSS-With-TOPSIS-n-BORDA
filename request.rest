@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4NTAwNiwiZXhwIjoxNzY0MDg4NjA2fQ.5WRikUfEFDvqkGi0RVX2ouEoZZZ15hGtJTrRpRMWL9g
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4NTc1NSwiZXhwIjoxNzY0MDg5MzU1fQ.RIGN5RLdUAIEt0kWTTTvIX6Es_aPqyq8mh0QHG_avQk
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -203,7 +203,7 @@ GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User
-GET https://web-gdss.vercel.app/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
+GET http://localhost:5000/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 
