@@ -100,18 +100,6 @@
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Kelompok (BORDA)</h1>
-            <div class="flex gap-3">
-                <button id="btnExportExcel"
-                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                    <i data-feather="file-text" class="w-4 h-4"></i>
-                    <span>Export Excel</span>
-                </button>
-                <button id="btnExportPDF"
-                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                    <i data-feather="file" class="w-4 h-4"></i>
-                    <span>Export PDF</span>
-                </button>
-            </div>
         </header>
         <div id="loadingContainer">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
@@ -139,7 +127,7 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-separate border-spacing-y-2">
-                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider">\
+                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider">
                         </thead>
                         <tbody id="skorBordaTableBody" class="text-gray-700 text-sm">
                         </tbody>
@@ -167,20 +155,6 @@
 
         <div class="h-10"></div>
     </main>
-
-    <script>
-        feather.replace();
-        const btnExportExcel = document.getElementById('btnExportExcel');
-        const btnExportPDF = document.getElementById('btnExportPDF');
-
-        btnExportExcel.addEventListener('click', () => {
-            showAlert('Data **Hasil Kelompok (BORDA)** berhasil diexport ke Excel.', 'success');
-        });
-
-        btnExportPDF.addEventListener('click', () => {
-            showAlert('Data **Hasil Kelompok (BORDA)** berhasil diexport ke PDF.', 'success');
-        });
-    </script>
     
     <script>
          window.addEventListener('DOMContentLoaded', () => {
