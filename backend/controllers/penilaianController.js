@@ -138,6 +138,12 @@ const perhitunganTopsis = async (req, res) => {
 
     console.log(dataToPython);
 
+    if (penilaianGet.length === 0) {
+      return res.status(400).json({
+        message: "Belum ada penilaian untuk user ini."
+      });
+    }    
+
     const python = spawn("python", ["./services/topsis.py"]);
 
     python.stdin.write(JSON.stringify(dataToPython));
@@ -150,7 +156,9 @@ const perhitunganTopsis = async (req, res) => {
 
     python.stderr.on("data", (data) => {
       console.error("Python error: ", data.toString());
+      return res.status(500).json({ message: data.toString() });
     });
+    
 
     python.on("close", async (code) => {
       if (code !== 0) {
@@ -181,7 +189,7 @@ const perhitunganTopsis = async (req, res) => {
 
         const borda = await Borda.deleteMany({});
 
-        res.status(200).json({
+        return res.status(200).json({
           matriks_keputusan_ternormalisasi:
             parsed["Matriks Keputusan Ternormalisasi"],
           matriks_keputusan_ternormalisasi_terbobot:

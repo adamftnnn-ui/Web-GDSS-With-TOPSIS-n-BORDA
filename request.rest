@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4MzMyNSwiZXhwIjoxNzY0MDg2OTI1fQ.dL4D0bhqIH1D_0HbmcYRtkLou1s1IfbDNhxDYVDrYvo
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4NTAwNiwiZXhwIjoxNzY0MDg4NjA2fQ.5WRikUfEFDvqkGi0RVX2ouEoZZZ15hGtJTrRpRMWL9g
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -203,7 +203,7 @@ GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User
-GET http://localhost:5000/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
+GET https://web-gdss.vercel.app/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 
@@ -212,7 +212,7 @@ GET http://localhost:5000/api/penilaian/borda
 Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif
-GET http://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=6925ac709de0ba2224f04605
+GET https://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=6925ac709de0ba2224f04605
 Authorization: Bearer {{accessToken}}
 
 ### Get Laporan Penilaian
