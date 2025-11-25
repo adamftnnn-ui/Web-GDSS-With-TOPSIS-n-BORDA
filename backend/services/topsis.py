@@ -43,6 +43,8 @@ def topsis(data):
     return {
         "Matriks Keputusan Ternormalisasi": R.tolist(),
         "Matriks Keputusan Ternormalisasi Terbobot": Y.tolist(),
+        "A+":A_plus.tolist(),
+        "A-":A_minus.tolist(),
         "D+":D_plus.tolist(),
         "D-":D_minus.tolist(),
         "Skor Akhir": V.tolist(),

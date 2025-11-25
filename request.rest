@@ -146,16 +146,16 @@ Content-Type: application/json
 }
 
 ### Update Kriteria
-PUT http://localhost:5000/api/kriteria
+PUT https://web-gdss.vercel.app/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_kriteria":"69121798082657540b47d52d",
-    "nama":"Harga Makanan",
-    "tipe":"Cost",
+    "id_kriteria":"69121869082657540b47d552",
+    "nama":"Waktu Operasional",
+    "tipe":"Benefit",
     "bobot":12.50,
-    "nilai":"1-Sangat Murah; 2-Murah; 3-Cukup Murah; 4-Mahal; 5-Sangat Mahal"
+    "nilai":"1-Pagi; 2-Pagi & Siang; 3-Pagi, Siang & Sore; 4-Pagi, Siang, Sore & Malam"
 }
 
 ### Delete Kriteria

@@ -116,7 +116,7 @@ const perhitunganTopsis = async (req, res) => {
     const kriteriaGet = await Kriteria.find(
       {},
       { nama: 1, tipe: 1, bobot: 1, _id: 0 }
-    );
+    ).sort({tipe:-1});
     const penilaianGet = await Penilaian.find({ id_user: id_user });
 
     if (kriteriaGet.length == 0) {
@@ -186,6 +186,8 @@ const perhitunganTopsis = async (req, res) => {
             parsed["Matriks Keputusan Ternormalisasi"],
           matriks_keputusan_ternormalisasi_terbobot:
             parsed["Matriks Keputusan Ternormalisasi Terbobot"],
+          a_plus:parsed["A+"],
+          a_minus:parsed["A-"],
           d_positif: parsed["D+"],
           d_negatif: parsed["D-"],
           skor_akhir: parsed["Skor Akhir"],
