@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Laporan Akhir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">
+                Laporan Akhir Keputusan (TOPSIS & BORDA)
+            </h1>
+            <div class="flex gap-3">
+                <button id="btnExportExcel"
+                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file-text" class="w-4 h-4"></i>
+                    <span>Export Excel</span>
+                </button>
+                <button id="btnExportPDF"
+                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                    <i data-feather="file" class="w-4 h-4"></i>
+                    <span>Export PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Decision Maker</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2 text-sm">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">Decision Maker</th>
+                            <th class="px-4 py-2">Jumlah Alternatif</th>
+                            <th class="px-4 py-2">Jumlah Kriteria</th>
+                            <th class="px-4 py-2">Tanggal Penilaian</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">DM1</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">8</td>
+                            <td class="px-4 py-3 rounded-r-lg">04 November 2025</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">DM2</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">8</td>
+                            <td class="px-4 py-3 rounded-r-lg">04 November 2025</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">DM3</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">8</td>
+                            <td class="px-4 py-3 rounded-r-lg">04 November 2025</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">DM4</td>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">8</td>
+                            <td class="px-4 py-3 rounded-r-lg">04 November 2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Ringkasan Hasil Individu (Ranking TOPSIS per DM)</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2 text-sm">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">Alternatif</th>
+                            <th class="px-4 py-2 text-center">DM1</th>
+                            <th class="px-4 py-2 text-center">DM2</th>
+                            <th class="px-4 py-2 text-center">DM3</th>
+                            <th class="px-4 py-2 text-center">DM4</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Resto Nusantara</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center rounded-r-lg">1</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Warung Sederhana</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center rounded-r-lg">3</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Cafe Kopi Kita</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center rounded-r-lg">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Rekapitulasi Poin BORDA dari Seluruh Decision Maker
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2 text-sm">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">Alternatif</th>
+                            <th class="px-4 py-2 text-center">DM1</th>
+                            <th class="px-4 py-2 text-center">DM2</th>
+                            <th class="px-4 py-2 text-center">DM3</th>
+                            <th class="px-4 py-2 text-center">DM4</th>
+                            <th class="px-4 py-2 text-center">Total Poin</th>
+                            <th class="px-4 py-2 text-center">Peringkat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <tr class="bg-primary-light hover:bg-blue-100 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Resto Nusantara</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center font-bold text-primary">11</td>
+                            <td class="px-4 py-3 text-center font-bold text-primary rounded-r-lg">1</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Warung Sederhana</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center">3</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center font-semibold">8</td>
+                            <td class="px-4 py-3 text-center font-semibold rounded-r-lg">2</td>
+                        </tr>
+                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                            <td class="px-4 py-3 font-medium rounded-l-lg">Cafe Kopi Kita</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center">1</td>
+                            <td class="px-4 py-3 text-center">2</td>
+                            <td class="px-4 py-3 text-center font-semibold">5</td>
+                            <td class="px-4 py-3 text-center font-semibold rounded-r-lg">3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi Hasil Akhir BORDA</h2>
+            <div class="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+
+            </div>
+            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                Visualisasi ini akan menampilkan total poin <strong>BORDA</strong> dari setiap alternatif yang dihitung
+                sebagai hasil
+                akhir kelompok.
+            </p>
+        </section>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Kesimpulan</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Berdasarkan hasil penggabungan metode <strong>TOPSIS</strong> dan <strong>BORDA</strong> dari keempat
+                Decision Maker,
+                alternatif terbaik yang dipilih sebagai destinasi kuliner unggulan adalah
+                <span class="font-bold text-primary">Resto Nusantara</span>.
+                Alternatif ini memperoleh nilai preferensi tertinggi dan total poin BORDA sebesar 11, menjadikannya
+                sebagai keputusan akhir kelompok dalam sistem GDSS.
+            </p>
+            <p class="text-xs text-gray-500 mt-4">Laporan dihasilkan secara otomatis oleh sistem GDSS pada 04 November
+                2025.</p>
+        </section>
+
+        <div class="h-10"></div>
+    </main>
+
+    <script>
+        feather.replace();
+
+        const btnExportExcel = document.getElementById('btnExportExcel');
+        const btnExportPDF = document.getElementById('btnExportPDF');
+
+        btnExportExcel.addEventListener('click', () => {
+            showAlert('Data **Laporan Akhir** berhasil diexport ke Excel.', 'success');
+        });
+
+        btnExportPDF.addEventListener('click', () => {
+            showAlert('Data **Laporan Akhir** berhasil diexport ke PDF.', 'success');
+        });
+    </script>
+</body>
+
+</html>

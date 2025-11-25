@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Form Penilaian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 min-h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Form Penilaian</h1>
+            <button id="btnKirimPenilaian"
+                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="save" class="w-4 h-4"></i>
+                <span>Kirim Penilaian</span>
+            </button>
+        </header>
+
+        <form id="formPenilaian">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Identitas Penilai</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="decisionMaker" class="block text-gray-700 font-medium text-sm mb-1">Nama Penilai
+                            (Decision Maker)</label>
+                        <select id="decisionMaker"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                            required>
+                            <option value="">Pilih DM</option>
+                            <option value="DM1">DM1</option>
+                            <option value="DM2">DM2</option>
+                            <option value="DM3">DM3</option>
+                            <option value="DM4">DM4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tanggalPenilaian" class="block text-gray-700 font-medium text-sm mb-1">Tanggal
+                            Penilaian</label>
+                        <input type="date" id="tanggalPenilaian"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                            required>
+                    </div>
+                    <div>
+                        <label for="keterangan" class="block text-gray-700 font-medium text-sm mb-1">Keterangan</label>
+                        <input type="text" id="keterangan" placeholder="(opsional)"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Isi Penilaian Alternatif</h2>
+
+                <div class="mb-6">
+                    <label for="alternatif" class="block text-gray-700 font-medium text-sm mb-1">Pilih
+                        Alternatif</label>
+                    <select id="alternatif"
+                        class="w-full max-w-sm px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                        required>
+                        <option value="">Pilih Alternatif</option>
+                        <option value="A1">Sop Saudara Irian</option>
+                        <option value="A2">Coto Maros</option>
+                        <option value="A3">Pallubasa Serigala</option>
+                        <option value="A4">Mie Titi Panakkukang</option>
+                        <option value="A5">Restoran Ulu Juku</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-4 py-2">Kode</th>
+                                <th class="px-4 py-2">Nama Kriteria</th>
+                                <th class="px-4 py-2">Tipe</th>
+                                <th class="px-4 py-2">Bobot</th>
+                                <th class="px-4 py-2 w-1/4">Nilai (Pilih)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="penilaianTableBody" class="text-gray-700 text-sm">
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C1</td>
+                                <td class="px-4 py-3">Biaya Transportasi</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Cost</span>
+                                </td>
+                                <td class="px-4 py-3">3.50</td>
+                                <td class="px-4 py-3">
+                                    <select name="C1" data-kriteria="C1"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Sangat Murah</option>
+                                        <option value="2">2 - Murah</option>
+                                        <option value="3">3 - Cukup Murah</option>
+                                        <option value="4">4 - Mahal</option>
+                                        <option value="5">5 - Sangat Mahal</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C2</td>
+                                <td class="px-4 py-3">Harga Makanan</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Cost</span>
+                                </td>
+                                <td class="px-4 py-3">4.50</td>
+                                <td class="px-4 py-3">
+                                    <select name="C2" data-kriteria="C2"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Sangat Murah</option>
+                                        <option value="2">2 - Murah</option>
+                                        <option value="3">3 - Cukup Murah</option>
+                                        <option value="4">4 - Mahal</option>
+                                        <option value="5">5 - Sangat Mahal</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C3</td>
+                                <td class="px-4 py-3">Fasilitas Umum</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">3.00</td>
+                                <td class="px-4 py-3">
+                                    <select name="C3" data-kriteria="C3"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Wastafel</option>
+                                        <option value="2">2 - +Toilet</option>
+                                        <option value="3">3 - +Parkiran</option>
+                                        <option value="4">4 - +Mushola</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C4</td>
+                                <td class="px-4 py-3">Kebersihan Tempat</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">4.50</td>
+                                <td class="px-4 py-3">
+                                    <select name="C4" data-kriteria="C4"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Tidak Bersih</option>
+                                        <option value="2">2 - Kurang Bersih</option>
+                                        <option value="3">3 - Bersih</option>
+                                        <option value="4">4 - Sangat Bersih</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C5</td>
+                                <td class="px-4 py-3">Cita Rasa Kuliner</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">4.75</td>
+                                <td class="px-4 py-3">
+                                    <select name="C5" data-kriteria="C5"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Tidak Enak</option>
+                                        <option value="2">2 - Kurang Enak</option>
+                                        <option value="3">3 - Enak</option>
+                                        <option value="4">4 - Sangat Enak</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C6</td>
+                                <td class="px-4 py-3">Keramahan Pelayan</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">3.50</td>
+                                <td class="px-4 py-3">
+                                    <select name="C6" data-kriteria="C6"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Tidak Ramah</option>
+                                        <option value="2">2 - Kurang Ramah</option>
+                                        <option value="3">3 - Ramah</option>
+                                        <option value="4">4 - Sangat Ramah</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C7</td>
+                                <td class="px-4 py-3">Variasi Menu</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">3.25</td>
+                                <td class="px-4 py-3">
+                                    <select name="C7" data-kriteria="C7"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Sedikit</option>
+                                        <option value="2">2 - Cukup</option>
+                                        <option value="3">3 - Banyak</option>
+                                        <option value="4">4 - Sangat Banyak</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
+                                <td class="px-4 py-3 font-medium">C8</td>
+                                <td class="px-4 py-3">Waktu Operasional</td>
+                                <td class="px-4 py-3">
+                                    <span
+                                        class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Benefit</span>
+                                </td>
+                                <td class="px-4 py-3">3.00</td>
+                                <td class="px-4 py-3">
+                                    <select name="C8" data-kriteria="C8"
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                                        <option value="">Pilih Nilai</option>
+                                        <option value="1">1 - Pagi</option>
+                                        <option value="2">2 - Pagi & Siang</option>
+                                        <option value="3">3 - Pagi, Siang & Sore</option>
+                                        <option value="4">4 - Pagi, Siang, Sore & Malam</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </form>
+
+        <div class="h-32"></div>
+    </main>
+
+    <script>
+        feather.replace();
+
+        const btnKirim = document.getElementById("btnKirimPenilaian");
+        const formPenilaian = document.getElementById("formPenilaian");
+
+        function validateForm() {
+            const dm = document.getElementById('decisionMaker').value;
+            const tgl = document.getElementById('tanggalPenilaian').value;
+            const alt = document.getElementById('alternatif').value;
+            const penilaianSelects = document.querySelectorAll('#penilaianTableBody select');
+
+            if (!dm || !tgl || !alt) {
+                return false;
+            }
+
+            let allRated = true;
+            penilaianSelects.forEach(select => {
+                if (select.value === "") {
+                    allRated = false;
+                }
+            });
+
+            return allRated;
+        }
+
+
+        btnKirim.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            if (validateForm()) {
+                const dm = document.getElementById('decisionMaker').value;
+                const alt = document.getElementById('alternatif').options[document.getElementById('alternatif').selectedIndex].text;
+
+                showAlert(`Penilaian untuk **${alt}** oleh **${dm}** berhasil disimpan.`, 'success');
+
+            } else {
+                showAlert('Gagal mengirim penilaian. Mohon lengkapi semua **Informasi Penilai** dan **Nilai Kriteria** sebelum mengirim.', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

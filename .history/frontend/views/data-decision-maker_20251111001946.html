@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Data Decision Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <!-- Sidebar (Desain Asli Tidak Diubah) -->
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Data Decision Maker</h1>
+            <button id="btnTambahDM"
+                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="plus-circle" class="w-4"></i>
+                <span>Tambah DM</span>
+            </button>
+        </header>
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-2">No</th>
+                            <th class="px-4 py-2">Nama Lengkap</th>
+                            <th class="px-4 py-2">Email</th>
+                            <th class="px-4 py-2">Peran</th>
+                            <!-- Kolom "Tanggal Bergabung" dihapus agar sesuai API -->
+                            <th class="px-4 py-2 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dmTable" class="text-gray-700 text-sm">
+                        <!-- Data dinamis akan dimuat di sini -->
+                        <tr>
+                            <td colspan="5" class="text-center p-4">
+                                <span class="text-gray-500">Memuat data...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <!-- AKHIR KONTEN UTAMA -->
+
+    <!-- Modal Tambah/Edit -->
+    <div id="modalDM" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
+            <h2 id="modalDMTitle" class="text-lg font-semibold text-gray-900 mb-4">Tambah Decision Maker</h2>
+            <form id="formDM" class="space-y-4">
+                <div>
+                    <label for="namaDM" class="block text-gray-700 font-medium text-sm mb-1">Nama Lengkap</label>
+                    <input type="text" id="namaDM" name="namaDM"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan nama lengkap" required>
+                </div>
+                <div>
+                    <label for="emailDM" class="block text-gray-700 font-medium text-sm mb-1">Email</label>
+                    <input type="email" id="emailDM" name="emailDM"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan email" required>
+                </div>
+                <div>
+                    <label for="peranDM" class="block text-gray-700 font-medium text-sm mb-1">Peran</label>
+                    <select id="peranDM" name="peranDM"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        required>
+                        <option value="">Pilih peran</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Decision Maker 1">Decision Maker 1</option>
+                        <option value="Decision Maker 2">Decision Maker 2</option>
+                        <option value="Decision Maker 3">Decision Maker 3</option>
+                        <option value="Decision Maker 4">Decision Maker 4</option>
+                    </select>
+                </div>
+                <!-- Input "Tanggal Bergabung" diganti dengan "Password" agar sesuai API -->
+                <div id="passwordWrapper">
+                    <label for="passwordDM" class="block text-gray-700 font-medium text-sm mb-1">Password</label>
+                    <input type="password" id="passwordDM" name="passwordDM"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm"
+                        placeholder="Masukkan password" required>
+                </div>
+                <!-- Akhir Perubahan Form -->
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" id="btnCloseDM"
+                        class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-700 transition text-sm">Simpan</button>
+                </div>
+            </form>
+            <button id="btnCloseDMX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modalKonfirmasiHapus" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs p-6 relative">
+            <div class="flex flex-col items-center text-center">
+                <div class="p-3 bg-red-100 rounded-full mb-4">
+                    <i data-feather="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                </div>
+                <h2 class="text-lg font-semibold text-gray-900 mb-2">Konfirmasi Penghapusan</h2>
+                <p id="konfirmasiText" class="text-sm text-gray-600 mb-6">Anda yakin ingin menghapus Decision Maker
+                    <strong>[Nama DM]</strong>? Aksi ini tidak dapat dibatalkan.</p>
+            </div>
+            <div class="flex justify-center gap-3">
+                <button type="button" id="btnKonfirmasiBatal"
+                    class="flex-1 px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
+                <button type="button" id="btnKonfirmasiHapus"
+                    class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition text-sm">Ya,
+                    Hapus</button>
+            </div>
+            <button id="btnKonfirmasiX" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 p-1">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 
+        ==================================================================
+        SCRIPT DINAMIS BARU
+        Menggantikan <script> statis sebelumnya
+        ==================================================================
+    -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. OTENTIKASI & KEAMANAN ---
+            const accessToken = localStorage.getItem('accessToken');
+
+            if (!accessToken) {
+                console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
+                const headerTitle = document.querySelector('main header h1');
+                if (headerTitle) {
+                    headerTitle.textContent = 'Akses Ditolak';
+                    headerTitle.classList.add('text-red-600');
+                }
+                const mainSection = document.querySelector('main section');
+                if (mainSection) {
+                    mainSection.innerHTML = '<p class="text-red-600 text-center font-medium">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p>';
+                }
+                document.getElementById('btnTambahDM').style.display = 'none';
+                return; // Hentikan eksekusi skrip
+            }
+
+            // --- 2. DEFINISI API (Berdasarkan request.rest) ---
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api';
+            // Endpoint 'user' untuk GET all, POST, dan PUT
+            const USER_URL = `${API_BASE_URL}/user`; 
+            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+
+            // --- 3. REFERENSI ELEMEN UI ---
+            const tableBody = document.getElementById("dmTable");
+            const btnTambah = document.getElementById("btnTambahDM");
+            
+            // Modal Tambah/Edit
+            const modal = document.getElementById("modalDM");
+            const modalTitle = document.getElementById("modalDMTitle");
+            const btnClose = document.getElementById("btnCloseDM");
+            const btnCloseX = document.getElementById("btnCloseDMX");
+            const form = document.getElementById("formDM");
+            const namaInput = document.getElementById("namaDM");
+            const emailInput = document.getElementById("emailDM");
+            const peranInput = document.getElementById("peranDM");
+            const passwordWrapper = document.getElementById("passwordWrapper");
+            const passwordInput = document.getElementById("passwordDM");
+
+            // Modal Konfirmasi Hapus
+            const modalKonfirmasi = document.getElementById("modalKonfirmasiHapus");
+            const konfirmasiText = document.getElementById("konfirmasiText");
+            const btnKonfirmasiHapus = document.getElementById("btnKonfirmasiHapus");
+            const btnKonfirmasiBatal = document.getElementById("btnKonfirmasiBatal");
+            const btnKonfirmasiX = document.getElementById("btnKonfirmasiX");
+            
+            // Tombol Logout
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            
+            // --- 4. STATE APLIKASI ---
+            let editingId = null;  // Menyimpan ID user yang sedang diedit
+            let idToDelete = null; // Menyimpan ID user yang akan dihapus
+
+            // --- 5. FUNGSI HELPER (Fetch, Logout) ---
+
+            /**
+             * Helper serbaguna untuk fetch request dengan token
+             */
+            async function fetchWithToken(url, options = {}) {
+                const headers = {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                };
+                const config = {
+                    ...options,
+                    headers: { ...headers, ...options.headers }
+                };
+                if (config.body && typeof config.body !== 'string') {
+                    config.body = JSON.stringify(config.body);
+                }
+
+                const response = await fetch(url, config);
+
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Unauthorized');
+                }
+                
+                // DELETE tidak selalu mengembalikan body
+                if (response.status === 204) {
+                    return null; 
+                }
+
+                // Coba parse JSON, tapi tangani jika body kosong (misal dari DELETE 200 OK)
+                let data;
+                try {
+                     data = await response.json();
+                } catch (e) {
+                    if (!response.ok) {
+                         throw new Error(`API Error: ${response.statusText}`);
+                    }
+                    return null; // Respons OK tapi body kosong
+                }
+
+                if (!response.ok) {
+                    const errorMessage = data.message || data.error || `API Error: ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+
+                return data;
+            }
+
+            /**
+             * Membersihkan state lokal dan redirect ke halaman login
+             */
+            function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + '/index.html';
+            }
+
+            /**
+             * Menangani klik tombol logout
+             */
+            async function handleLogout(e) {
+                e.preventDefault();
+                try {
+                    await fetch(LOGOUT_URL, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                } catch (error) {
+                    console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
+                } finally {
+                    forceLogout();
+                }
+            }
+
+            // --- 6. FUNGSI INTI CRUD ---
+
+            /**
+             * Mengambil semua data user dari API dan merendernya
+             */
+            async function loadDecisionMakers() {
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Memuat data...</td></tr>`;
+                try {
+                    // API 'GET .../api/user/'
+                    // Asumsi API mengembalikan array objek: [ { id_user: '...', nama: '...', email: '...', peran: '...' }, ... ]
+                    const data = await fetchWithToken(USER_URL, { method: 'GET' });
+
+                    if (!Array.isArray(data)) {
+                         throw new Error("Format data tidak terduga dari server.");
+                    }
+
+                    renderTable(data);
+
+                } catch (error) {
+                    console.error('Gagal memuat decision maker:', error);
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data: ${error.message}</td></tr>`;
+                    if (error.message === 'Unauthorized') {
+                        forceLogout();
+                    }
+                }
+            }
+
+            /**
+             * Merender data ke dalam tabel HTML
+             */
+            function renderTable(data) {
+                tableBody.innerHTML = ""; // Kosongkan tabel
+                
+                if (data.length === 0) {
+                     tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data decision maker.</td></tr>`;
+                     return;
+                }
+                
+                data.forEach((item, index) => {
+                    const row = document.createElement("tr");
+                    row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
+                    
+                    const peranClass = item.peran === 'Admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+                    
+                    row.innerHTML = `
+                        <td class="px-4 py-3 rounded-l-lg">${index + 1}</td>
+                        <td class="px-4 py-3 font-medium">${item.nama}</td>
+                        <td class="px-4 py-3">${item.email}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${peranClass}">
+                                ${item.peran}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 flex items-center justify-center gap-3 rounded-r-lg">
+                            <button class="editBtn p-1.5 text-blue-600 hover:text-blue-800 rounded-md transition" title="Edit" 
+                                data-id="${item.id_user}" 
+                                data-nama="${item.nama}" 
+                                data-email="${item.email}" 
+                                data-peran="${item.peran}">
+                                <i data-feather="edit" class="w-4 h-4" style="pointer-events: none;"></i>
+                            </button>
+                            <button class="deleteBtn p-1.5 text-red-500 hover:text-red-700 rounded-md transition" title="Delete" 
+                                data-id="${item.id_user}" 
+                                data-nama="${item.nama}">
+                                <i data-feather="trash-2" class="w-4 h-4" style="pointer-events: none;"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                feather.replace(); // Perbarui ikon
+                attachRowEvents(); // Pasang event listener ke tombol baru
+            }
+
+            /**
+             * Menambahkan event listener ke tombol Edit & Delete
+             */
+            function attachRowEvents() {
+                document.querySelectorAll(".deleteBtn").forEach(btn => {
+                    btn.onclick = () => {
+                        const id = btn.dataset.id;
+                        const nama = btn.dataset.nama;
+                        showDeleteConfirm(id, nama);
+                    };
+                });
+
+                document.querySelectorAll(".editBtn").forEach(btn => {
+                    btn.onclick = () => {
+                        editingId = btn.dataset.id;
+                        modalTitle.textContent = "Edit Decision Maker";
+                        namaInput.value = btn.dataset.nama;
+                        emailInput.value = btn.dataset.email;
+                        peranInput.value = btn.dataset.peran;
+                        
+                        emailInput.readOnly = true; // Email tidak boleh diedit (biasanya)
+                        passwordWrapper.style.display = 'none'; // Sembunyikan password saat edit
+                        passwordInput.required = false; // Hapus validasi 'required'
+                        
+                        openModal(modal);
+                    };
+                });
+            }
+
+            /**
+             * Menangani submit form (Tambah atau Edit)
+             */
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                const nama = namaInput.value.trim();
+                const email = emailInput.value.trim();
+                const peran = peranInput.value;
+                const password = passwordInput.value;
+
+                let alertMessage = "";
+                let method, body;
+
+                if (editingId) {
+                    // Mode Edit (PUT)
+                    if (!nama || !email || !peran) {
+                         showAlert('Gagal menyimpan. Mohon lengkapi nama, email, dan peran.', 'error');
+                         return;
+                    }
+                    method = 'PUT';
+                    // Sesuai API: id_user, nama, email, peran
+                    body = { id_user: editingId, nama, email, peran };
+                    alertMessage = `Data <strong>${nama}</strong> berhasil diperbarui.`;
+                } else {
+                    // Mode Tambah (POST)
+                    if (!nama || !email || !peran || !password) {
+                        showAlert('Gagal menyimpan. Mohon lengkapi semua data (termasuk password).', 'error');
+                        return;
+                    }
+                    method = 'POST';
+                    // Sesuai API: nama, email, password, peran
+                    body = { nama, email, password, peran };
+                    alertMessage = `Decision Maker <strong>${nama}</strong> berhasil ditambahkan.`;
+                }
+
+                try {
+                    await fetchWithToken(USER_URL, { method, body });
+                    closeModal(modal);
+                    showAlert(alertMessage, 'success');
+                    await loadDecisionMakers();
+                } catch (error) {
+                    console.error('Gagal menyimpan DM:', error);
+                    showAlert(`Gagal menyimpan: ${error.message}`, 'error');
+                }
+            }
+            
+            /**
+             * Menangani konfirmasi hapus
+             */
+            async function handleConfirmDelete() {
+                if (!idToDelete) return;
+
+                const submitButton = btnKonfirmasiHapus;
+                const originalText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = 'Menghapus...';
+
+                try {
+                    const url = `${USER_URL}?id_user=${idToDelete}`;
+                    
+                    await fetchWithToken(url, { method: 'DELETE' });
+                    
+                    showAlert('Data berhasil dihapus.', 'success');
+                    closeModal(modalKonfirmasi);
+                    await loadDecisionMakers();
+                    
+                } catch (error) {
+                    console.error('Gagal menghapus DM:', error);
+                    showAlert(`Gagal menghapus: ${error.message}`, 'error');
+                } finally {
+                    idToDelete = null;
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                }
+            }
+            function openModal(modalElement) {
+                modalElement.classList.remove("hidden");
+                modalElement.classList.add("flex");
+            }
+            
+            function closeModal(modalElement) {
+                modalElement.classList.add("hidden");
+                modalElement.classList.remove("flex");
+                
+                if (modalElement === modal) {
+                    form.reset();
+                    editingId = null;
+                }
+                if (modalElement === modalKonfirmasi) {
+                    idToDelete = null;
+                }
+            }
+
+            function showDeleteConfirm(id, nama) {
+                const messageText = `Anda yakin ingin menghapus Decision Maker <strong>${nama}</strong>? Aksi ini tidak dapat dibatalkan.`;
+                konfirmasiText.innerHTML = messageText;
+                idToDelete = id;
+                openModal(modalKonfirmasi);
+            }
+            btnTambah.addEventListener("click", () => {
+                editingId = null;
+                modalTitle.textContent = "Tambah Decision Maker";
+                form.reset();
+                
+                emailInput.readOnly = false;
+                passwordWrapper.style.display = 'block';
+                passwordInput.required = true;
+                
+                openModal(modal);
+            });
+            
+            btnClose.addEventListener("click", () => closeModal(modal));
+            btnCloseX.addEventListener("click", () => closeModal(modal));
+            btnKonfirmasiBatal.addEventListener("click", () => closeModal(modalKonfirmasi));
+            btnKonfirmasiX.addEventListener("click", () => closeModal(modalKonfirmasi));
+            form.addEventListener("submit", handleFormSubmit);
+            btnKonfirmasiHapus.addEventListener("click", handleConfirmDelete);
+            logoutButton.addEventListener('click', handleLogout);
+            loadDecisionMakers();
+
+        });
+    </script>
+</body>
+
+</html>

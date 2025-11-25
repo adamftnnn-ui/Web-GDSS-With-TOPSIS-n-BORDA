@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Form Penilaian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="alert.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 min-h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Form Penilaian</h1>
+            <button id="btnKirimPenilaian"
+                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="save" class="w-4 h-4"></i>
+                <span>Kirim Penilaian</span>
+            </button>
+        </header>
+
+        <form id="formPenilaian">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Identitas Penilai</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="decisionMaker" class="block text-gray-700 font-medium text-sm mb-1">Decision
+                            Maker</label>
+                        <input type="text" id="decisionMaker"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-sm text-gray-700 cursor-not-allowed"
+                            readonly value="Memuat Peran...">
+                    </div>
+                    <div>
+                        <label for="tanggalPenilaian" class="block text-gray-700 font-medium text-sm mb-1">Tanggal
+                            Penilaian</label>
+                        <input type="date" id="tanggalPenilaian"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                            required>
+                    </div>
+                    <div>
+                        <label for="keterangan" class="block text-gray-700 font-medium text-sm mb-1">Keterangan</label>
+                        <input type="text" id="keterangan" placeholder="(opsional)"
+                            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700">
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Isi Penilaian Alternatif</h2>
+
+                <div class="mb-6">
+                    <label for="alternatif" class="block text-gray-700 font-medium text-sm mb-1">Pilih
+                        Alternatif</label>
+                    <select id="alternatif"
+                        class="w-full max-w-sm px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                        required>
+                        <option value="">Memuat Alternatif...</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead class="text-gray-600 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="px-4 py-2">Kode</th>
+                                <th class="px-4 py-2">Nama Kriteria</th>
+                                <th class="px-4 py-2">Tipe</th>
+                                <th class="px-4 py-2">Bobot</th>
+                                <th class="px-4 py-2 w-1/4">Nilai (Pilih)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="penilaianTableBody" class="text-gray-700 text-sm">
+                            <tr>
+                                <td colspan="5" class="text-center p-4 text-gray-500">Memuat kriteria...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </form>
+
+        <div class="h-32"></div>
+    </main>
+
+    <script>
+        feather.replace();
+    </script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const dmInput = document.getElementById('decisionMaker');
+
+            // --- KONFIGURASI API (WAJIB https://web-gdss.vercel.app/api) ---
+            const API_BASE_URL = 'https://web-gdss.vercel.app/api'; 
+            const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
+            const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
+            const PENILAIAN_URL = `${API_BASE_URL}/penilaian`;
+            const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
+            const INDIVIDU_URL = `${API_BASE_URL}/penilaian/individu`; 
+
+            const btnKirim = document.getElementById("btnKirimPenilaian");
+            const formPenilaian = document.getElementById("formPenilaian");
+            const alternatifSelect = document.getElementById('alternatif');
+            const tanggalInput = document.getElementById('tanggalPenilaian');
+            const keteranganInput = document.getElementById('keterangan');
+            const tableBody = document.getElementById('penilaianTableBody');
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+
+            // --- HELPER FUNCTIONS ---
+
+            function parseJwt(token) {
+                if (!token) return null;
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            }
+
+            function loadUserInfo() {
+                if (!accessToken) {
+                    dmInput.value = 'Tidak diketahui';
+                    return;
+                }
+                try {
+                    const userData = parseJwt(accessToken);
+                    dmInput.value = userData.peran || 'Tidak diketahui';
+                    dmInput.dataset.id_user = userData.id_user || ''; 
+                } catch (e) {
+                    console.error('Gagal mengambil data user dari token:', e);
+                    dmInput.value = 'Tidak diketahui';
+                }
+            }
+
+            if (!accessToken) {
+                console.warn("Tidak ada accessToken.");
+                const headerTitle = document.querySelector('main header h1');
+                if (headerTitle) {
+                    headerTitle.textContent = 'Akses Ditolak';
+                    headerTitle.classList.add('text-red-600');
+                }
+                const mainSection = document.querySelector('main');
+                if (mainSection) {
+                    mainSection.innerHTML = '<p class="text-red-600 text-center font-medium p-8">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p>';
+                }
+                return;
+            }
+
+            async function fetchWithToken(url, options = {}) {
+                const headers = {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                };
+                const config = {
+                    ...options,
+                    headers: { ...headers, ...options.headers }
+                };
+                if (config.body && typeof config.body !== 'string') {
+                    config.body = JSON.stringify(config.body);
+                }
+
+                const response = await fetch(url, config);
+
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Unauthorized');
+                }
+
+                const text = await response.text(); 
+                if (!text) return null; 
+
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    // Jika response bukan JSON tapi ada isinya (misal error 500 html), lempar error
+                    console.error("Response bukan JSON:", text);
+                    throw new Error("Response server tidak valid");
+                }
+            }
+
+            function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + '/index.html';
+            }
+            
+            async function handleLogout(e) {
+                e.preventDefault();
+                try {
+                    await fetch(LOGOUT_URL, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                } catch (error) {
+                    console.warn("Logout lokal.", error);
+                } finally {
+                    forceLogout();
+                }
+            }
+
+            function populateSelect(selectElement, data, valueKey, textKey, defaultOptionText) {
+                selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
+                if(Array.isArray(data)){
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        // Perhatikan disini: kita pastikan key yang diambil benar
+                        // Untuk Alternatif: id_alternatif (bukan _id)
+                        // Cek dulu struktur data dari API Alternatif
+                        const val = item[valueKey] || item._id; // Fallback ke _id jika valueKey undefined
+                        
+                        option.value = val;
+                        option.textContent = item[textKey];
+                        selectElement.appendChild(option);
+                    });
+                }
+            }
+
+            function generateNilaiOptions(nilaiRaw) {
+                if (typeof nilaiRaw === 'string') {
+                    const items = nilaiRaw.includes(';') ? nilaiRaw.split(';') : nilaiRaw.split(',');
+                    return `<option value="">Pilih Nilai</option>` + items.map(item => {
+                        const parts = item.split('-');
+                        if (parts.length >= 2) {
+                            const key = parts[0].trim();
+                            const label = parts.slice(1).join('-').trim();
+                            return `<option value="${key}">${key} - ${label}</option>`;
+                        }
+                        return '';
+                    }).join('');
+                } else if (Array.isArray(nilaiRaw)) {
+                    let optionsHTML = '<option value="">Pilih Nilai</option>';
+                    nilaiRaw.forEach(n => {
+                         optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
+                    });
+                    return optionsHTML;
+                }
+                return '<option value="">Nilai tidak valid</option>';
+            }
+
+            function renderKriteriaTable(kriteriaData) {
+                tableBody.innerHTML = "";
+                if (!kriteriaData || kriteriaData.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada data kriteria.</td></tr>`;
+                    return;
+                }
+
+                kriteriaData.forEach((kriteria, index) => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-gray-50 hover:bg-blue-50 transition-all';
+                    const tipeClass = kriteria.tipe === 'Cost' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+                    const tipeText = kriteria.tipe || 'N/A';
+                    const bobotText = typeof kriteria.bobot === 'number' ? kriteria.bobot.toFixed(2) : 'N/A';
+                    const selectOptions = generateNilaiOptions(kriteria.nilai);
+                    const kriteriaId = kriteria.id_kriteria || kriteria._id;
+
+                    row.innerHTML = `
+                        <td class="px-4 py-3 font-medium">C${index + 1}</td>
+                        <td class="px-4 py-3">${kriteria.nama}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full ${tipeClass}">${tipeText}</span>
+                        </td>
+                        <td class="px-4 py-3">${bobotText}</td>
+                        <td class="px-4 py-3">
+                            <select name="kriteria_${kriteriaId}" 
+                                    data-id_kriteria="${kriteriaId}"
+                                    class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-sm text-gray-700"
+                                    required>
+                                ${selectOptions}
+                            </select>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                feather.replace();
+            }
+            async function loadInitialData() {
+                try {
+                    const [alternatif, kriteria] = await Promise.all([
+                        fetchWithToken(ALTERNATIF_URL),
+                        fetchWithToken(KRITERIA_URL)
+                    ]);
+                    
+                    console.log("Data Alternatif Loaded:", alternatif);
+                    console.log("Data Kriteria Loaded:", kriteria);
+
+                    populateSelect(alternatifSelect, alternatif, 'id_alternatif', 'nama', 'Pilih Alternatif');
+                    renderKriteriaTable(kriteria);
+
+                } catch (error) {
+                    console.error('Gagal memuat data awal:', error);
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data: ${error.message}</td></tr>`;
+                    alternatifSelect.innerHTML = '<option value="">Gagal muat Alternatif</option>';
+                    if (error.message === 'Unauthorized') forceLogout();
+                }
+            }
+            async function handleAlternatifChange(e) {
+                const id_alternatif = e.target.value;
+                const id_user = dmInput.dataset.id_user;
+
+                console.log("Alternatif Selected Value:", id_alternatif);
+
+                tanggalInput.value = "";
+                keteranganInput.value = "";
+                const allSelects = document.querySelectorAll('#penilaianTableBody select');
+                allSelects.forEach(s => s.value = "");
+
+                if (!id_alternatif || id_alternatif === "undefined" || !id_user) {
+                    console.warn("ID Alternatif atau User tidak valid:", id_alternatif, id_user);
+                    return;
+                }
+                const url = `${INDIVIDU_URL}?id_user=${id_user}&id_alternatif=${id_alternatif}`;
+                console.log("Mencari data penilaian:", url);
+
+                try {
+                    const data = await fetchWithToken(url);
+                    
+                    if (data && !data.message) {
+                        console.log("Data ditemukan, mengisi form...", data);
+
+                        if (data.tanggal_penilaian) {
+                            const dateObj = new Date(data.tanggal_penilaian);
+                            const formattedDate = dateObj.toISOString().split('T')[0];
+                            tanggalInput.value = formattedDate;
+                        }
+                        if (data.keterangan) {
+                            keteranganInput.value = data.keterangan;
+                        }
+                        if (Array.isArray(data.nilai)) {
+                            data.nilai.forEach(item => {
+                                const dropdown = document.querySelector(`select[data-id_kriteria="${item.key}"]`);
+                                if (dropdown) {
+                                    dropdown.value = item.value;
+                                } else {
+                                    console.warn(`Dropdown untuk kriteria ID ${item.key} tidak ditemukan.`);
+                                }
+                            });
+                        }
+
+                        showAlert('Data penilaian sebelumnya berhasil dimuat.', 'success');
+                    } else {
+                        console.log("Belum ada data penilaian untuk kombinasi ini (atau API mengembalikan pesan error).");
+                    }
+
+                } catch (error) {
+                    console.warn("Info: Tidak ada data penilaian tersimpan atau gagal fetch.", error.message);
+                }
+            }
+
+            async function handleSubmitPenilaian(e) {
+                e.preventDefault();
+                const id_user = dmInput.dataset.id_user;
+                const id_alternatif = alternatifSelect.value;
+                const rawDate = tanggalInput.value;
+                const keterangan = keteranganInput.value.trim();
+                const penilaianSelects = document.querySelectorAll('#penilaianTableBody select');
+
+                if (!id_user || !id_alternatif || !rawDate) {
+                    showAlert('Gagal mengirim. Mohon lengkapi **Tanggal** dan **Alternatif**.', 'error');
+                    return;
+                }
+
+                let allRated = true;
+                penilaianSelects.forEach(select => {
+                    if (select.value === "") allRated = false;
+                });
+
+                if (!allRated) {
+                    showAlert('Gagal mengirim. Mohon isi **semua nilai kriteria**.', 'error');
+                    return;
+                }
+
+                const [year, month, day] = rawDate.split('-');
+                const tanggal_penilaian = `${month}/${day}/${year}`;
+
+                btnKirim.disabled = true;
+                btnKirim.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>&nbsp; Mengirim...';
+                feather.replace();
+
+                const nilaiPairs = [];
+                penilaianSelects.forEach(select => {
+                    nilaiPairs.push(`${select.dataset.id_kriteria} - ${select.value}`);
+                });
+                const nilaiString = nilaiPairs.join(';');
+
+                const payload = {
+                    id_user: id_user,
+                    tanggal_penilaian: tanggal_penilaian,
+                    id_alternatif: id_alternatif,
+                    nilai: nilaiString,
+                    keterangan: keterangan
+                };
+
+                console.log("Mengirim payload penilaian:", payload);
+
+                try {
+                    const result = await fetchWithToken(PENILAIAN_URL, {
+                        method: 'POST',
+                        body: payload
+                    });
+
+                    const altText = alternatifSelect.options[alternatifSelect.selectedIndex].text;
+                    showAlert(`Penilaian untuk <strong>${altText}</strong> berhasil disimpan.`, 'success');
+                    
+                } catch (error) {
+                    console.error('Gagal mengirim penilaian:', error);
+                    showAlert(`Gagal mengirim: ${error.message}`, 'error');
+                } finally {
+                    btnKirim.disabled = false;
+                    btnKirim.innerHTML = '<i data-feather="save" class="w-4 h-4"></i> <span>Kirim Penilaian</span>';
+                    feather.replace();
+                }
+            }
+            btnKirim.addEventListener("click", handleSubmitPenilaian);
+            logoutButton.addEventListener('click', handleLogout);
+            alternatifSelect.addEventListener('change', handleAlternatifChange);
+            
+            loadUserInfo();
+            loadInitialData();
+        });
+    </script>
+</body>
+
+</html>
