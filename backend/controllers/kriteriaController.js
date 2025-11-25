@@ -102,7 +102,7 @@ const updateKriteria = async (req, res) => {
   const { id_kriteria, nama, tipe, bobot, nilai } = req.body;
   const clearedComma = nilai.split(";").map((item) => item.trim());
   const nilaiKriteria = clearedComma.map((item) => {
-    const [key, value] = item.split(" - ");
+    const [key, value] = item.split("-");
     return {
       key: key.trim(),
       value: value.trim(),
