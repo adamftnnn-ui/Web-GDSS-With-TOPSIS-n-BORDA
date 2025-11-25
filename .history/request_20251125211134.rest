@@ -117,7 +117,7 @@ Content-Type: application/json
 }
 
 ### Get All Kriteria
-GET http://web-gdss.vercel.app/api/kriteria
+GET http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
