@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh 
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwiZW1haWwiOiJhcmhhbUBnbWFpbC5jb20iLCJpYXQiOjE3NjM0NTAwMDIsImV4cCI6MTc2MzQ1MzYwMn0.xdoOxtMtW6MUTXQ25PPNhmpefQw85uYSpG-MsMfBsMs
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA0Nzc4OSwiZXhwIjoxNzY0MDUxMzg5fQ.sCiSy37Ck_7oWvH9XFtWYarg1LbyPnYJytAg87dMkCA
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -146,16 +146,15 @@ Content-Type: application/json
 }
 
 ### Update Kriteria
-PUT https://web-gdss.vercel.app/api/kriteria
+PUT http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_kriteria":"69119912b6e1f71ce9ff893f",
-    "id_user":"69109c6a6a0c7a5786f4c696",
-    "nama":"Biaya Transportasi",
+    "id_kriteria":"69121798082657540b47d52d",
+    "nama":"Harga Makanan",
     "tipe":"Cost",
-    "bobot":3.50,
+    "bobot":4.50,
     "nilai":"1 - Sangat Murah;2 - Murah;3 - Cukup Murah;4 - Mahal;5 - Sangat Mahal"
 }
 

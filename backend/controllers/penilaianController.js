@@ -26,7 +26,7 @@ const getPenilaianByIdUserAndAlternatif = async (req, res) => {
     const response = await Penilaian.findOne({
       id_user: id_user,
       id_alternatif: id_alternatif,
-  }).populate('nilai.id_kriteria');
+    }).populate("nilai.id_kriteria");
 
     res.status(200).json(response);
   } catch (e) {
@@ -58,17 +58,20 @@ const addPenilaian = async (req, res) => {
   const formattedDate = `${tahun}-${bulan}-${hari}`;
 
   try {
-    const existingPenilaian=await Penilaian.findOne({id_user:id_user,id_alternatif:id_alternatif})
+    const existingPenilaian = await Penilaian.findOne({
+      id_user: id_user,
+      id_alternatif: id_alternatif,
+    });
 
-    if(existingPenilaian){
-      existingPenilaian.tanggal_penilaian=formattedDate,
-      existingPenilaian.keterangan=keterangan
-      existingPenilaian.nilai=nilaiPenilaian
+    if (existingPenilaian) {
+      (existingPenilaian.tanggal_penilaian = formattedDate),
+        (existingPenilaian.keterangan = keterangan);
+      existingPenilaian.nilai = nilaiPenilaian;
 
-      await existingPenilaian.save()
+      await existingPenilaian.save();
 
       return res.sendStatus(200);
-    }else{
+    } else {
       await Penilaian.create({
         id_user: id_user,
         tanggal_penilaian: formattedDate,
@@ -79,6 +82,8 @@ const addPenilaian = async (req, res) => {
       });
       return res.sendStatus(201);
     }
+
+    const response = await Topsis.findByIdAndDelete({ id_user: id_user });
   } catch (e) {
     res.status(500).json({
       message: "Error dalam memasukkan data penilaian ke database: ",
@@ -107,11 +112,12 @@ const perhitunganTopsis = async (req, res) => {
   const response = await Topsis.findOne({ id_user: id_user });
 
   if (response) {
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } else {
     // Log data alternatif dan kriteria sebelum diproses
     const alternatifGet = await Alternatif.find({}, { nama: 1, _id: 0 });
-    const kriteriaGet = await Kriteria.find({},
+    const kriteriaGet = await Kriteria.find(
+      {},
       { nama: 1, tipe: 1, bobot: 1, _id: 0 }
     );
     const penilaianGet = await Penilaian.find({ id_user: id_user });
@@ -149,7 +155,9 @@ const perhitunganTopsis = async (req, res) => {
 
     python.on("close", async (code) => {
       if (code !== 0) {
-        return res.status(500).json({ message: `Python access failed ${code}` });
+        return res
+          .status(500)
+          .json({ message: `Python access failed ${code}` });
       }
 
       try {
@@ -166,6 +174,8 @@ const perhitunganTopsis = async (req, res) => {
           peringkat: parsed["Peringkat"],
           alternatif_terbaik: parsed["Alternatif Terbaik"],
         });
+
+        const borda = await Borda.deleteMany({});
 
         res.status(200).json({
           matriks_keputusan_ternormalisasi:
@@ -260,20 +270,25 @@ const getInfoDecisionMakerLaporan = async (req, res) => {
   try {
     const dm = await User.find({}, { peran: 1 });
 
-    let data = await Promise.all(dm
-      .filter((item) => item.peran != "Admin")
-      .map(async (item) => {
-        const totalAlternatif = await Alternatif.countDocuments();
-        const totalKriteria=await Kriteria.countDocuments()
-        const tanggalPenilaian=await Penilaian.findOne({id_user:item._id},{_id:0,tanggal_penilaian:1})
-        return {
-          'id_user': item._id,
-          'peran': item.peran,
-          'total_alternatif': totalAlternatif,
-          'total_kriteria':totalKriteria,
-          'tanggal_penilaian':tanggalPenilaian?.tanggal_penilaian||null
-        };
-      }))
+    let data = await Promise.all(
+      dm
+        .filter((item) => item.peran != "Admin")
+        .map(async (item) => {
+          const totalAlternatif = await Alternatif.countDocuments();
+          const totalKriteria = await Kriteria.countDocuments();
+          const tanggalPenilaian = await Penilaian.findOne(
+            { id_user: item._id },
+            { _id: 0, tanggal_penilaian: 1 }
+          );
+          return {
+            id_user: item._id,
+            peran: item.peran,
+            total_alternatif: totalAlternatif,
+            total_kriteria: totalKriteria,
+            tanggal_penilaian: tanggalPenilaian?.tanggal_penilaian || null,
+          };
+        })
+    );
 
     res.status(200).json(data);
   } catch (e) {

@@ -1,5 +1,6 @@
 const Kriteria = require("../models/kriteria");
 const Penilaian = require("../models/penilaian");
+const Topsis=require("../models/topsis")
 const mongoose = require("mongoose");
 
 const toTitleCase = (str) => {
@@ -111,6 +112,8 @@ const updateKriteria = async (req, res) => {
     existingKriteria.nilai = nilaiKriteria;
 
     await existingKriteria.save();
+
+    await Topsis.deleteMany({})
 
     res.sendStatus(200);
   } catch (e) {
