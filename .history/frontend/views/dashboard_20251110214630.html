@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside
+        class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">G
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+
+        <nav class="flex flex-col space-y-1">
+            <a href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
+                <i data-feather="home" class="w-4"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="data-decision-maker.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="user-check" class="w-4"></i>
+                <span>Data Decision Maker</span>
+            </a>
+            <a href="data-alternatif.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="folder" class="w-4"></i>
+                <span>Data Alternatif</span>
+            </a>
+            <a href="data-kriteria.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="sliders" class="w-4"></i>
+                <span>Data Kriteria</span>
+            </a>
+            <a href="form-penilaian.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="edit-3" class="w-4"></i>
+                <span>Form Penilaian</span>
+            </a>
+            <a href="hasil-individu.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="bar-chart-2" class="w-4"></i>
+                <span>Hasil Individu</span>
+            </a>
+            <a href="hasil-kelompok.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="users" class="w-4"></i>
+                <span>Hasil Kelompok</span>
+            </a>
+            <a href="laporan.html"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                <i data-feather="file-text" class="w-4"></i>
+                <span>Laporan</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                    <i data-feather="user" class="w-4"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="index.html"
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
+                    <i data-feather="log-out" class="w-4"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <span class="text-gray-600 text-sm">Welcome, <strong class="text-gray-800">Decision
+                        Maker</strong></span>
+                <img src="https://i.pravatar.cc/40" alt="avatar" class="h-8 w-8 rounded-full border border-gray-200">
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Alternatif</h2>
+                <p class="text-3xl font-bold text-gray-900 mt-1">12</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Kriteria Penilaian</h2>
+                <p class="text-3xl font-bold text-gray-900 mt-1">5</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition">
+                <h2 class="text-gray-500 text-xs font-medium uppercase tracking-wider">Decision Maker</h2>
+                <p class="text-3xl font-bold text-gray-900 mt-1">4</p>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Progress Penilaian</h2>
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary" style="width: 75%;"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                    <strong class="text-primary">75%</strong> penilaian telah selesai.
+                </p>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Ringkasan Aktivitas Terakhir</h2>
+                <ul class="divide-y divide-gray-100">
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM1 menilai Alternatif A</span>
+                        <span class="text-gray-400 text-xs">2 jam lalu</span>
+                    </li>
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM2 menyelesaikan penilaian</span>
+                        <span class="text-gray-400 text-xs">5 jam lalu</span>
+                    </li>
+                    <li class="py-2 flex items-center justify-between">
+                        <span class="text-gray-700">DM4 melihat hasil BORDA</span>
+                        <span class="text-gray-400 text-xs">Kemarin</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <script>feather.replace()</script>
+</body>
+
+</html>

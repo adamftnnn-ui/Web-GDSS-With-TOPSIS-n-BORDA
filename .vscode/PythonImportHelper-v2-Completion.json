@@ -1,0 +1,83 @@
+[
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "hitung_borda",
+        "kind": 2,
+        "importPath": "backend.services.borda",
+        "description": "backend.services.borda",
+        "peekOfCode": "def hitung_borda(data):\n    bobot={i:j for i,j in zip(range(1,len(data[0]['peringkat'])+1),range(len(data[0]['peringkat']),0,-1))}\n    alternatif=[i for i,j in data[0]['peringkat'].items()]\n    ranking_view=[{i['nama']:{j:k for j,k in i['peringkat'].items()}} for i in data]\n    ranking_on_criteria=[{i:[value for item in data for key,value in item['peringkat'].items() if key==i]} for i in alternatif ]\n    skor_akhir_on_criteria=[[i for i in obj['skor_akhir']] for obj in data ]\n    #[{'Sop Saudara Irian': [1, 2, 1, 5]}, {'Coto Maros': [2, 5, 2, 4]}, {'Coto Nusantara': [3, 4, 3, 3]}, {'Pallubasa Serigala': [4, 1, 4, 2]}, {'Mie Titi Panakkukang': [5, 3, 5, 1]}]\n    bobot_from_ranking=[[bvalue for i in value for bkey,bvalue in bobot.items() if i==bkey] for obj in ranking_on_criteria for key,value in obj.items() ]\n    skor=[[k*skor_akhir_on_criteria[j][i] for j,k in enumerate(v)] for i,v in enumerate(bobot_from_ranking)]\n    skor_akhir=[sum(i) for i in skor]",
+        "detail": "backend.services.borda",
+        "documentation": {}
+    },
+    {
+        "label": "topsis",
+        "kind": 2,
+        "importPath": "backend.services.topsis",
+        "description": "backend.services.topsis",
+        "peekOfCode": "def topsis(data):\n    alternatives = data['alternatif']\n    benefit = [x['item'] for x in data['kriteria']]\n    weights = np.array(data['bobot'])\n    X = np.array(data['nilai'], dtype=float)\n    divisors = np.sqrt(np.sum(X**2, axis=0))\n    R = X / divisors  # Matriks ternormalisasi\n    Y = R * weights  # Matriks terbobot\n    benefit_cols = [i for i, t in enumerate(benefit) if t == \"Benefit\"]\n    cost_cols = [i for i, t in enumerate(benefit) if t == \"Cost\"]",
+        "detail": "backend.services.topsis",
+        "documentation": {}
+    },
+    {
+        "label": "input_data",
+        "kind": 5,
+        "importPath": "backend.services.topsis",
+        "description": "backend.services.topsis",
+        "peekOfCode": "input_data = sys.stdin.read()\ndata = json.loads(input_data)  # Mengonversi JSON string menjadi Python dict\n# Memanggil fungsi topsis dan mendapatkan hasil\nresult = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
+        "detail": "backend.services.topsis",
+        "documentation": {}
+    },
+    {
+        "label": "data",
+        "kind": 5,
+        "importPath": "backend.services.topsis",
+        "description": "backend.services.topsis",
+        "peekOfCode": "data = json.loads(input_data)  # Mengonversi JSON string menjadi Python dict\n# Memanggil fungsi topsis dan mendapatkan hasil\nresult = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
+        "detail": "backend.services.topsis",
+        "documentation": {}
+    },
+    {
+        "label": "result",
+        "kind": 5,
+        "importPath": "backend.services.topsis",
+        "description": "backend.services.topsis",
+        "peekOfCode": "result = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
+        "detail": "backend.services.topsis",
+        "documentation": {}
+    }
+]

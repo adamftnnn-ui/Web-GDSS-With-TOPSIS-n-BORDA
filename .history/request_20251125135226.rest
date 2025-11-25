@@ -1,0 +1,220 @@
+
+### Login
+POST https://web-gdss.vercel.app/api/auth/login
+Content-Type: application/json
+
+{
+    "email":"arham@gmail.com",
+    "password":"password2"
+}
+
+### Register
+POST https://web-gdss.vercel.app/api/auth/register
+Content-Type: application/json
+
+{
+    "nama":"Adam Fatin",
+    "email":"adam@gmail.com",
+    "password":"password",
+    "peran":"Decision Maker 1"
+}
+
+### Logout
+POST https://web-gdss.vercel.app/api/auth/logout
+
+### Refresh Access Token
+POST https://web-gdss.vercel.app/api/auth/refresh 
+
+### Token
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA1MzUxOCwiZXhwIjoxNzY0MDU3MTE4fQ.s1zwKAl-Onjw6P2k_7q1RTBn962ZuKNHV5-UuOpDw7E
+
+### Dashboard
+GET https://web-gdss.vercel.app/api/
+Authorization: Bearer {{accessToken}}
+
+
+
+### Get User By Id
+GET https://web-gdss.vercel.app/api/user/find?id_user=6910cb902e5b13934a3a9b67
+Authorization: Bearer {{accessToken}}
+
+### Get Total User
+GET https://web-gdss.vercel.app/api/user/total
+Authorization: Bearer {{accessToken}}
+
+### Update User By Id   
+PUT https://web-gdss.vercel.app/api/user
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_user":"69109c6a6a0c7a5786f4c696",
+    "nama":"Nachsyas Arham Mumtaz",
+    "email":"arham@gmail.com",
+    "peran":"Decision Maker 1"
+}
+
+### Create New User
+POST https://web-gdss.vercel.app/api/user
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "nama":"Reza Kurnia",
+    "email":"reza@gmail.com",
+    "password":"password",
+    "peran":"Decision Maker 4"
+}
+
+### Delete User
+DELETE https://web-gdss.vercel.app/api/user?id_user=6910cb372e5b13934a3a9b56
+Authorization: Bearer {{accessToken}}
+
+### Update Password
+POST https://web-gdss.vercel.app/api/user/password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_user":"69109c6a6a0c7a5786f4c696",
+    "password":"password2"
+}
+
+
+
+### Get Total Alternatif
+GET https://web-gdss.vercel.app/api/alternatif/total
+Authorization: Bearer {{accessToken}}
+
+### Add Alternatif
+POST https://web-gdss.vercel.app/api/alternatif
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "nama":"Mie Titi Panakkukang",
+    "deskripsi":"Mie kering khas Makassar favorit wisatawan."
+}
+
+### Update Alternatif
+PUT https://web-gdss.vercel.app/api/alternatif
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_alternatif":"69117a7691a69d09370572a1",
+    "nama":"Sop Saudara Irian",
+    "deskripsi":"Menyajikan sop khas Makassar dengan cita rasa gurih."
+}
+
+### Delete Alternatif
+DELETE https://web-gdss.vercel.app/api/alternatif
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_alternatif":"691180fb65de5d03ecbd1f40"
+}
+
+### Get All Kriteria
+GET https://web-gdss.vercel.app/api/kriteria
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+### Get Kriteria By Id User
+GET https://web-gdss.vercel.app/api/kriteria/id/69109c6a6a0c7a5786f4c696
+Authorization: Bearer {{accessToken}}
+
+### Get Kriteria By Tipe
+GET https://web-gdss.vercel.app/api/kriteria/tipe/benefit
+Authorization: Bearer {{accessToken}}
+
+### Get Total Kriteria
+GET https://web-gdss.vercel.app/api/kriteria/total
+Authorization: Bearer {{accessToken}}
+
+### Add Kriteria
+POST http://localhost:5000/api/kriteria
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "nama": "Biaya Transportasi",
+  "tipe": "Cost",
+  "bobot": 3.50,
+  "nilai": "1 - Sangat Murah;2 - Murah;3 - Cukup Murah;4 - Mahal;5 - Sangat Mahal"
+}
+
+### Update Kriteria
+PUT http://localhost:5000/api/kriteria
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_kriteria":"69121798082657540b47d52d",
+    "nama":"Harga Makanan",
+    "tipe":"Cost",
+    "bobot":4.50,
+    "nilai":"1 - Sangat Murah;2 - Murah;3 - Cukup Murah;4 - Mahal;5 - Sangat Mahal"
+}
+
+### Delete Kriteria
+DELETE https://web-gdss.vercel.app/api/kriteria?id_kriteria=691c26a5b49778c74b7d7d6e
+Authorization: Bearer {{accessToken}}
+
+### Get All Penilaian
+GET https://web-gdss.vercel.app/api/penilaian
+Authorization: Bearer {{accessToken}}
+
+### Get All Users
+GET https://web-gdss.vercel.app/api/user/
+Authorization: Bearer {{accessToken}}
+
+### Get All Alternatif
+GET https://web-gdss.vercel.app/api/alternatif
+Authorization: Bearer {{accessToken}}
+
+### Add Penilaian
+POST http://localhost:5000/api/penilaian
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_user":"69109c6a6a0c7a5786f4c696",
+    "tanggal_penilaian":"11/18/2025",
+    "id_alternatif":"691181ba3ef5b13486fe838d",
+    "nilai":"691bead4cc1b224fc138f483 - 2;69121798082657540b47d52d - 3;691217ce082657540b47d534 - 5;691217ed082657540b47d53a - 1;6912180c082657540b47d540 - 4;6912182e082657540b47d546 - 2;6912184a082657540b47d54c - 4;69121869082657540b47d552 - 3",
+    "keterangan":""
+}
+
+### Delete Penilaian
+DELETE https://web-gdss.vercel.app/api/penilaian
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "id_penilaian":"691211f58bdb3e5f2ed6a46a"
+}
+
+### PAGE HASIL INDIVIDU
+
+### Get Inisial User
+GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
+Authorization: Bearer {{accessToken}}
+
+### Perhitungan Topsis By Id User
+GET http://localhost:5000/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
+Authorization: Bearer {{accessToken}}
+
+
+### Perhitungan Borda
+GET http://localhost:5000/api/penilaian/borda
+Authorization: Bearer {{accessToken}}
+
+### Get Penilaian By Id User And Id Alternatif
+GET http://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=691181ba3ef5b13486fe838d
+Authorization: Bearer {{accessToken}}
+
+### Get Laporan Penilaian
+GET http://localhost:5000/api/penilaian/laporan
+Authorization: Bearer {{accessToken}}
