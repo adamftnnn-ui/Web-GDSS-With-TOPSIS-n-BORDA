@@ -108,18 +108,6 @@
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Individu (TOPSIS)</h1>
-            <div class="flex gap-3">
-                <button id="btnExportExcel"
-                    class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                    <i data-feather="file-text" class="w-4 h-4"></i>
-                    <span>Export Excel</span>
-                </button>
-                <button id="btnExportPDF"
-                    class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                    <i data-feather="file" class="w-4 h-4"></i>
-                    <span>Export PDF</span>
-                </button>
-            </div>
         </header>
 
         <!-- Bagian Info Header -->
@@ -164,35 +152,7 @@
 
         <div class="h-10"></div>
     </main>
-
     
-
-    <script>
-        feather.replace();
-
-        // Logika Ekspor (Tetap statis sesuai file asli)
-        const btnExportExcel = document.getElementById('btnExportExcel');
-        const btnExportPDF = document.getElementById('btnExportPDF');
-
-        btnExportExcel.addEventListener('click', () => {
-            const dmNama = document.getElementById('namaDM').textContent || "DM";
-            // Panggil fungsi ekspor Excel di sini
-            showAlert(`Fungsi export Excel untuk **${dmNama}** belum diimplementasikan.`, 'info');
-        });
-
-        btnExportPDF.addEventListener('click', () => {
-            const dmNama = document.getElementById('namaDM').textContent || "DM";
-            // Panggil fungsi ekspor PDF di sini
-            showAlert(`Fungsi export PDF untuk **${dmNama}** belum diimplementasikan.`, 'info');
-        });
-    </script>
-    
-    <!-- 
-        ==================================================================
-        SCRIPT DINAMIS BARU
-        Menggantikan logika statis
-        ==================================================================
-    -->
     <script>
          window.addEventListener('DOMContentLoaded', () => {
 
