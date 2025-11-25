@@ -1,3 +1,4 @@
+const borda = require("../models/borda");
 const Kriteria = require("../models/kriteria");
 const Penilaian = require("../models/penilaian");
 const Topsis=require("../models/topsis")
@@ -35,11 +36,14 @@ const addKriteria = async (req, res) => {
     for (const item of allExistingPenilaian) {
       item.nilai.push({
         id_kriteria: newKriteria._id,
-        value: null,
+        value: 0,
       });
 
       await item.save();
     }
+
+    await Topsis.deleteMany({})
+    await Borda.deleteMany({})
 
     res.sendStatus(201);
   } catch (e) {
