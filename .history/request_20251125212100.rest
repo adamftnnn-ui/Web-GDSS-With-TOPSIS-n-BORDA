@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4MzMyNSwiZXhwIjoxNzY0MDg2OTI1fQ.dL4D0bhqIH1D_0HbmcYRtkLou1s1IfbDNhxDYVDrYvo
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA3OTgyNSwiZXhwIjoxNzY0MDgzNDI1fQ.Mjt8hNJfsl6OG6rnwFPGF04ZJcCe4VPNKA5dFfDuVNQ
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -146,16 +146,16 @@ Content-Type: application/json
 }
 
 ### Update Kriteria
-PUT https://web-gdss.vercel.app/api/kriteria
+PUT http://localhost:5000/api/kriteria
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_kriteria":"69121869082657540b47d552",
-    "nama":"Waktu Operasional",
-    "tipe":"Benefit",
+    "id_kriteria":"69121798082657540b47d52d",
+    "nama":"Harga Makanan",
+    "tipe":"Cost",
     "bobot":12.50,
-    "nilai":"1-Pagi; 2-Pagi & Siang; 3-Pagi, Siang & Sore; 4-Pagi, Siang, Sore & Malam"
+    "nilai":"1-Sangat Murah; 2-Murah; 3-Cukup Murah; 4-Mahal; 5-Sangat Mahal"
 }
 
 ### Delete Kriteria

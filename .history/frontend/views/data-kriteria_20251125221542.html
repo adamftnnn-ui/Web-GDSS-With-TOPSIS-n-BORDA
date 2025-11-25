@@ -97,7 +97,7 @@
                 <div>
                     <label for="nilaiKriteria" class="block text-gray-700 font-medium text-sm mb-1">Nilai</label>
                     <textarea id="nilaiKriteria" name="nilaiKriteria" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm" placeholder="Contoh:&#10;1 - Sangat Murah;&#10;2 - Murah;&#10;3 - Cukup Murah" required></textarea>
-                    <p class="text-xs text-gray-500 mt-1"><strong>PENTING:</strong> Format: "Angka - Keterangan".<br>Pisahkan antar pilihan dengan <strong>TITIK KOMA ( ; )</strong>.</p>
+                    <p class="text-xs text-gray-500 mt-1"><strong>PENTING:</strong> Pisahkan antar pilihan dengan <strong>TITIK KOMA ( ; )</strong>.<br>Gunakan <strong>koma ( , )</strong> hanya untuk teks biasa (misal: Pagi, Siang & Sore).</p>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" id="btnCloseModal" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
@@ -150,7 +150,7 @@
 
             let dataKriteria = [];
 
-            // --- FETCH HELPER (SUDAH DIPERBAIKI UNTUK TEXT RESPONSE "OK") ---
+            // --- FETCH HELPER ---
             async function fetchWithAuth(url, options = {}) {
                 const headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json', ...options.headers };
                 console.log(`[API Call] ${options.method || 'GET'} ${url}`);
@@ -160,15 +160,10 @@
                 
                 let data;
                 try {
-                    // Coba parse JSON
                     data = text ? JSON.parse(text) : {};
                 } catch (e) {
-                    // FIX: Jika gagal parse tapi response OK (misal text "OK"), return sebagai objek
-                    if (response.ok) {
-                        return { message: text }; // Sukses, kembalikan pesan text
-                    }
                     console.error("Non-JSON Response:", text);
-                    if(response.status === 500) throw new Error("Server Error 500: Cek format nilai (titik koma) atau backend crash.");
+                    if(response.status === 500) throw new Error("Server Error 500: Format data nilai salah. Cek pemisah titik koma.");
                     throw new Error(`Server Error (${response.status})`);
                 }
 
@@ -245,10 +240,10 @@
                             document.getElementById("tipeKriteria").value = item.tipe;
                             document.getElementById("bobotKriteria").value = item.bobot;
                             
+                            // Format ulang ke string dengan pemisah titik koma yang jelas
                             let displayNilai = "";
                             if (Array.isArray(item.nilai)) {
-                                // Tambah enter agar lebih mudah dibaca di textarea
-                                displayNilai = item.nilai.map(n => `${n.key}-${n.value}`).join(';\n');
+                                displayNilai = item.nilai.map(n => `${n.key}-${n.value}`).join(';\n'); // Tambah enter biar rapi
                             } else {
                                 displayNilai = item.nilai;
                             }
@@ -287,7 +282,7 @@
                 btnClose.onclick = btnCloseX.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("flex"); }
             }
 
-            // --- FORM SUBMIT ---
+            // --- FORM SUBMIT (FINAL FIX) ---
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const id = idKriteriaInput.value;
@@ -296,19 +291,25 @@
                 const bobot = parseFloat(document.getElementById("bobotKriteria").value);
                 let nilaiRaw = document.getElementById("nilaiKriteria").value.trim();
 
-                // Hapus newlines (enter) jadi spasi
+                // 1. Hapus baris baru (enter) menjadi spasi agar jadi satu baris string
                 nilaiRaw = nilaiRaw.replace(/[\r\n]+/g, ' ');
 
-                // VALIDASI FORMAT: Pecah berdasarkan titik koma
+                // 2. VALIDASI FORMAT: Pastikan format "Key-Value" aman
+                // Kita pecah dulu berdasarkan titik koma (;)
                 const parts = nilaiRaw.split(';').map(s => s.trim()).filter(s => s);
+                
+                // Cek apakah setiap bagian punya pemisah "-" (dash)
+                // Backend butuh struktur "Key-Value". Contoh: "1-Murah"
+                // Jika ada bagian seperti "Siang & Sore" (tanpa dash), backend akan crash 500.
                 const invalidParts = parts.filter(p => !p.includes('-'));
 
                 if (invalidParts.length > 0) {
-                    showAlert(`Format nilai salah pada: "<strong>${invalidParts[0]}</strong>".<br>Harus ada tanda strip (-) antara angka dan teks.<br>Contoh: <strong>1 - Sangat Murah</strong>`, "error");
+                    showAlert(`Format nilai salah pada: "<strong>${invalidParts[0]}</strong>".<br>Harus ada tanda strip (-) antara angka dan teks.<br>Contoh benar: <strong>3 - Pagi, Siang & Sore</strong>`, "error");
                     return;
                 }
 
-                const formattedNilai = parts.join('; '); // Gabung ulang
+                // Gabungkan kembali dengan titik koma
+                const formattedNilai = parts.join('; ');
 
                 if (!nama || !tipe || isNaN(bobot) || !formattedNilai) {
                     showAlert("Mohon lengkapi semua field!", "error");

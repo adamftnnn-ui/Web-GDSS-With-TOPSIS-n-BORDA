@@ -95,9 +95,9 @@
                     <input type="number" step="0.01" id="bobotKriteria" name="bobotKriteria" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm" placeholder="Masukkan bobot kriteria (cth: 4.5)" required>
                 </div>
                 <div>
-                    <label for="nilaiKriteria" class="block text-gray-700 font-medium text-sm mb-1">Nilai</label>
-                    <textarea id="nilaiKriteria" name="nilaiKriteria" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm" placeholder="Contoh:&#10;1 - Sangat Murah;&#10;2 - Murah;&#10;3 - Cukup Murah" required></textarea>
-                    <p class="text-xs text-gray-500 mt-1"><strong>PENTING:</strong> Format: "Angka - Keterangan".<br>Pisahkan antar pilihan dengan <strong>TITIK KOMA ( ; )</strong>.</p>
+                    <label for="nilaiKriteria" class="block text-gray-700 font-medium text-sm mb-1">Nilai (Format: 1-Buruk, 2-Baik)</label>
+                    <input type="text" id="nilaiKriteria" name="nilaiKriteria" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-gray-700 text-sm" placeholder="Contoh: 1-Sangat Murah; 2-Murah" required>
+                    <p class="text-xs text-gray-500 mt-1">Pisahkan dengan titik koma (;) atau koma (,)</p>
                 </div>
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" id="btnCloseModal" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition text-sm">Batal</button>
@@ -115,7 +115,10 @@
             const accessToken = localStorage.getItem('accessToken');
             
             // --- KONFIGURASI API ---
+            // Gunakan https://web-gdss.vercel.app/api jika backend sudah dideploy
+            // Gunakan http://localhost:5000/api jika testing di laptop dan backend jalan di lokal
             const API_BASE_URL = 'https://web-gdss.vercel.app/api'; 
+            
             const KRITERIA_URL = `${API_BASE_URL}/kriteria`;
             const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
 
@@ -132,6 +135,7 @@
 
             if (!accessToken) { window.location.href = 'index.html'; return; }
 
+            // --- DOM ELEMENTS ---
             const tableBody = document.getElementById("kriteriaTable");
             const modal = document.getElementById("modalKriteria");
             const modalTitle = document.getElementById("modalKriteriaTitle");
@@ -150,25 +154,20 @@
 
             let dataKriteria = [];
 
-            // --- FETCH HELPER (SUDAH DIPERBAIKI UNTUK TEXT RESPONSE "OK") ---
+            // --- FETCH HELPER ---
             async function fetchWithAuth(url, options = {}) {
                 const headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json', ...options.headers };
-                console.log(`[API Call] ${options.method || 'GET'} ${url}`);
+                console.log(`[Request] ${options.method || 'GET'} ${url}`); // Debugging
 
                 const response = await fetch(url, { ...options, headers });
                 const text = await response.text();
                 
                 let data;
                 try {
-                    // Coba parse JSON
                     data = text ? JSON.parse(text) : {};
                 } catch (e) {
-                    // FIX: Jika gagal parse tapi response OK (misal text "OK"), return sebagai objek
-                    if (response.ok) {
-                        return { message: text }; // Sukses, kembalikan pesan text
-                    }
                     console.error("Non-JSON Response:", text);
-                    if(response.status === 500) throw new Error("Server Error 500: Cek format nilai (titik koma) atau backend crash.");
+                    if(response.status === 404) throw new Error("Endpoint 404: Cek URL backend.");
                     throw new Error(`Server Error (${response.status})`);
                 }
 
@@ -178,7 +177,7 @@
                 return data;
             }
 
-            // --- GET DATA ---
+            // --- GET ALL KRITERIA ---
             async function fetchKriteria() {
                 try {
                     dataKriteria = await fetchWithAuth(KRITERIA_URL);
@@ -204,8 +203,8 @@
                     if (Array.isArray(item.nilai)) {
                         nilaiOptions = item.nilai.map(n => `<option value="${n.value}">${n.key} - ${n.value}</option>`).join('');
                     } else if (typeof item.nilai === 'string') {
-                        const delimiter = item.nilai.includes(';') ? ';' : ',';
-                        const items = item.nilai.split(delimiter);
+                        // Handle jika API mengembalikan string terpisah titik koma
+                        const items = item.nilai.includes(';') ? item.nilai.split(';') : item.nilai.split(',');
                         nilaiOptions = items.map(p => `<option>${p.trim()}</option>`).join('');
                     }
 
@@ -231,10 +230,11 @@
                 attachRowEvents();
             }
 
-            // --- EVENTS (EDIT & DELETE) ---
+            // --- ATTACH EVENTS ---
             function attachRowEvents() {
                 if (!isAdmin) return;
                 
+                // EVENT EDIT
                 document.querySelectorAll(".editBtn").forEach(btn => {
                     btn.onclick = (e) => {
                         const id = e.currentTarget.dataset.id;
@@ -245,10 +245,11 @@
                             document.getElementById("tipeKriteria").value = item.tipe;
                             document.getElementById("bobotKriteria").value = item.bobot;
                             
+                            // Convert Array/String API format back to Input string
                             let displayNilai = "";
                             if (Array.isArray(item.nilai)) {
-                                // Tambah enter agar lebih mudah dibaca di textarea
-                                displayNilai = item.nilai.map(n => `${n.key}-${n.value}`).join(';\n');
+                                // Array [{key:1, value:A}, ...] -> "1-A; 2-B"
+                                displayNilai = item.nilai.map(n => `${n.key}-${n.value}`).join('; ');
                             } else {
                                 displayNilai = item.nilai;
                             }
@@ -261,12 +262,14 @@
                     }
                 });
 
+                // EVENT DELETE (Perbaikan URL: Gunakan Query Param ?id_kriteria=)
                 document.querySelectorAll(".deleteBtn").forEach(btn => {
                     btn.onclick = async (e) => {
                         const id = e.currentTarget.dataset.id;
                         const nama = e.currentTarget.dataset.nama;
                         if (confirm(`Hapus kriteria ${nama}?`)) {
                             try {
+                                // FIX: Delete menggunakan Query Param sesuai API
                                 await fetchWithAuth(`${KRITERIA_URL}?id_kriteria=${id}`, { method: 'DELETE' });
                                 showAlert(`Kriteria **${nama}** berhasil dihapus.`, 'success');
                                 fetchKriteria();
@@ -287,34 +290,26 @@
                 btnClose.onclick = btnCloseX.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("flex"); }
             }
 
-            // --- FORM SUBMIT ---
+            // --- FORM SUBMIT (ADD & EDIT) ---
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const id = idKriteriaInput.value;
                 const nama = document.getElementById("namaKriteria").value.trim();
                 const tipe = document.getElementById("tipeKriteria").value;
                 const bobot = parseFloat(document.getElementById("bobotKriteria").value);
-                let nilaiRaw = document.getElementById("nilaiKriteria").value.trim();
+                const nilaiRaw = document.getElementById("nilaiKriteria").value.trim();
 
-                // Hapus newlines (enter) jadi spasi
-                nilaiRaw = nilaiRaw.replace(/[\r\n]+/g, ' ');
-
-                // VALIDASI FORMAT: Pecah berdasarkan titik koma
-                const parts = nilaiRaw.split(';').map(s => s.trim()).filter(s => s);
-                const invalidParts = parts.filter(p => !p.includes('-'));
-
-                if (invalidParts.length > 0) {
-                    showAlert(`Format nilai salah pada: "<strong>${invalidParts[0]}</strong>".<br>Harus ada tanda strip (-) antara angka dan teks.<br>Contoh: <strong>1 - Sangat Murah</strong>`, "error");
-                    return;
-                }
-
-                const formattedNilai = parts.join('; '); // Gabung ulang
+                // Format string input user (boleh pisah koma atau titik koma) agar seragam jadi string api
+                // API Request contoh: "1 - Sangat Murah;2 - Murah"
+                // Kita format user input menjadi string yang dipisah titik koma
+                const formattedNilai = nilaiRaw.replace(/,/g, ';'); 
 
                 if (!nama || !tipe || isNaN(bobot) || !formattedNilai) {
                     showAlert("Mohon lengkapi semua field!", "error");
                     return;
                 }
 
+                // FIX: Payload disesuaikan dengan dokumentasi API
                 const payload = {
                     nama: nama,
                     tipe: tipe,
@@ -322,15 +317,14 @@
                     nilai: formattedNilai
                 };
 
-                let method, url;
+                // FIX: Jika Edit (PUT), ID masuk ke BODY, URL tetap base
                 if (id) {
-                    method = 'PUT';
-                    url = KRITERIA_URL; 
-                    payload.id_kriteria = id; 
-                } else {
-                    method = 'POST';
-                    url = KRITERIA_URL;
+                    payload.id_kriteria = id;
                 }
+
+                const method = id ? 'PUT' : 'POST'; 
+                // FIX: URL PUT Edit tidak pakai /:id, melainkan base URL
+                const url = KRITERIA_URL; 
 
                 try {
                     await fetchWithAuth(url, { method: method, body: JSON.stringify(payload) });

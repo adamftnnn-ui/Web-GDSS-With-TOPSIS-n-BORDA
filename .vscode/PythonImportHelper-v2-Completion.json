@@ -49,7 +49,7 @@
         "kind": 2,
         "importPath": "backend.services.topsis",
         "description": "backend.services.topsis",
-        "peekOfCode": "def topsis(data):\n    alternatives = data['alternatif']\n    benefit = [x['item'] for x in data['kriteria']]\n    weights = np.array(data['bobot'], dtype=float)\n    X = np.array(data['nilai'], dtype=float)\n    # --- SKIP kolom yang semua nilainya 0 ---\n    valid_cols = ~(np.all(X == 0, axis=0))\n    X = X[:, valid_cols]\n    weights = weights[valid_cols]\n    benefit = [b for i, b in enumerate(benefit) if valid_cols[i]]",
+        "peekOfCode": "def topsis(data):\n    alternatives = data['alternatif']\n    benefit = [x['item'] for x in data['kriteria']]\n    weights = np.array(data['bobot'])\n    X = np.array(data['nilai'], dtype=float)\n    if np.all(X == 0):\n        return {\n            \"status\": \"error\",\n            \"message\": \"Semua nilai kriteria bernilai 0. TOPSIS tidak dapat dihitung sebelum ada penilaian minimal 1 nilai.\"\n        }",
         "detail": "backend.services.topsis",
         "documentation": {}
     },
@@ -58,7 +58,7 @@
         "kind": 5,
         "importPath": "backend.services.topsis",
         "description": "backend.services.topsis",
-        "peekOfCode": "input_data = sys.stdin.read()\ndata = json.loads(input_data)\n# Jalankan TOPSIS\nresult = topsis(data)\n# Output JSON\nprint(json.dumps(result))",
+        "peekOfCode": "input_data = sys.stdin.read()\ndata = json.loads(input_data)  # Mengonversi JSON string menjadi Python dict\n# Memanggil fungsi topsis dan mendapatkan hasil\nresult = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
         "detail": "backend.services.topsis",
         "documentation": {}
     },
@@ -67,7 +67,7 @@
         "kind": 5,
         "importPath": "backend.services.topsis",
         "description": "backend.services.topsis",
-        "peekOfCode": "data = json.loads(input_data)\n# Jalankan TOPSIS\nresult = topsis(data)\n# Output JSON\nprint(json.dumps(result))",
+        "peekOfCode": "data = json.loads(input_data)  # Mengonversi JSON string menjadi Python dict\n# Memanggil fungsi topsis dan mendapatkan hasil\nresult = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
         "detail": "backend.services.topsis",
         "documentation": {}
     },
@@ -76,7 +76,7 @@
         "kind": 5,
         "importPath": "backend.services.topsis",
         "description": "backend.services.topsis",
-        "peekOfCode": "result = topsis(data)\n# Output JSON\nprint(json.dumps(result))",
+        "peekOfCode": "result = topsis(data)\n# Mengirimkan hasil kembali ke stdout dalam format JSON\nprint(json.dumps(result))",
         "detail": "backend.services.topsis",
         "documentation": {}
     }
