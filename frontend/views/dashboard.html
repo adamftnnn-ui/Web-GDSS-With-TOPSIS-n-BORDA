@@ -161,16 +161,8 @@
             const accessToken = localStorage.getItem('accessToken');
 
             if (!accessToken) {
-                console.error("Tidak ada accessToken. Harap login terlebih dahulu.");
-                const headerTitle = document.querySelector('main header h1');
-                if (headerTitle) {
-                    headerTitle.textContent = 'Akses Ditolak';
-                    headerTitle.classList.add('text-red-600');
-                }
-                const welcomeText = document.querySelector('main header .flex.items-center.gap-3');
-                if (welcomeText) {
-                    welcomeText.innerHTML = '<span class="text-red-600 font-medium">Anda harus login untuk melihat halaman ini. Token tidak ditemukan.</span>';
-                }
+                localStorage.removeItem("accessToken");
+                window.location.href = "views/index.html";
                 return;
             }
             const API_BASE_URL = 'https://web-gdss.vercel.app/api';
@@ -182,7 +174,7 @@
             const altDisplay = document.getElementById('totalAlternatif');
             const kriteriaDisplay = document.getElementById('totalKriteria');
             const userDisplay = document.getElementById('totalUser');
-            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            const logoutButton = document.querySelector('nav a[href="views/index.html"]');
 
             async function fetchWithToken(url) {
                 const response = await fetch(url, {
@@ -249,7 +241,7 @@
 
             function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + '/index.html';
+                window.location.href = window.location.origin + 'views/index.html';
             }
             loadDashboardData();
 
