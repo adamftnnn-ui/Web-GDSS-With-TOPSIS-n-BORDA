@@ -185,9 +185,13 @@
 
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
             if (isAdmin && formPenilaian && hasilIndividu) {
                 formPenilaian.remove();
                 hasilIndividu.remove();
+            }
+            if (!isAdmin && dataKriteria) {
+                dataKriteria.remove();
             }
 
             // --- 2. FUNGSI HELPER (Fetch, Logout, Parse JWT) ---
@@ -611,6 +615,7 @@
 
             // Panggil fungsi utama
             loadTopsisResults();
+            feather.replace();
         });
     </script>
 </body>

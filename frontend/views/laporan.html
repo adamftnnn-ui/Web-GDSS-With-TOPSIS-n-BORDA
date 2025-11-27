@@ -237,10 +237,15 @@
 
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
             if (isAdmin && formPenilaian && hasilIndividu) {
                 formPenilaian.remove();
                 hasilIndividu.remove();
             }
+            if (!isAdmin && dataKriteria) {
+                dataKriteria.remove();
+            }
+            
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
             const LAPORAN_URL = `${API_PROD_URL}/penilaian/laporan`;

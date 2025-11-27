@@ -102,7 +102,8 @@
             <div class="flex items-center gap-3">
                 <span class="text-gray-600 text-sm">Welcome, <strong class="text-gray-800">Decision
                         Maker</strong></span>
-                <img src="https://i.pravatar.cc/40" alt="avatar" class="h-8 w-8 rounded-full border border-gray-200">
+                <img id="profileAvatar" src="../assets/avatar.jpg" alt="avatar"
+                    class="h-8 w-8 rounded-full border border-gray-200">
             </div>
         </header>
 
@@ -240,7 +241,14 @@
                 ]);
                 altDisplay.textContent = findTotal(altData);
                 kriteriaDisplay.textContent = findTotal(kriteriaData);
-                userDisplay.textContent = findTotal(userData);
+                const userResponse = await fetch(`${API_BASE}/user`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const allUsers = await userResponse.json();
+                const totalNonAdmin = allUsers.filter(u => u.peran !== "Admin").length;
+
+                userDisplay.textContent = totalNonAdmin;
+
             } catch (error) {
                 console.error('Gagal memuat data dashboard:', error);
                 altDisplay.textContent = 'Err';
@@ -256,15 +264,20 @@
                 const userData = await userRes.json();
                 if (welcomeText) welcomeText.textContent = userData.peran || "User";
 
-                
+
                 const isAdmin = userData.peran && userData.peran.toLowerCase() === "admin";
 
                 const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
                 const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+                const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
 
                 if (isAdmin && formPenilaian && hasilIndividu) {
                     formPenilaian.remove();
                     hasilIndividu.remove();
+                }
+
+                if (!isAdmin && dataKriteria) {
+                    dataKriteria.remove();
                 }
 
 

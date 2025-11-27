@@ -118,7 +118,7 @@
         <section
             class="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col md:flex-row items-center md:items-start gap-8">
             <div class="flex-shrink-0">
-                <img src="https://via.placeholder.com/150" alt="Foto Profil"
+                <img id="profileAvatar" src="../assets/avatar.jpg" alt="Avatar"
                     class="rounded-full w-32 h-32 object-cover border-4 border-primary shadow-md">
             </div>
 
@@ -230,6 +230,41 @@
             email: document.getElementById('profileCardEmail').textContent,
             role: document.getElementById('profileCardRole').textContent
         };
+
+        const accessToken = localStorage.getItem('accessToken');
+        const ID_USER = localStorage.getItem('idUser');
+        const API_BASE = 'https://web-gdss.vercel.app/api';
+
+        async function loadUserRole() {
+            try {
+                const userRes = await fetch(`${API_BASE}/user/find?id_user=${ID_USER}`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                const userData = await userRes.json();
+                const isAdmin = userData.peran && userData.peran.toLowerCase() === "admin";
+
+                const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+                const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+                const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+
+                // Hide Form Penilaian & Hasil Individu untuk Admin
+                if (isAdmin && formPenilaian && hasilIndividu) {
+                    formPenilaian.remove();
+                    hasilIndividu.remove();
+                }
+
+                // Hide Data Kriteria untuk Non-Admin
+                if (!isAdmin && dataKriteria) {
+                    dataKriteria.remove();
+                }
+            } catch (error) {
+                console.error("Gagal mendapatkan peran user", error);
+            }
+        }
+
+        loadUserRole();
+
 
         editProfileBtn.addEventListener('click', () => {
             modalProfile.classList.remove('hidden');

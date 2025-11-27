@@ -262,9 +262,13 @@
 
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
             if (isAdmin && formPenilaian && hasilIndividu) {
                 formPenilaian.remove();
                 hasilIndividu.remove();
+            }
+            if (!isAdmin && dataKriteria) {
+                dataKriteria.remove();
             }
 
             async function fetchWithToken(url, options = {}) {

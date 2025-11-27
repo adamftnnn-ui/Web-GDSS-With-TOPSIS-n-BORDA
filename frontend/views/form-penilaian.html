@@ -220,6 +220,15 @@
                 }
             }
 
+            const userData = parseJwt(accessToken);
+            const isAdmin = userData?.peran?.toLowerCase() === 'admin';
+
+            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+
+            if (!isAdmin && dataKriteria) {
+                dataKriteria.remove();
+            }
+
             if (!accessToken) {
                 localStorage.removeItem("accessToken");
                 window.location.href = "index.html";
