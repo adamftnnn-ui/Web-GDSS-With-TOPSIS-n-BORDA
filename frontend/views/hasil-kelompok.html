@@ -166,7 +166,7 @@
 
             if (!accessToken) {
                 localStorage.removeItem("accessToken");
-                window.location.href = "views/index.html";
+                window.location.href = "index.html";
                 return;
             }
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
@@ -207,7 +207,7 @@
 
             async function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + 'views/index.html';
+                window.location.href = 'index.html';
             }
 
             const logoutButton = document.querySelector('nav a[href="index.html"]');

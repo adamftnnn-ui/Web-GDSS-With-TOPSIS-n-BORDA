@@ -222,7 +222,7 @@
 
             if (!accessToken) {
                 localStorage.removeItem("accessToken");
-                window.location.href = "views/index.html";
+                window.location.href = "index.html";
                 return;
             }
 
@@ -263,7 +263,7 @@
 
             function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + '/index.html';
+                window.location.href = 'index.html';
             }
 
             async function handleLogout(e) {
