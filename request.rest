@@ -216,5 +216,5 @@ GET https://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c6
 Authorization: Bearer {{accessToken}}
 
 ### Get Laporan Penilaian
-GET http://localhost:5000/api/penilaian/laporan
+GET http://web-gdss.vercel.app/api/penilaian/laporan
 Authorization: Bearer {{accessToken}}

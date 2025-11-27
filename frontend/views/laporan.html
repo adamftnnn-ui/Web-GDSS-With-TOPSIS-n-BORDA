@@ -28,6 +28,8 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="alert.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body class="min-h-screen bg-gray-50 flex text-sm antialiased">
@@ -104,10 +106,10 @@
                 Laporan Akhir Keputusan (TOPSIS & BORDA)
             </h1>
             <div class="flex gap-3">
-                <button id="btnExportExcel"
+                <!-- <button id="btnExportExcel"
                     class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
                     <i data-feather="file-text" class="w-4 h-4"></i>
-                    <span>Export Excel</span>
+                    <span>Export Excel</span> -->
                 </button>
                 <button id="btnExportPDF"
                     class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
@@ -198,15 +200,303 @@
 
     <script>
         feather.replace();
-        const btnExportExcel = document.getElementById('btnExportExcel');
+        // const btnExportExcel = document.getElementById('btnExportExcel');
         const btnExportPDF = document.getElementById('btnExportPDF');
 
-        btnExportExcel.addEventListener('click', () => {
-            showAlert('Data **Laporan Akhir** berhasil diexport ke Excel.', 'success');
-        });
+        // Helper untuk memformat angka dengan pemisah ribuan (IDR format)
+        const formatNumber = (num, decimals = 4) => {
+            if (typeof num !== 'number' || isNaN(num)) return 'N/A';
+            return num.toLocaleString('id-ID', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            });
+        };
 
-        btnExportPDF.addEventListener('click', () => {
-            showAlert('Data **Laporan Akhir** berhasil diexport ke PDF.', 'success');
+        // btnExportExcel.addEventListener('click', () => {
+        //     showAlert('Data **Laporan Akhir** berhasil diexport ke Excel.', 'success');
+        // });
+
+        btnExportPDF.addEventListener('click', async () => {
+            btnExportPDF.disabled = true;
+            const originalHTML = btnExportPDF.innerHTML;
+            btnExportPDF.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i> Mengunduh…';
+            feather.replace();
+
+            try {
+                const accessToken = localStorage.getItem('accessToken');
+                if (!accessToken) throw new Error('Token tidak tersedia, silakan login kembali.');
+
+                const [laporanData, bordaResponse] = await Promise.all([
+                    fetch('https://web-gdss.vercel.app/api/penilaian/laporan', { headers: { 'Authorization': `Bearer ${accessToken}` } }).then(r => r.json()),
+                    fetch('https://web-gdss.vercel.app/api/penilaian/borda', { headers: { 'Authorization': `Bearer ${accessToken}` } }).then(r => r.json())
+                ]);
+
+                // ===================================================
+                // === PEMROSESAN DATA UTAMA ===
+                // ===================================================
+                const rankingData = bordaResponse[0]?.ranking_alternatif_per_decision_maker || [];
+                const bordaRaw = bordaResponse[0]?.perhitungan_skor_borda || [];
+
+                if (rankingData.length === 0 || bordaRaw.length === 0) {
+                    throw new Error("Data Ranking atau Borda tidak lengkap untuk membuat laporan.");
+                }
+
+                const dmHeaders = rankingData.map(dmObj => Object.keys(dmObj)[0]);
+                const altNames = Object.keys(rankingData[0][dmHeaders[0]]);
+                const m = altNames.length; // Jumlah Alternatif
+
+                const bordaDataProcessed = bordaRaw.map(item => {
+                    const altName = Object.keys(item)[0];
+                    const values = item[altName];
+                    return { nama: altName, total_skor: values.skor_akhir, peringkat: values.ranking };
+                }).sort((a, b) => a.peringkat - b.peringkat);
+                // ===================================================
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const margin = 50;
+                const headerHeight = 30; // Jarak total header dari atas
+                let y = margin;
+                let pageNum = 1;
+
+                // --- Style Korporat ---
+                const corporateBlue = [10, 39, 85];
+                const accentRed = [200, 30, 50];
+                const darkGrey = [50, 50, 50];
+                const lightGrey = [238, 238, 238];
+
+                // --- Fungsi Header dan Footer Formal ---
+                function addHeader(doc, pageNum, sectionTitle) {
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                    doc.text("GDSS: Laporan Analisis Keputusan", margin, margin);
+
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(sectionTitle, pageWidth / 2, margin, { align: 'center' });
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(darkGrey[0], darkGrey[1], darkGrey[2]);
+                    doc.text(`Halaman ${pageNum}`, pageWidth - margin, margin, { align: 'right' });
+
+                    doc.setDrawColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                    doc.setLineWidth(1.5);
+                    doc.line(margin, margin + 12, pageWidth - margin, margin + 12);
+                }
+
+                function addFooter(doc) {
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    const currentYear = new Date().getFullYear();
+                    doc.text(`Hak Cipta © ${currentYear} | GDSS Analytic Platform`, margin, pageHeight - 30);
+                }
+                // --------------------------------
+
+                // --- 0. Halaman Judul (Executive Cover) ---
+                doc.setFontSize(16);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(darkGrey[0], darkGrey[1], darkGrey[2]);
+                doc.text("Laporan Akhir", pageWidth / 2, pageHeight / 3 - 20, { align: 'center' });
+
+                doc.setFontSize(40);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                doc.text("ANALISIS KEPUTUSAN", pageWidth / 2, pageHeight / 3 + 30, { align: 'center' });
+
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(accentRed[0], accentRed[1], accentRed[2]);
+                doc.text("Berdasarkan Konsensus TOPSIS & BORDA", pageWidth / 2, pageHeight / 3 + 60, { align: 'center' });
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100);
+                const coverDate = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                doc.text(`Dokumen Dibuat: ${coverDate}`, pageWidth / 2, pageHeight - 100, { align: 'center' });
+
+                doc.addPage();
+                y = margin + headerHeight;
+
+                // --- Konten Halaman 2 dan seterusnya ---
+                addHeader(doc, pageNum, "Informasi Partisipan");
+
+                function checkPageBreak(doc, currentY, minSpace = 60, sectionTitle) {
+                    if (currentY + minSpace > pageHeight - margin - 30) {
+                        addFooter(doc);
+                        doc.addPage();
+                        pageNum++;
+                        addHeader(doc, pageNum, sectionTitle);
+                        currentY = margin + headerHeight;
+                    }
+                    return currentY;
+                }
+
+                // --- Bagian 1: Executive Summary ---
+                y = checkPageBreak(doc, y, 100, "Ringkasan Eksekutif");
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                doc.text("1. Ringkasan", margin, y);
+                y += 20;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(darkGrey[0], darkGrey[1], darkGrey[2]);
+
+                if (bordaDataProcessed.length > 0) {
+                    const pemenang = bordaDataProcessed.filter(item => item.peringkat === 1);
+                    const namaPemenang = pemenang.map(i => `${i.nama}`).join(' / ');
+                    const skorTertinggi = formatNumber(pemenang[0].total_skor);
+
+                    // TEKS TELAH DIMODIFIKASI UNTUK MENGHILANGKAN BOLD PADA PARAGRAF DAN MENGGUNAKAN RATA KIRI
+                    let decisionLine = `KEPUTUSAN: ${namaPemenang}`;
+
+                    let summaryText = `Analisis ini melibatkan ${laporanData.length} Decision Maker dan bertujuan memberikan rekomendasi keputusan yang optimal. Setelah melalui proses penilaian individu menggunakan TOPSIS, hasil dikonsolidasikan menggunakan Metode BORDA. Hasil akhir secara mutlak merekomendasikan ${namaPemenang} sebagai alternatif terbaik dengan total skor konsensus ${skorTertinggi}. Keputusan ini mencerminkan penerimaan yang paling tinggi dan stabil di seluruh grup partisipan.`;
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(accentRed[0], accentRed[1], accentRed[2]);
+                    doc.text(decisionLine, margin, y);
+                    y += 15;
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(darkGrey[0], darkGrey[1], darkGrey[2]);
+
+                    // Menggunakan doc.splitTextToSize yang menghasilkan alignment RATA KIRI (Left Justify) yang rapi
+                    const splitText = doc.splitTextToSize(summaryText, pageWidth - 2 * margin);
+                    doc.text(splitText, margin, y);
+                    y += splitText.length * 15;
+                } else {
+                    doc.text("Data hasil analisis belum lengkap untuk menghasilkan Executive Summary.", margin, y);
+                    y += 15;
+                }
+
+                // --- Bagian 2: Data Partisipan & Status ---
+                y = checkPageBreak(doc, y, 100, "Data Partisipan");
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                doc.text("2. Data Partisipan", margin, y);
+                y += 20;
+
+                const dmTableBody = laporanData.map(dm => [
+                    dm.peran,
+                    dm.total_alternatif,
+                    dm.total_kriteria,
+                    dm.tanggal_penilaian ? new Date(dm.tanggal_penilaian).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Pending'
+                ]);
+
+                doc.autoTable({
+                    startY: y,
+                    head: [['Partisipan (Decision Maker)', 'Jml. Alternatif', 'Jml. Kriteria', 'Status Penilaian']],
+                    body: dmTableBody,
+                    styles: { fontSize: 10, cellPadding: 8, lineColor: lightGrey, lineWidth: 0.1, textColor: darkGrey },
+                    columnStyles: {
+                        0: { halign: 'left', fontStyle: 'bold' },
+                        1: { halign: 'center' },
+                        2: { halign: 'center' },
+                        3: { halign: 'center' }
+                    },
+                    theme: 'plain',
+                    headStyles: { fillColor: corporateBlue, textColor: 255, fontStyle: 'bold', minCellHeight: 25 },
+                    alternateRowStyles: { fillColor: lightGrey },
+                    margin: { left: margin, right: margin }
+                });
+
+                pageNum = doc.internal.pages.length;
+                y = doc.lastAutoTable.finalY + 30;
+
+                // --- Bagian 3: Konsolidasi Ranking Individu ---
+                y = checkPageBreak(doc, y, 100, "Konsolidasi Ranking");
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                doc.text("3. Konsolidasi Ranking Individu (TOPSIS)", margin, y);
+                y += 20;
+
+                const rankingTableBody = altNames.map(alt => [alt, ...dmHeaders.map(dm => rankingData.find(d => d[dm])?.[dm]?.[alt] || 'N/A')]);
+
+                doc.autoTable({
+                    startY: y,
+                    head: [['Alternatif', ...dmHeaders.map(dm => `Rank ${dm}`)]],
+                    body: rankingTableBody,
+                    styles: { fontSize: 10, cellPadding: 8, halign: 'center', lineColor: lightGrey, lineWidth: 0.1, textColor: darkGrey },
+                    columnStyles: { 0: { halign: 'left', fontStyle: 'bold' } },
+                    theme: 'plain',
+                    headStyles: { fillColor: corporateBlue, textColor: 255, fontStyle: 'bold', minCellHeight: 25 },
+                    alternateRowStyles: { fillColor: lightGrey },
+                    margin: { left: margin, right: margin }
+                });
+
+                pageNum = doc.internal.pages.length;
+                y = doc.lastAutoTable.finalY + 30;
+
+                // --- Bagian 4: Hasil Akhir (Metode BORDA) ---
+                y = checkPageBreak(doc, y, 100, "Hasil Akhir & Keputusan");
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(corporateBlue[0], corporateBlue[1], corporateBlue[2]);
+                doc.text("4. Hasil Akhir (BORDA)", margin, y);
+                y += 20;
+
+                const bordaTableBody = bordaDataProcessed.map(item => {
+                    const row = [item.nama];
+                    dmHeaders.forEach((dmName, idx) => {
+                        const rankData = rankingData.find(d => d[dmName]);
+                        if (rankData) {
+                            const rank = rankData[dmName][item.nama];
+                            const score = (m - rank);
+                            row.push(score.toString());
+                        } else {
+                            row.push('0');
+                        }
+                    });
+                    row.push(formatNumber(item.total_skor), item.peringkat.toString());
+                    return row;
+                });
+
+                const bordaHead = [['Alternatif', ...dmHeaders.map(dm => `Skor (${dm})`), 'TOTAL SKOR', 'PERINGKAT']];
+
+                const columnStylesConfig = { 0: { halign: 'left', fontStyle: 'bold' } };
+                for (let i = 1; i < bordaHead[0].length - 1; i++) {
+                    columnStylesConfig[i] = { halign: 'right' };
+                }
+                columnStylesConfig[bordaHead[0].length - 1] = { halign: 'center', fontStyle: 'bold' };
+
+                const bodyStyles = bordaDataProcessed.map(item => {
+                    if (item.peringkat === 1) {
+                        return { fillColor: accentRed, textColor: 255, fontStyle: 'bold' };
+                    }
+                    return {};
+                });
+
+                doc.autoTable({
+                    startY: y,
+                    head: bordaHead,
+                    body: bordaTableBody,
+                    styles: { fontSize: 10, cellPadding: 8, lineColor: lightGrey, lineWidth: 0.1, textColor: darkGrey },
+                    bodyStyles: bodyStyles,
+                    columnStyles: columnStylesConfig,
+                    theme: 'plain',
+                    headStyles: { fillColor: corporateBlue, textColor: 255, fontStyle: 'bold', minCellHeight: 25 },
+                    alternateRowStyles: { fillColor: lightGrey },
+                    margin: { left: margin, right: margin }
+                });
+
+                addFooter(doc);
+
+                doc.save(`Laporan_Keputusan_Korporat_${new Date().toISOString().split('T')[0]}.pdf`);
+
+            } catch (error) {
+                alert('Gagal export PDF: ' + error.message);
+                console.error(error);
+            } finally {
+                btnExportPDF.disabled = false;
+                btnExportPDF.innerHTML = originalHTML;
+                feather.replace();
+            }
         });
     </script>
 
@@ -245,7 +535,7 @@
             if (!isAdmin && dataKriteria) {
                 dataKriteria.remove();
             }
-            
+
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
             const LAPORAN_URL = `${API_PROD_URL}/penilaian/laporan`;
