@@ -177,6 +177,12 @@
             const bar = document.querySelector('.progress-bar');
             const barText = document.querySelector('.progress-text');
             const welcomeText = document.querySelector("header span strong");
+            altDisplay.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin"></i>';
+            kriteriaDisplay.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin"></i>';
+            userDisplay.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin"></i>';
+            barText.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin text-primary"></i>&nbsp; Menghitung...';
+            feather.replace();
+
 
             function parseJwt(token) {
                 const base64Url = token.split('.')[1];

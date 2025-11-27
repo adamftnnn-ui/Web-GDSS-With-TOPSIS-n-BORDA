@@ -158,11 +158,18 @@
                                 <th class="px-4 py-2 w-1/4">Nilai (Pilih)</th>
                             </tr>
                         </thead>
-                        <tbody id="penilaianTableBody" class="text-gray-700 text-sm">
-                            <tr>
-                                <td colspan="5" class="text-center p-4 text-gray-500">Memuat kriteria...</td>
-                            </tr>
-                        </tbody>
+<tbody id="penilaianTableBody" class="text-gray-700 text-sm">
+    <tr>
+        <td colspan="5" class="p-8 text-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+                <!-- Spinner / animasi -->
+                <i data-feather="loader" class="w-6 h-6 animate-spin text-gray-400"></i>
+                <!-- Teks -->
+                <span class="text-gray-500 text-sm">Memuat kriteria...</span>
+            </div>
+        </td>
+    </tr>
+</tbody>
                     </table>
                 </div>
             </section>

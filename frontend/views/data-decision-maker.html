@@ -327,7 +327,17 @@
                 }
             }
             async function loadDecisionMakers() {
-                tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">Memuat data...</td></tr>`;
+                // Tampilkan spinner loading
+                tableBody.innerHTML = `
+        <tr>
+            <td colspan="5" class="text-center p-6">
+                <i data-feather="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+                <div class="text-gray-500">Memuat data...</div>
+            </td>
+        </tr>
+`;
+                feather.replace(); // render feather icon
+
                 try {
                     const data = await fetchWithToken(USER_URL, { method: 'GET' });
 
@@ -339,12 +349,18 @@
 
                 } catch (error) {
                     console.error('Gagal memuat decision maker:', error);
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Gagal memuat data: ${error.message}</td></tr>`;
+                    tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center p-4 text-red-500">
+                    Gagal memuat data: ${error.message}
+                </td>
+            </tr>`;
                     if (error.message === 'Unauthorized') {
                         forceLogout();
                     }
                 }
             }
+
             function renderTable(data) {
                 tableBody.innerHTML = "";
 
