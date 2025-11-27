@@ -266,6 +266,13 @@
                 btnTambahAlternatif.style.display = 'none';
             }
 
+            const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+            const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            if (isAdmin && formPenilaian && hasilIndividu) {
+                formPenilaian.remove();
+                hasilIndividu.remove();
+            }
+
             let editingId = null;
             let idToDelete = null;
             async function fetchWithToken(url, options = {}) {

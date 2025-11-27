@@ -255,6 +255,19 @@
                 });
                 const userData = await userRes.json();
                 if (welcomeText) welcomeText.textContent = userData.peran || "User";
+
+                
+                const isAdmin = userData.peran && userData.peran.toLowerCase() === "admin";
+
+                const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+                const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+
+                if (isAdmin && formPenilaian && hasilIndividu) {
+                    formPenilaian.remove();
+                    hasilIndividu.remove();
+                }
+
+
             } catch (error) {
                 console.error("Gagal memuat peran user:", error);
                 if (welcomeText) welcomeText.textContent = "User";

@@ -260,6 +260,12 @@
                 btnTambah.style.display = 'none';
             }
 
+            const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+            const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            if (isAdmin && formPenilaian && hasilIndividu) {
+                formPenilaian.remove();
+                hasilIndividu.remove();
+            }
 
             async function fetchWithToken(url, options = {}) {
                 const headers = {
