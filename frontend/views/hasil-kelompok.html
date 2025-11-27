@@ -103,13 +103,13 @@
         </header>
         <div id="loadingContainer">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                 <p class="text-center text-gray-500 py-8">
+                <p class="text-center text-gray-500 py-8">
                     <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
                     <span class="ml-2">Memuat hasil perhitungan kelompok...</span>
                 </p>
             </section>
         </div>
-        
+
         <div id="hasilContainer" class="hidden space-y-6">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Alternatif per Decision Maker</h2>
@@ -137,10 +137,12 @@
 
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi Total Skor BORDA</h2>
-                <div id="bordaChartContainer" class="w-full h-64 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+                <div id="bordaChartContainer"
+                    class="w-full h-64 rounded-lg flex items-center justify-center text-gray-400 text-sm">
                 </div>
                 <p class="text-sm text-gray-500 mt-3">
-                    Grafik ini akan menampilkan perbandingan total <strong>skor BORDA</strong> dari setiap alternatif untuk
+                    Grafik ini akan menampilkan perbandingan total <strong>skor BORDA</strong> dari setiap alternatif
+                    untuk
                     menentukan
                     hasil keputusan kelompok akhir.
                 </p>
@@ -155,26 +157,26 @@
 
         <div class="h-10"></div>
     </main>
-    
+
     <script>
-         window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
             const loadingContainer = document.getElementById('loadingContainer');
             const hasilContainer = document.getElementById('hasilContainer');
 
             if (!accessToken) {
-                console.warn("Tidak ada accessToken. Harap login terlebih dahulu.");
-                loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><h2 class="text-lg font-semibold text-red-600 mb-4">Akses Ditolak</h2><p class="text-red-600">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p></section>`;
+                localStorage.removeItem("accessToken");
+                window.location.href = "views/index.html";
                 return;
             }
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
-            
+
             // API Borda sesuai request.rest
             const BORDA_URL = `${API_PROD_URL}/penilaian/borda`;
-            
+
             async function fetchWithToken(url, options = {}) {
-                const headers = { 'Authorization': `Bearer ${accessToken}`};
+                const headers = { 'Authorization': `Bearer ${accessToken}` };
                 if (options.body) {
                     headers['Content-Type'] = 'application/json';
                 }
@@ -182,16 +184,16 @@
 
                 const response = await fetch(url, config);
                 if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
-                
+
                 const text = await response.text();
                 if (!text) {
-                     if (!response.ok) throw new Error(`API Error: ${response.statusText} (No Content)`);
-                     return null;
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText} (No Content)`);
+                    return null;
                 }
-                
+
                 let data;
-                try { data = JSON.parse(text); } 
-                catch(e) { 
+                try { data = JSON.parse(text); }
+                catch (e) {
                     console.error("Gagal parse JSON:", text);
                     throw new Error("Respons server bukan JSON yang valid.");
                 }
@@ -203,24 +205,24 @@
                 return data;
             }
 
-            function forceLogout() {
+            async function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + '/index.html';
+                window.location.href = window.location.origin + 'views/index.html';
             }
-            
+
             const logoutButton = document.querySelector('nav a[href="index.html"]');
             logoutButton.addEventListener('click', async (e) => {
-                 e.preventDefault();
-                 try {
-                    await fetch(LOGOUT_URL, { 
-                        method: 'POST', 
+                e.preventDefault();
+                try {
+                    await fetch(LOGOUT_URL, {
+                        method: 'POST',
                         headers: { 'Authorization': `Bearer ${accessToken}` }
                     });
-                 } catch (error) {
+                } catch (error) {
                     console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
-                 } finally {
+                } finally {
                     forceLogout();
-                 }
+                }
             });
 
             /**
@@ -231,7 +233,7 @@
             function renderRankingDM(rankingData, dmHeaders, altNames) {
                 const thead = document.getElementById('rankingDmTableHead');
                 const tbody = document.getElementById('rankingDmTableBody');
-                
+
                 let headHTML = '<tr><th class="px-4 py-2">Alternatif</th>';
                 dmHeaders.forEach(h => {
                     headHTML += `<th class="px-4 py-2 text-center">${h}</th>`;
@@ -247,12 +249,12 @@
                         const rank = rankingData[index][dmName][altName] || 'N/A';
                         bodyHTML += `<td class="px-4 py-3 text-center">${rank}</td>`;
                     });
-                    
+
                     bodyHTML += `<td class="rounded-r-lg"></td></tr>`;
                 });
                 tbody.innerHTML = bodyHTML || `<tr><td colspan="${dmHeaders.length + 1}" class="text-center p-4 text-gray-500">Data ranking tidak tersedia.</td></tr>`;
             }
-            
+
             /**
              * @param {Array} rankingData 
              * @param {Array} bordaData
@@ -269,7 +271,7 @@
                 headHTML += `<th class="px-4 py-2 text-center">Total Skor</th>
                              <th class="px-4 py-2 text-center">Peringkat</th></tr>`;
                 thead.innerHTML = headHTML;
-                
+
                 let bodyHTML = '';
                 bordaData.forEach(item => {
                     const isWinner = item.peringkat === 1;
@@ -281,7 +283,7 @@
                     dmHeaders.forEach((dmName, index) => {
                         const rank = rankingData[index][dmName][item.nama];
                         const score = (m - rank) + 1;
-                         bodyHTML += `<td class="px-4 py-3 text-center">${score}</td>`;
+                        bodyHTML += `<td class="px-4 py-3 text-center">${score}</td>`;
                     });
                     bodyHTML += `<td class="px-4 py-3 text-center ${textClass}">${item.total_skor.toFixed(4)}</td>
                                  <td class="px-4 py-3 text-center rounded-r-lg ${textClass}">${item.peringkat}</td>
@@ -289,7 +291,7 @@
                 });
                 tbody.innerHTML = bodyHTML || `<tr><td colspan="${dmHeaders.length + 3}" class="text-center p-4 text-gray-500">Data skor tidak tersedia.</td></tr>`;
             }
-            
+
             /**
              * Render Grafik
              * @param {Array} bordaData - Array hasil olahan: [{ nama: "...", total_skor: ..., peringkat: ...}]
@@ -298,13 +300,13 @@
                 const container = document.getElementById('bordaChartContainer');
                 container.innerHTML = '<canvas id="bordaChartCanvas"></canvas>';
                 container.classList.remove('bg-gray-100');
-                
+
                 const ctx = document.getElementById('bordaChartCanvas').getContext('2d');
-                
+
                 const sortedData = [...bordaData].sort((a, b) => b.total_skor - a.total_skor);
                 const labels = sortedData.map(item => item.nama);
                 const scores = sortedData.map(item => item.total_skor);
-                
+
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -334,7 +336,7 @@
                     }
                 });
             }
-            
+
             /**
              * Render Kesimpulan
              * @param {Array} bordaData - Array hasil olahan: [{ nama: "...", total_skor: ..., peringkat: ...}]
@@ -345,11 +347,11 @@
                     p.innerHTML = 'Data perhitungan tidak tersedia.';
                     return;
                 }
-                
+
                 const skorTertinggi = Math.max(...bordaData.map(item => item.total_skor));
                 const pemenang = bordaData.filter(item => item.total_skor === skorTertinggi);
                 const namaPemenang = pemenang.map(item => `<strong>${item.nama}</strong>`).join(' dan ');
-                
+
                 const skorLain = bordaData.filter(item => item.total_skor < skorTertinggi);
                 let runnerUpText = '';
                 if (skorLain.length > 0) {
@@ -372,15 +374,15 @@
                     const data = await fetchWithToken(BORDA_URL);
                     console.log("Data Borda Diterima:", data);
                     if (!data || !Array.isArray(data) || data.length === 0) {
-                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
-                         return;
+                        loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
+                        return;
                     }
-                    
+
                     const payload = data[0];
-                    
+
                     if (!payload.ranking_alternatif_per_decision_maker || !payload.perhitungan_skor_borda || payload.ranking_alternatif_per_decision_maker.length === 0) {
-                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Data Borda tidak lengkap atau tidak ada penilaian.</p></section>`;
-                         return;
+                        loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Data Borda tidak lengkap atau tidak ada penilaian.</p></section>`;
+                        return;
                     }
                     const rankingData = payload.ranking_alternatif_per_decision_maker;
                     const bordaDataRaw = payload.perhitungan_skor_borda;
@@ -400,7 +402,7 @@
                     renderSkorBorda(rankingData, bordaDataProcessed, dmHeaders, m);
                     renderBordaChart(bordaDataProcessed);
                     renderKesimpulan(bordaDataProcessed);
-                    
+
                     loadingContainer.style.display = 'none';
                     hasilContainer.style.display = 'block';
                     feather.replace();
@@ -416,7 +418,7 @@
                 }
             }
             loadBordaResults();
-         });
+        });
     </script>
 </body>
 

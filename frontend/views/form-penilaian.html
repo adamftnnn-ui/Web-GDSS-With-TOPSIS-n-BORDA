@@ -221,16 +221,8 @@
             }
 
             if (!accessToken) {
-                console.warn("Tidak ada accessToken.");
-                const headerTitle = document.querySelector('main header h1');
-                if (headerTitle) {
-                    headerTitle.textContent = 'Akses Ditolak';
-                    headerTitle.classList.add('text-red-600');
-                }
-                const mainSection = document.querySelector('main');
-                if (mainSection) {
-                    mainSection.innerHTML = '<p class="text-red-600 text-center font-medium p-8">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p>';
-                }
+                localStorage.removeItem("accessToken");
+                window.location.href = "views/index.html";
                 return;
             }
 
@@ -273,7 +265,7 @@
                 localStorage.removeItem('accessToken');
                 window.location.href = window.location.origin + '/index.html';
             }
-            
+
             async function handleLogout(e) {
                 e.preventDefault();
                 try {
@@ -290,7 +282,7 @@
 
             function populateSelect(selectElement, data, valueKey, textKey, defaultOptionText) {
                 selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
-                if(Array.isArray(data)){
+                if (Array.isArray(data)) {
                     data.forEach(item => {
                         const option = document.createElement('option');
                         const val = item[valueKey] || item._id;
@@ -316,7 +308,7 @@
                 } else if (Array.isArray(nilaiRaw)) {
                     let optionsHTML = '<option value="">Pilih Nilai</option>';
                     nilaiRaw.forEach(n => {
-                          optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
+                        optionsHTML += `<option value="${n.key}">${n.key} - ${n.value}</option>`;
                     });
                     return optionsHTML;
                 }
@@ -335,7 +327,7 @@
                         t.nama === item.nama
                     ))
                 );
-                
+
                 uniqueKriteria.forEach((kriteria, index) => {
                     const row = document.createElement('tr');
                     row.className = 'bg-gray-50 hover:bg-blue-50 transition-all';
@@ -374,7 +366,7 @@
                         fetchWithToken(ALTERNATIF_URL),
                         fetchWithToken(KRITERIA_URL)
                     ]);
-                    
+
                     populateSelect(alternatifSelect, alternatif, 'id_alternatif', 'nama', 'Pilih Alternatif');
                     renderKriteriaTable(kriteria);
 
@@ -401,10 +393,10 @@
                 }
 
                 const url = `${INDIVIDU_URL}?id_user=${id_user}&id_alternatif=${id_alternatif}`;
-                
+
                 try {
                     const data = await fetchWithToken(url);
-                    
+
                     if (data && !data.message) {
                         if (data.tanggal_penilaian) {
                             const dateObj = new Date(data.tanggal_penilaian);
@@ -508,7 +500,7 @@
 
                     const altText = alternatifSelect.options[alternatifSelect.selectedIndex].text;
                     showAlert(`Penilaian untuk <strong>${altText}</strong> berhasil disimpan.`, 'success');
-                    
+
                 } catch (error) {
                     console.error('Gagal mengirim penilaian:', error);
                     showAlert(`Gagal mengirim: ${error.message}`, 'error');
@@ -522,7 +514,7 @@
             btnKirim.addEventListener("click", handleSubmitPenilaian);
             logoutButton.addEventListener('click', handleLogout);
             alternatifSelect.addEventListener('change', handleAlternatifChange);
-            
+
             loadUserInfo();
             loadInitialData();
         });

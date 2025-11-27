@@ -222,17 +222,8 @@
             }
 
             if (!accessToken) {
-                console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
-                const headerTitle = document.querySelector('main header h1');
-                if (headerTitle) {
-                    headerTitle.textContent = 'Akses Ditolak';
-                    headerTitle.classList.add('text-red-600');
-                }
-                const mainSection = document.querySelector('main section');
-                if (mainSection) {
-                    mainSection.innerHTML = '<p class="text-red-600 text-center font-medium">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p>';
-                }
-                document.getElementById('btnTambahDM').style.display = 'none';
+                localStorage.removeItem("accessToken");
+                window.location.href = "views/index.html";
                 return;
             }
             const API_BASE_URL = 'https://web-gdss.vercel.app/api';
@@ -308,9 +299,9 @@
 
                 return data;
             }
-            function forceLogout() {
+            async function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + '/index.html';
+                window.location.href = window.location.origin + 'views/index.html';
             }
             async function handleLogout(e) {
                 e.preventDefault();

@@ -31,7 +31,7 @@
 </head>
 
 <body class="min-h-screen bg-gray-50 flex text-sm antialiased">
-    
+
     <aside
         class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen overflow-y-auto">
         <div class="flex items-center space-x-2">
@@ -99,7 +99,7 @@
             </nav>
         </div>
     </aside>
-    
+
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Data Alternatif</h1>
@@ -132,7 +132,7 @@
             </div>
         </section>
     </main>
-    
+
     <div id="modalAlternatif" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
             <h2 id="modalTitle" class="text-lg font-semibold text-gray-900 mb-4">Tambah Alternatif</h2>
@@ -163,7 +163,7 @@
             </button>
         </div>
     </div>
-    
+
     <div id="modalDetailAlternatif" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Detail Alternatif</h2>
@@ -190,7 +190,7 @@
             </button>
         </div>
     </div>
-    
+
     <div id="modalKonfirmasiHapus" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs p-6 relative">
             <div class="flex flex-col items-center text-center">
@@ -214,7 +214,7 @@
             </button>
         </div>
     </div>
-    
+
     <script>
         window.addEventListener('DOMContentLoaded', () => {
 
@@ -233,19 +233,11 @@
             }
 
             if (!accessToken) {
-                console.warn("Tidak ada accessToken. Harap login terlebih dahulu. Menampilkan 'Akses Ditolak'.");
-                const headerTitle = document.querySelector('main header h1');
-                if (headerTitle) {
-                    headerTitle.textContent = 'Akses Ditolak';
-                    headerTitle.classList.add('text-red-600');
-                }
-                const mainSection = document.querySelector('main section');
-                if (mainSection) {
-                    mainSection.innerHTML = '<p class="text-red-600 text-center font-medium">Anda harus login untuk melihat data ini. Token tidak ditemukan.</p>';
-                }
-                document.getElementById('btnTambahAlternatif').style.display = 'none';
+                localStorage.removeItem("accessToken");
+                window.location.href = "views/index.html";
                 return;
             }
+
             const API_BASE_URL = 'https://web-gdss.vercel.app/api';
             const ALTERNATIF_URL = `${API_BASE_URL}/alternatif`;
             const LOGOUT_URL = `${API_BASE_URL}/auth/logout`;
@@ -270,7 +262,7 @@
             const btnKonfirmasiX = document.getElementById("btnKonfirmasiX");
             const logoutButton = document.querySelector('nav a[href="index.html"]');
 
-if (!isAdmin && btnTambahAlternatif) {
+            if (!isAdmin && btnTambahAlternatif) {
                 btnTambahAlternatif.style.display = 'none';
             }
 
@@ -281,25 +273,25 @@ if (!isAdmin && btnTambahAlternatif) {
                     'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 };
-                
+
                 const config = {
                     ...options,
                     headers: { ...headers, ...options.headers }
                 };
-                
+
                 if (config.body && typeof config.body !== 'string') {
                     config.body = JSON.stringify(config.body);
                 }
 
                 const response = await fetch(url, config);
-                
+
                 if (response.status === 401 || response.status === 403) {
                     throw new Error('Unauthorized');
                 }
                 if (response.status === 204) {
-                    return null; 
+                    return null;
                 }
-                
+
                 let data = null;
 
                 const text = await response.text();
@@ -316,9 +308,9 @@ if (!isAdmin && btnTambahAlternatif) {
 
                 return data;
             }
-            function forceLogout() {
+            async function forceLogout() {
                 localStorage.removeItem('accessToken');
-                window.location.href = window.location.origin + '/index.html';
+                window.location.href = window.location.origin + 'views/index.html';
             }
             async function handleLogout(e) {
                 e.preventDefault();
@@ -339,7 +331,7 @@ if (!isAdmin && btnTambahAlternatif) {
                     const data = await fetchWithToken(ALTERNATIF_URL, { method: 'GET' });
 
                     if (!Array.isArray(data)) {
-                         throw new Error("Format data tidak terduga dari server.");
+                        throw new Error("Format data tidak terduga dari server.");
                     }
 
                     renderTable(data);
@@ -354,12 +346,12 @@ if (!isAdmin && btnTambahAlternatif) {
             }
             function renderTable(data) {
                 tableBody.innerHTML = "";
-                
+
                 if (data.length === 0) {
-                     tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data alternatif.</td></tr>`;
-                     return;
+                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-gray-500">Belum ada data alternatif.</td></tr>`;
+                    return;
                 }
-                
+
                 data.forEach((item, index) => {
                     const row = document.createElement("tr");
                     row.className = "bg-gray-50 hover:bg-blue-50 transition-all";
@@ -452,11 +444,11 @@ if (!isAdmin && btnTambahAlternatif) {
 
                 try {
                     await fetchWithToken(ALTERNATIF_URL, { method, body });
-                    
+
                     closeModal(modal);
                     showAlert(alertMessage, 'success');
                     await loadAlternatif();
-                    
+
                 } catch (error) {
                     console.error('Gagal menyimpan alternatif:', error);
                     showAlert(`Gagal menyimpan: ${error.message}`, 'error');
@@ -475,11 +467,11 @@ if (!isAdmin && btnTambahAlternatif) {
                         method: 'DELETE',
                         body: { id_alternatif: idToDelete }
                     });
-                    
+
                     showAlert('Data berhasil dihapus.', 'success');
                     closeModal(modalKonfirmasi);
                     await loadAlternatif();
-                    
+
                 } catch (error) {
                     console.error('Gagal menghapus alternatif:', error);
                     showAlert(`Gagal menghapus: ${error.message}`, 'error');
@@ -493,7 +485,7 @@ if (!isAdmin && btnTambahAlternatif) {
                 modalElement.classList.remove("hidden");
                 modalElement.classList.add("flex");
             }
-            
+
             function closeModal(modalElement) {
                 modalElement.classList.add("hidden");
                 modalElement.classList.remove("flex");
@@ -501,7 +493,7 @@ if (!isAdmin && btnTambahAlternatif) {
                     form.reset();
                     editingId = null;
                 }
-                
+
                 if (modalElement === modalKonfirmasi) {
                     idToDelete = null;
                 }
@@ -521,19 +513,19 @@ if (!isAdmin && btnTambahAlternatif) {
             });
             btnClose.addEventListener("click", () => closeModal(modal));
             btnCloseX.addEventListener("click", () => closeModal(modal));
-            
+
             btnCloseDetail.addEventListener("click", () => closeModal(modalDetail));
             btnCloseDetailX.addEventListener("click", () => closeModal(modalDetail));
-            
+
             btnKonfirmasiBatal.addEventListener("click", () => closeModal(modalKonfirmasi));
             btnKonfirmasiX.addEventListener("click", () => closeModal(modalKonfirmasi));
-            
+
             form.addEventListener("submit", handleFormSubmit);
-            
+
             btnKonfirmasiHapus.addEventListener("click", handleConfirmDelete);
-            
+
             logoutButton.addEventListener('click', handleLogout);
-            
+
             loadAlternatif();
 
         });
