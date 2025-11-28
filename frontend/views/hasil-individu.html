@@ -26,91 +26,43 @@
         }
     </script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <!-- Tambahkan library Chart.js untuk visualisasi -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="alert.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
 </head>
 
 <body class="min-h-screen bg-gray-50 flex text-sm antialiased">
-    <!-- Sidebar (Desain Asli Tidak Diubah) -->
+    
     <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen">
         <div class="flex items-center space-x-2">
-            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                G
-            </div>
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">G</div>
             <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
         </div>
-
         <nav class="flex flex-col space-y-1">
-            <a href="dashboard.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="home" class="w-4"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="data-decision-maker.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="user-check" class="w-4"></i>
-                <span>Data Decision Maker</span>
-            </a>
-            <a href="data-alternatif.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="folder" class="w-4"></i>
-                <span>Data Alternatif</span>
-            </a>
-            <a href="data-kriteria.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="sliders" class="w-4"></i>
-                <span>Data Kriteria</span>
-            </a>
-            <a href="form-penilaian.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="edit-3" class="w-4"></i>
-                <span>Form Penilaian</span>
-            </a>
-            <a href="#"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition">
-                <i data-feather="bar-chart-2" class="w-4"></i>
-                <span>Hasil Individu</span>
-            </a>
-            <a href="hasil-kelompok.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="users" class="w-4"></i>
-                <span>Hasil Kelompok</span>
-            </a>
-            <a href="laporan.html"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                <i data-feather="file-text" class="w-4"></i>
-                <span>Laporan</span>
-            </a>
+            <a href="dashboard.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="home" class="w-4"></i><span>Dashboard</span></a>
+            <a href="data-decision-maker.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="user-check" class="w-4"></i><span>Data Decision Maker</span></a>
+            <a href="data-alternatif.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="folder" class="w-4"></i><span>Data Alternatif</span></a>
+            <a href="data-kriteria.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="sliders" class="w-4"></i><span>Data Kriteria</span></a>
+            <a href="form-penilaian.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="edit-3" class="w-4"></i><span>Form Penilaian</span></a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition"><i data-feather="bar-chart-2" class="w-4"></i><span>Hasil Individu</span></a>
+            <a href="hasil-kelompok.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="users" class="w-4"></i><span>Hasil Kelompok</span></a>
+            <a href="laporan.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="file-text" class="w-4"></i><span>Laporan</span></a>
         </nav>
-
         <div class="mt-auto border-t pt-4 border-gray-100">
             <nav class="flex flex-col space-y-1">
-                <a href="profil.html"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
-                    <i data-feather="user" class="w-4"></i>
-                    <span>Profil Saya</span>
-                </a>
-                <a href="index.html"
-                    class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition">
-                    <i data-feather="log-out" class="w-4"></i>
-                    <span>Logout</span>
-                </a>
+                <a href="profil.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="user" class="w-4"></i><span>Profil Saya</span></a>
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition"><i data-feather="log-out" class="w-4"></i><span>Logout</span></a>
             </nav>
         </div>
     </aside>
 
-    <!-- Konten Utama -->
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Individu (TOPSIS)</h1>
         </header>
 
-        <!-- Bagian Info Header -->
         <section id="infoSection" class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Decision Maker</h2>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -132,78 +84,40 @@
                 </div>
             </div>
         </section>
+        
+        <div id="hasilContainer" class="space-y-6"></div>
 
-        <!-- Placeholder untuk Konten Hasil -->
-        <div id="hasilContainer" class="space-y-6">
-            <!-- Semua tabel hasil akan dirender di sini oleh JS -->
+        <div id="loadingContainer" class="space-y-6">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Memuat Hasil Perhitungan</h2>
+                 <p class="text-center text-gray-500 py-8">
+                    <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
+                    <span class="ml-2">Sedang mengambil data dari server...</span>
+                </p>
+            </section>
         </div>
-
-        <!-- Placeholder jika tidak ada data -->
-<div id="loadingContainer" class="space-y-6">
-    <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Memuat Hasil Perhitungan</h2>
-        <div class="flex flex-col items-center justify-center py-8 gap-2">
-            <!-- Spinner / animasi -->
-            <i data-feather="loader" class="w-8 h-8 animate-spin text-gray-400"></i>
-            <!-- Teks -->
-            <span class="text-gray-500 text-sm text-center">Sedang mengambil data dari server...</span>
-        </div>
-    </section>
-</div>
-
-
         <div class="h-10"></div>
     </main>
-
+    
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-
+         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
-            const currentUser = parseJwt(accessToken);
-            const isAdmin = currentUser?.peran === 'Admin';
-
-            function parseJwt(token) {
-                if (!token) return null;
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            }
-
-            // --- 1. OTENTIKASI & KEAMANAN ---
             const loadingContainer = document.getElementById('loadingContainer');
             const hasilContainer = document.getElementById('hasilContainer');
             const infoSection = document.getElementById('infoSection');
-
-            hasilContainer.style.display = 'none'; // Sembunyikan hasil dulu
+            
+            hasilContainer.style.display = 'none';
 
             if (!accessToken) {
-                localStorage.removeItem("accessToken");
-                window.location.href = "index.html";
+                console.warn("Tidak ada accessToken.");
+                localStorage.removeItem('accessToken');
+                window.location.href = 'index.html';
                 return;
             }
 
-            const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-            const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
-            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
-            if (isAdmin && formPenilaian && hasilIndividu) {
-                formPenilaian.remove();
-                hasilIndividu.remove();
-            }
-            if (!isAdmin && dataKriteria) {
-                dataKriteria.remove();
-            }
-
-            // --- 2. FUNGSI HELPER (Fetch, Logout, Parse JWT) ---
-
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
-
-            /**
-             * Mem-parse JWT untuk mendapatkan payload
-             */
+            
             function parseJwt(token) {
                 try {
                     const base64Url = token.split('.')[1];
@@ -213,413 +127,198 @@
                     }).join(''));
                     return JSON.parse(jsonPayload);
                 } catch (e) {
-                    console.error("Gagal parse JWT", e);
                     return null;
                 }
             }
 
-            // Dapatkan id_user dari token
             const tokenPayload = parseJwt(accessToken);
             const ID_USER = tokenPayload ? tokenPayload.id_user : null;
+            const isAdmin = tokenPayload?.peran === 'Admin';
 
+            // Sembunyikan menu jika Admin (Opsional, sesuai logika user sebelumnya)
+            const formPenilaianLink = document.querySelector('a[href="form-penilaian.html"]');
+            const hasilIndividuLink = document.querySelector('a[href="hasil-individu.html"]');
+            const dataKriteriaLink = document.querySelector('a[href="data-kriteria.html"]');
+            if (isAdmin) {
+                if (formPenilaianLink) formPenilaianLink.remove();
+                if (hasilIndividuLink) hasilIndividuLink.remove();
+            } else {
+                if (dataKriteriaLink) dataKriteriaLink.remove();
+            }
+            
             if (!ID_USER) {
-                console.error("Tidak dapat menemukan id_user di dalam token.");
-                infoSection.innerHTML = '<h2 class="text-lg font-semibold text-red-600 mb-4">Error Token</h2><p class="text-red-600">Tidak dapat memuat data individu. ID User tidak ditemukan di dalam token.</p>';
-                loadingContainer.style.display = 'none';
-                return;
+                 loadingContainer.innerHTML = '<p class="text-red-500 text-center p-8">Error: ID User tidak valid.</p>';
+                 return;
             }
 
             const TOPSIS_URL = `${API_PROD_URL}/penilaian/topsis/${ID_USER}`;
-
-            /**
-             * Helper serbaguna untuk fetch request dengan token
-             */
+            
             async function fetchWithToken(url, options = {}) {
-                // Siapkan header dasar
-                const headers = { 'Authorization': `Bearer ${accessToken}` };
-
-                // Hanya tambahkan Content-Type jika ada body (misal POST/PUT)
-                if (options.body) {
-                    headers['Content-Type'] = 'application/json';
-                }
-
+                const headers = { 'Authorization': `Bearer ${accessToken}`};
+                if (options.body) headers['Content-Type'] = 'application/json';
                 const config = { ...options, headers: { ...headers, ...options.headers } };
 
                 const response = await fetch(url, config);
                 if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
-
+                
                 const text = await response.text();
-                if (!text) {
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText} (No Content)`);
-                    return null;
-                }
-
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    console.error("Gagal parse JSON:", text);
-                    throw new Error("Respons server bukan JSON yang valid.");
-                }
-
-                if (!response.ok) {
-                    const errorMessage = data.message || data.error || `API Error: ${response.statusText}`;
-                    throw new Error(errorMessage);
-                }
-                return data;
+                if (!text) return null; 
+                try { return JSON.parse(text); } 
+                catch(e) { throw new Error("Respons server bukan JSON."); }
             }
 
-            /**
-             * Membersihkan state lokal dan redirect ke halaman login
-             */
             async function forceLogout() {
                 localStorage.removeItem('accessToken');
                 window.location.href = 'index.html';
             }
-
-            /**
-             * Menangani klik tombol logout
-             */
+            
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-            logoutButton.addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    await fetch(LOGOUT_URL, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    });
-                } catch (error) {
-                    console.warn("Panggilan API Logout gagal, logout secara lokal.", error);
-                } finally {
-                    forceLogout();
-                }
-            });
+            if(logoutButton) {
+                logoutButton.addEventListener('click', async (e) => {
+                     e.preventDefault();
+                     try { await fetch(LOGOUT_URL, { method: 'POST', headers: { 'Authorization': `Bearer ${accessToken}` } }); } 
+                     catch (error) {} 
+                     finally { forceLogout(); }
+                });
+            }
 
-            // --- 3. FUNGSI RENDER DATA TOPSIS (Tidak Diubah) ---
-
-            /**
-             * Mengisi kartu informasi di header
-             */
+            // --- RENDER FUNCTIONS ---
             function renderHeaderCards(metadata) {
                 document.getElementById('totalAlternatif').textContent = metadata.total_alternatif || '0';
                 document.getElementById('totalKriteria').textContent = metadata.total_kriteria || '0';
                 document.getElementById('namaDM').textContent = tokenPayload.peran || 'Tidak diketahui';
-
-                let tanggal = 'Belum Ada';
-                // Gunakan tanggal dari _id jika ada, jika tidak, tanggal_penilaian (fallback)
-                let dateSource = metadata.tanggal_penilaian || metadata.timestamp_id;
-
-                if (dateSource) {
-                    tanggal = new Date(dateSource).toLocaleDateString('id-ID', {
+                
+                let tanggal = 'Hari ini';
+                // REVISI: Safe check date
+                if (metadata.timestamp_id) {
+                    tanggal = new Date(metadata.timestamp_id).toLocaleDateString('id-ID', {
                         day: '2-digit', month: 'short', year: 'numeric'
                     });
                 }
                 document.getElementById('tanggalPenilaian').textContent = tanggal;
             }
 
-            /**
-             * Membuat dan merender tabel matriks (Normalisasi & Terbobot)
-             */
             function renderMatriks(title, kriteriaHeaders, matriksData) {
                 const section = document.createElement('section');
                 section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
-
                 let headersHTML = kriteriaHeaders.map(h => `<th class="px-4 py-2 text-center">${h}</th>`).join('');
                 let bodyHTML = '';
-
-                // matriksData = { "Nama Alternatif": [0.1, 0.2, ...], ... }
                 for (const altNama in matriksData) {
                     const nilai = matriksData[altNama];
                     const nilaiHTML = nilai.map(n => `<td class="text-center">${n.toFixed(4)}</td>`).join('');
-
-                    bodyHTML += `
-                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
-                            <td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td>
-                            ${nilaiHTML}
-                        </tr>
-                    `;
+                    bodyHTML += `<tr class="bg-gray-50 hover:bg-blue-50 transition-all"><td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td>${nilaiHTML}</tr>`;
                 }
-                const colSpan = kriteriaHeaders.length + 1;
-
-                section.innerHTML = `
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">${title}</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-separate border-spacing-y-2">
-                            <thead class="text-gray-600 text-xs uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-2">Alternatif</th>
-                                    ${headersHTML}
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-700 text-sm">
-                                ${bodyHTML || `<tr><td colspan="${colSpan}" class="text-center p-4 text-gray-500">Data tidak tersedia.</td></tr>`}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">${title}</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Alternatif</th>${headersHTML}</tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
                 hasilContainer.appendChild(section);
             }
 
-            /**
-             * Membuat dan merender tabel Jarak Ideal (D+ / D-)
-             */
             function renderJarak(jarakData) {
                 const section = document.createElement('section');
                 section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
-
                 let bodyHTML = '';
-                // jarakData = { "Nama Alternatif": { D_plus: 0.1, D_minus: 0.8 }, ... }
                 for (const altNama in jarakData) {
-                    const jarak = jarakData[altNama];
-                    bodyHTML += `
-                        <tr class="bg-gray-50 hover:bg-blue-50 transition-all">
-                            <td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td>
-                            <td class="px-4 py-3 text-center">${jarak.D_plus.toFixed(4)}</td>
-                            <td class="px-4 py-3 text-center rounded-r-lg">${jarak.D_minus.toFixed(4)}</td>
-                        </tr>
-                    `;
+                     const jarak = jarakData[altNama];
+                     bodyHTML += `<tr class="bg-gray-50 hover:bg-blue-50 transition-all"><td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td><td class="px-4 py-3 text-center">${jarak.D_plus.toFixed(4)}</td><td class="px-4 py-3 text-center rounded-r-lg">${jarak.D_minus.toFixed(4)}</td></tr>`;
                 }
-
-                section.innerHTML = `
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Jarak ke Solusi Ideal (D⁺ & D⁻)</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-separate border-spacing-y-2">
-                            <thead class="text-gray-600 text-xs uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-2">Alternatif</th>
-                                    <th class="px-4 py-2 text-center">D⁺</th>
-                                    <th class="px-4 py-2 text-center">D⁻</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-700 text-sm">
-                                ${bodyHTML || `<tr><td colspan="3" class="text-center p-4 text-gray-500">Data tidak tersedia.</td></tr>`}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                return section; // Kembalikan elemen untuk ditempatkan di grid
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Jarak ke Solusi Ideal (D⁺ & D⁻)</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Alternatif</th><th class="px-4 py-2 text-center">D⁺</th><th class="px-4 py-2 text-center">D⁻</th></tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
+                return section;
             }
-
-            /**
-             * Membuat dan merender tabel Ranking Akhir
-             */
+            
             function renderRanking(rankingData) {
                 const section = document.createElement('section');
                 section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
-
                 let bodyHTML = '';
-                // rankingData = [ { peringkat: 1, nama: "...", nilai: 0.8 }, ... ]
                 rankingData.forEach((item, index) => {
-                    const rowClass = index === 0 ? "bg-primary-light hover:bg-blue-100 transition-all font-semibold" : "bg-gray-50 hover:bg-blue-50 transition-all";
-                    const textClass = index === 0 ? "text-primary" : "font-semibold";
-
-                    bodyHTML += `
-                        <tr class="${rowClass}">
-                            <td class="px-4 py-3 ${textClass} rounded-l-lg">${item.peringkat}</td>
-                            <td class="px-4 py-3 ${index === 0 ? 'text-gray-900' : 'text-gray-700'}">${item.nama}</td>
-                            <td class="px-4 py-3 text-center rounded-r-lg ${index === 0 ? 'text-gray-900' : 'text-gray-700'}">${item.nilai.toFixed(4)}</td>
-                        </tr>
-                    `;
+                    const rowClass = index === 0 ? "bg-primary-light hover:bg-blue-100 font-semibold" : "bg-gray-50 hover:bg-blue-50";
+                    bodyHTML += `<tr class="${rowClass} transition-all"><td class="px-4 py-3 rounded-l-lg">${item.peringkat}</td><td class="px-4 py-3">${item.nama}</td><td class="px-4 py-3 text-center rounded-r-lg">${item.nilai.toFixed(4)}</td></tr>`;
                 });
-
-                section.innerHTML = `
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Nilai Preferensi (Vᵢ) & Ranking Akhir</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-separate border-spacing-y-2">
-                            <thead class="text-gray-600 text-xs uppercase tracking-wider">
-                                <tr>
-                                    <th class="px-4 py-2">Peringkat</th>
-                                    <th class="px-4 py-2">Alternatif</th>
-                                    <th class="px-4 py-2 text-center">Nilai Preferensi (Vᵢ)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-gray-700 text-sm">
-                                ${bodyHTML || `<tr><td colspan="3" class="text-center p-4 text-gray-500">Data tidak tersedia.</td></tr>`}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                return section; // Kembalikan elemen untuk ditempatkan di grid
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Akhir</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Rank</th><th class="px-4 py-2">Alternatif</th><th class="px-4 py-2 text-center">Nilai (Vᵢ)</th></tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
+                return section;
             }
 
-            /**
-             * Membuat dan merender Visualisasi Chart
-             */
             function renderChart(rankingData) {
                 const section = document.createElement('section');
                 section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
-                section.innerHTML = `
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi Nilai Preferensi (Vᵢ)</h2>
-                    <div class="w-full h-64 rounded-lg text-gray-400 text-sm">
-                        <canvas id="topsisChart"></canvas>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-3">
-                        Grafik ini menampilkan perbandingan nilai preferensi (Vᵢ) setiap alternatif. Nilai yang lebih tinggi lebih baik.
-                    </p>
-                `;
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi</h2><div class="w-full h-64"><canvas id="topsisChart"></canvas></div>`;
                 hasilContainer.appendChild(section);
-
-                // Urutkan data dari V (nilai) tertinggi ke terendah untuk chart
+                
                 const sortedData = [...rankingData].sort((a, b) => b.nilai - a.nilai);
-                const labels = sortedData.map(item => item.nama);
-                const data = sortedData.map(item => item.nilai);
-
-                const ctx = document.getElementById('topsisChart').getContext('2d');
-                new Chart(ctx, {
+                new Chart(document.getElementById('topsisChart').getContext('2d'), {
                     type: 'bar',
                     data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Nilai Preferensi (Vᵢ)',
-                            data: data,
-                            backgroundColor: 'rgba(37, 99, 235, 0.6)', // primary
-                            borderColor: 'rgba(37, 99, 235, 1)',
-                            borderWidth: 1
-                        }]
+                        labels: sortedData.map(i => i.nama),
+                        datasets: [{ label: 'Nilai Vᵢ', data: sortedData.map(i => i.nilai), backgroundColor: '#2563EB' }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y', // Buat jadi bar horizontal agar mudah dibaca
-                        scales: {
-                            x: {
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
                 });
             }
 
-
-            // --- 4. FUNGSI UTAMA (Main) ---
-
-            /**
-             * Fungsi utama untuk memuat dan merender semua hasil
-             */
+            // --- MAIN FUNCTION ---
             async function loadTopsisResults() {
                 try {
-                    // Panggil API TOPSIS
                     const data = await fetchWithToken(TOPSIS_URL);
-                    console.log("Data TOPSIS yang diterima:", data); // Debug data mentah
+                    console.log("Data TOPSIS:", data);
 
-                    // ==================================================================
-                    // *** REVISI ***
-                    // Cek data berdasarkan struktur API BARU
-                    // ==================================================================
-                    if (!data || !data.peringkat || !data.skor_akhir || data.skor_akhir.length === 0) {
-                        // Kasus di mana API merespons OK tapi tidak ada data (misal belum menilai)
-                        loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian untuk dihitung. Silakan isi form penilaian terlebih dahulu.</p></section>`;
-
-                        // Tetap render info header (versi fallback)
-                        renderHeaderCards({
-                            nama_dm: tokenPayload.nama,
-                            total_alternatif: 0,
-                            total_kriteria: 0,
-                            // Coba ambil tanggal dari ID jika ada (trik MongoDB _id)
-                            timestamp_id: data ? new Date(parseInt(data._id.substring(0, 8), 16) * 1000) : null
-                        });
+                    if (!data || !data.peringkat || !data.skor_akhir) {
+                        loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl text-center text-gray-500">Belum ada data penilaian.</section>`;
                         return;
                     }
-
-                    // ==================================================================
-                    // *** REVISI ***
-                    // "Lapisan Adaptasi"
-                    // Mengubah data API baru ke format lama yang diharapkan fungsi render
-                    // ==================================================================
-
-                    // 1. Dapatkan nama Alternatif (diasumsikan urutannya sama)
+                    
                     const altNames = Object.keys(data.peringkat);
-
-                    // 2. Buat Kriteria Headers (C1, C2, ...)
                     const kriteria_headers = data.matriks_keputusan_ternormalisasi[0].map((_, i) => `C${i + 1}`);
 
-                    // 3. Buat objek Metadata
+                    // REVISI PENTING: Penanganan Tanggal Aman
+                    let safeTimestamp = new Date(); // Default hari ini
+                    if (data._id) {
+                        // Jika _id ada, ambil timestamp dari _id
+                        safeTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
+                    }
+
                     const metadata = {
                         total_alternatif: altNames.length,
                         total_kriteria: kriteria_headers.length,
-                        nama_dm: tokenPayload.nama, // Ambil dari token
-                        // Ambil tanggal dari timestamp _id MongoDB
-                        timestamp_id: new Date(parseInt(data._id.substring(0, 8), 16) * 1000)
+                        timestamp_id: safeTimestamp 
                     };
 
-                    // 4. Ubah Matriks Normalisasi (Array dari Array -> Objek)
                     const matriks_normalisasi = {};
+                    const matriks_terbobot = {};
+                    const jarak_solusi = {};
+                    const hasil_akhir = [];
+
                     altNames.forEach((nama, i) => {
                         matriks_normalisasi[nama] = data.matriks_keputusan_ternormalisasi[i];
-                    });
-
-                    // 5. Ubah Matriks Terbobot (Array dari Array -> Objek)
-                    const matriks_terbobot = {};
-                    altNames.forEach((nama, i) => {
                         matriks_terbobot[nama] = data.matriks_keputusan_ternormalisasi_terbobot[i];
+                        jarak_solusi[nama] = { D_plus: data.d_positif[i], D_minus: data.d_negatif[i] };
+                        hasil_akhir.push({ peringkat: data.peringkat[nama], nama: nama, nilai: data.skor_akhir[i] });
                     });
-
-                    // 6. Ubah Jarak (Dua Array -> Objek)
-                    const jarak_solusi = {};
-                    altNames.forEach((nama, i) => {
-                        jarak_solusi[nama] = {
-                            D_plus: data.d_positif[i],
-                            D_minus: data.d_negatif[i]
-                        };
-                    });
-
-                    // 7. Ubah Ranking (Objek + Array -> Array dari Objek)
-                    const hasil_akhir = [];
-                    altNames.forEach((nama, i) => {
-                        hasil_akhir.push({
-                            peringkat: data.peringkat[nama], // Ambil rank dari objek 'peringkat'
-                            nama: nama,
-                            nilai: data.skor_akhir[i]       // Ambil nilai dari array 'skor_akhir'
-                        });
-                    });
-                    // Urutkan berdasarkan peringkat
                     hasil_akhir.sort((a, b) => a.peringkat - b.peringkat);
 
-                    // --- AKHIR LAPISAN ADAPTASI ---
-
-
-                    // Render semua komponen menggunakan data yang sudah diubah
                     renderHeaderCards(metadata);
                     renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
-                    renderMatriks('Matriks Ternormalisasi Terbobot (Y)', kriteria_headers, matriks_terbobot);
+                    renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
 
-                    const gridContainer = document.createElement('div');
-                    gridContainer.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
-
-                    const jarakSection = renderJarak(jarak_solusi);
-                    gridContainer.appendChild(jarakSection);
-
-                    const rankingSection = renderRanking(hasil_akhir);
-                    gridContainer.appendChild(rankingSection);
-
-                    hasilContainer.appendChild(gridContainer);
-
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
+                    grid.appendChild(renderJarak(jarak_solusi));
+                    grid.appendChild(renderRanking(hasil_akhir));
+                    hasilContainer.appendChild(grid);
+                    
                     renderChart(hasil_akhir);
-
+                    
                     hasilContainer.style.display = 'block';
                     loadingContainer.style.display = 'none';
 
                 } catch (error) {
-                    console.error('Gagal memuat hasil TOPSIS:', error);
-                    let errorMsg = `Gagal memuat hasil: ${error.message}`;
-                    if (error.message === 'Unauthorized') {
-                        errorMsg = "Sesi Anda telah berakhir. Harap login kembali.";
-                        forceLogout();
-                    }
-                    loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-red-500 py-8">${errorMsg}</p></section>`;
+                    console.error('Error:', error);
+                    let msg = `Gagal: ${error.message}`;
+                    if (error.message === 'Unauthorized') { msg = "Sesi habis. Login kembali."; forceLogout(); }
+                    loadingContainer.innerHTML = `<p class="text-center text-red-500 p-8">${msg}</p>`;
                 }
             }
-
-            // Panggil fungsi utama
+            
             loadTopsisResults();
             feather.replace();
-        });
+         });
     </script>
 </body>
-
 </html>
