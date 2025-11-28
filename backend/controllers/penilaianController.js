@@ -86,11 +86,12 @@ const addPenilaian = async (req, res) => {
       await existingTopsis.deleteOne()
     }
 
+    await Borda.deleteMany()
+
     return res.sendStatus(201);
   } catch (e) {
     res.status(500).json({
-      message: "Error dalam memasukkan data penilaian ke database: ",
-      e,
+      message: `Error dalam memasukkan data penilaian ke database: ${e.message}`,
     });
   }
 };
@@ -140,8 +141,6 @@ const perhitunganTopsis = async (req, res) => {
 
   const dataToPython = { alternatif, kriteria, bobot, nilai };
 
-  console.log(dataToPython);
-
   if (penilaianGet.length === 0) {
     return res.status(400).json({
       message: "Belum ada penilaian untuk user ini.",
@@ -168,7 +167,7 @@ const perhitunganTopsis = async (req, res) => {
       alternatif_terbaik: parsed["Alternatif Terbaik"],
     });
 
-    const borda = await Borda.deleteMany({});
+    await Borda.deleteMany()
 
     return res.status(200).json({
       matriks_keputusan_ternormalisasi:
