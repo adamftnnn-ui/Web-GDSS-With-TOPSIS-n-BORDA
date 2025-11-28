@@ -80,7 +80,11 @@ const addPenilaian = async (req, res) => {
     //   keterangan: keterangan,
     // });
 
-    await Topsis.findByIdAndDelete({ id_user: id_user });
+    const existingTopsis=await Topsis.findOne({ id_user: id_user });
+
+    if(existingTopsis){
+      await existingTopsis.deleteOne()
+    }
 
     return res.sendStatus(201);
   } catch (e) {
@@ -111,104 +115,100 @@ const perhitunganTopsis = async (req, res) => {
   const response = await Topsis.findOne({ id_user: id_user });
 
   if (response) {
-    return res.status(200).json(response);
-  } else {
-    // Log data alternatif dan kriteria sebelum diproses
-    const alternatifGet = await Alternatif.find({}, { nama: 1, _id: 0 });
-    const kriteriaGet = await Kriteria.find(
-      {},
-      { nama: 1, tipe: 1, bobot: 1, _id: 0 }
-    ).sort({ tipe: -1 });
-    const penilaianGet = await Penilaian.find({ id_user: id_user });
-
-    if (kriteriaGet.length == 0) {
-      return res.status(500).json({ message: "Data kriteria kosong" });
-    }
-
-    const alternatif = alternatifGet.map((item) => item.nama);
-    const kriteria = kriteriaGet.map((item) => ({
-      nama: item.nama,
-      item: item.tipe,
-    }));
-    const bobot = kriteriaGet.map((item) => parseFloat(item.bobot));
-    const nilaiObj = penilaianGet.map((item) => item.nilai);
-    const nilai = nilaiObj.map((row) =>
-      row.map((obj) => parseFloat(obj.value))
-    );
-
-    const dataToPython = { alternatif, kriteria, bobot, nilai };
-
-
-    if (penilaianGet.length === 0) {
-      return res.status(400).json({
-        message: "Belum ada penilaian untuk user ini.",
-      });
-    }
-
-    try {
-      const parsed = topsisJS(dataToPython);
-
-      if (parsed.status === "error") {
-        return res.status(400).json(parsed);
-      }
-
-      await Topsis.create({
-        id_user: id_user,
-        matriks_keputusan_ternormalisasi:
-          parsed["Matriks Keputusan Ternormalisasi"],
-        matriks_keputusan_ternormalisasi_terbobot:
-          parsed["Matriks Keputusan Ternormalisasi Terbobot"],
-        d_positif: parsed["D+"],
-        d_negatif: parsed["D-"],
-        skor_akhir: parsed["Skor Akhir"],
-        peringkat: parsed["Peringkat"],
-        alternatif_terbaik: parsed["Alternatif Terbaik"],
-      });
-
-      const borda = await Borda.deleteMany({});
-
-      return res.status(200).json({
-        matriks_keputusan_ternormalisasi:
-          parsed["Matriks Keputusan Ternormalisasi"],
-        matriks_keputusan_ternormalisasi_terbobot:
-          parsed["Matriks Keputusan Ternormalisasi Terbobot"],
-        a_plus: parsed["A+"],
-        a_minus: parsed["A-"],
-        d_positif: parsed["D+"],
-        d_negatif: parsed["D-"],
-        skor_akhir: parsed["Skor Akhir"],
-        peringkat: parsed["Peringkat"],
-        alternatif_terbaik: parsed["Alternatif Terbaik"],
-      });
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: `Error parsing Python result: ${error}` });
-    }
-    // const python = spawn("python", ["./services/topsis.py"]);
-
-    // python.stdin.write(JSON.stringify(dataToPython));
-    // python.stdin.end();
-
-    // let result = "";
-    // python.stdout.on("data", (data) => {
-    //   result += data.toString();
-    // });
-
-    // python.stderr.on("data", (data) => {
-    //   console.error("Python error: ", data.toString());
-    //   return res.status(500).json({ message: data.toString() });
-    // });
-
-    // python.on("close", async (code) => {
-    //   if (code !== 0) {
-    //     return res
-    //       .status(500)
-    //       .json({ message: `Python access failed ${code}` });
-    //   }
-
-    // });
+    return res.status(200).json(response)
   }
+  // Log data alternatif dan kriteria sebelum diproses
+  const alternatifGet = await Alternatif.find({}, { nama: 1, _id: 0 });
+  const kriteriaGet = await Kriteria.find(
+    {},
+    { nama: 1, tipe: 1, bobot: 1, _id: 0 }
+  ).sort({ tipe: -1 });
+  const penilaianGet = await Penilaian.find({ id_user: id_user });
+
+  if (kriteriaGet.length == 0) {
+    return res.status(500).json({ message: "Data kriteria kosong" });
+  }
+
+  const alternatif = alternatifGet.map((item) => item.nama);
+  const kriteria = kriteriaGet.map((item) => ({
+    nama: item.nama,
+    item: item.tipe,
+  }));
+  const bobot = kriteriaGet.map((item) => parseFloat(item.bobot));
+  const nilaiObj = penilaianGet.map((item) => item.nilai);
+  const nilai = nilaiObj.map((row) => row.map((obj) => parseFloat(obj.value)));
+
+  const dataToPython = { alternatif, kriteria, bobot, nilai };
+
+  console.log(dataToPython);
+
+  if (penilaianGet.length === 0) {
+    return res.status(400).json({
+      message: "Belum ada penilaian untuk user ini.",
+    });
+  }
+
+  try {
+    const parsed = topsisJS(dataToPython);
+
+    if (parsed.status === "error") {
+      return res.status(400).json(parsed);
+    }
+
+    await Topsis.create({
+      id_user: id_user,
+      matriks_keputusan_ternormalisasi:
+        parsed["Matriks Keputusan Ternormalisasi"],
+      matriks_keputusan_ternormalisasi_terbobot:
+        parsed["Matriks Keputusan Ternormalisasi Terbobot"],
+      d_positif: parsed["D+"],
+      d_negatif: parsed["D-"],
+      skor_akhir: parsed["Skor Akhir"],
+      peringkat: parsed["Peringkat"],
+      alternatif_terbaik: parsed["Alternatif Terbaik"],
+    });
+
+    const borda = await Borda.deleteMany({});
+
+    return res.status(200).json({
+      matriks_keputusan_ternormalisasi:
+        parsed["Matriks Keputusan Ternormalisasi"],
+      matriks_keputusan_ternormalisasi_terbobot:
+        parsed["Matriks Keputusan Ternormalisasi Terbobot"],
+      a_plus: parsed["A+"],
+      a_minus: parsed["A-"],
+      d_positif: parsed["D+"],
+      d_negatif: parsed["D-"],
+      skor_akhir: parsed["Skor Akhir"],
+      peringkat: parsed["Peringkat"],
+      alternatif_terbaik: parsed["Alternatif Terbaik"],
+    });
+  } catch (error) {
+    res.status(500).json({ message: `Error parsing Python result: ${error}` });
+  }
+  // const python = spawn("python", ["./services/topsis.py"]);
+
+  // python.stdin.write(JSON.stringify(dataToPython));
+  // python.stdin.end();
+
+  // let result = "";
+  // python.stdout.on("data", (data) => {
+  //   result += data.toString();
+  // });
+
+  // python.stderr.on("data", (data) => {
+  //   console.error("Python error: ", data.toString());
+  //   return res.status(500).json({ message: data.toString() });
+  // });
+
+  // python.on("close", async (code) => {
+  //   if (code !== 0) {
+  //     return res
+  //       .status(500)
+  //       .json({ message: `Python access failed ${code}` });
+  //   }
+
+  // });
 };
 
 const perhitunganBorda = async (req, res) => {
@@ -225,23 +225,22 @@ const perhitunganBorda = async (req, res) => {
     .populate("id_user", "peran")
     .exec();
 
-    const result = topsis.map((item) => {
-      const peran_plain = item.id_user.peran;
-      const peran_splitted = peran_plain.split(" ");
-      let peran = "";
-      for (let i = 0; i < peran_splitted.length; i++) {
-        peran += peran_splitted[i].charAt(0).toUpperCase();
-      }
-    
-      const peringkatObj = Object.fromEntries(item.peringkat);
-    
-      return {
-        nama: peran,
-        skor_akhir: item.skor_akhir,
-        peringkat: peringkatObj,
-      };
-    });
-    
+  const result = topsis.map((item) => {
+    const peran_plain = item.id_user.peran;
+    const peran_splitted = peran_plain.split(" ");
+    let peran = "";
+    for (let i = 0; i < peran_splitted.length; i++) {
+      peran += peran_splitted[i].charAt(0).toUpperCase();
+    }
+
+    const peringkatObj = Object.fromEntries(item.peringkat);
+
+    return {
+      nama: peran,
+      skor_akhir: item.skor_akhir,
+      peringkat: peringkatObj,
+    };
+  });
 
   try {
     const parsed = bordaJS.hitungBorda(result);

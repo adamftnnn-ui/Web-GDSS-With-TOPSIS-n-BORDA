@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDA4NTc1NSwiZXhwIjoxNzY0MDg5MzU1fQ.RIGN5RLdUAIEt0kWTTTvIX6Es_aPqyq8mh0QHG_avQk
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDMzMzQ0MywiZXhwIjoxNzY0MzM3MDQzfQ.GDxBlwW-2-cVvbC_8klyfQIK1q2bsR5Fi9uB8wMiJig
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -180,10 +180,10 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "id_user":"69109c6a6a0c7a5786f4c696",
-    "tanggal_penilaian":"11/18/2025",
-    "id_alternatif":"691181ba3ef5b13486fe838d",
-    "nilai":"691bead4cc1b224fc138f483 - 2;69121798082657540b47d52d - 3;691217ce082657540b47d534 - 5;691217ed082657540b47d53a - 1;6912180c082657540b47d540 - 4;6912182e082657540b47d546 - 2;6912184a082657540b47d54c - 4;69121869082657540b47d552 - 3",
+    "id_user":"6910cb902e5b13934a3a9b67",
+    "tanggal_penilaian":"11/28/2025",
+    "id_alternatif":"6925b836d20af6b695dd05c4",
+    "nilai":"69121798082657540b47d52d - 2;69255a20a14a7c851ccd5dca - 3;691217ce082657540b47d534 - 5;691217ed082657540b47d53a - 1;6912180c082657540b47d540 - 4;6912182e082657540b47d546 - 2;6912184a082657540b47d54c - 4;69121869082657540b47d552 - 3",
     "keterangan":""
 }
 
@@ -203,7 +203,7 @@ GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User
-GET http://localhost:5000/api/penilaian/topsis/69109c6a6a0c7a5786f4c696
+GET http://localhost:5000/api/penilaian/topsis/6910cb902e5b13934a3a9b67
 Authorization: Bearer {{accessToken}}
 
 
@@ -212,7 +212,7 @@ GET http://localhost:5000/api/penilaian/borda
 Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif
-GET https://localhost:5000/api/penilaian/individu?id_user=69109c6a6a0c7a5786f4c696&id_alternatif=6925ac709de0ba2224f04605
+GET https://web-gdss.vercel.app/api/penilaian/individu?id_user=6910cb902e5b13934a3a9b67&id_alternatif=6925b81bd20af6b695dd0572
 Authorization: Bearer {{accessToken}}
 
 ### Get Laporan Penilaian
