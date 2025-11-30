@@ -125,19 +125,19 @@
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                 <div>
                     <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Nama Lengkap</h2>
-                    <p id="profileCardName" class="font-semibold text-gray-800">Adam Pratama</p>
+                    <p id="profileCardName" class="font-semibold text-gray-800">—</p>
                 </div>
                 <div>
                     <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Email</h2>
-                    <p id="profileCardEmail" class="font-semibold text-gray-800">adam@example.com</p>
+                    <p id="profileCardEmail" class="font-semibold text-gray-800">—</p>
                 </div>
                 <div>
                     <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Peran</h2>
-                    <p id="profileCardRole" class="font-semibold text-gray-800">Decision Maker 1</p>
+                    <p id="profileCardRole" class="font-semibold text-gray-800">—</p>
                 </div>
                 <div>
                     <h2 class="text-xs text-gray-500 uppercase tracking-wider mb-1">Tanggal Bergabung</h2>
-                    <p class="font-semibold text-gray-800">04 November 2025</p>
+                    <p id="profileCardJoined" class="font-semibold text-gray-800">—</p>
                 </div>
             </div>
         </section>
@@ -210,126 +210,403 @@
     </div>
 
     <script>
-        feather.replace();
+            // controllers/profile-api.js
+            // Paste ini ke file JS yang dipanggil di halaman (atau ganti inline <script> yang sekarang).
+            (function () {
+                const API_BASE = 'https://web-gdss.vercel.app/api';
+                const accessToken = localStorage.getItem('accessToken') || '';
+                let ID_USER = localStorage.getItem('idUser') || null;
 
-        const modalProfile = document.getElementById('modalProfile');
-        const modalTitle = document.getElementById('modalProfileTitle');
-        const passwordFields = document.getElementById('passwordFields');
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const changePasswordBtn = document.getElementById('changePasswordBtn');
-        const btnCloseProfileModal = document.getElementById('btnCloseProfileModal');
-        const btnCloseProfileX = document.getElementById('btnCloseProfileX');
-        const modalProfileForm = document.getElementById('modalProfileForm');
+                // DOM elements
+                const profileAvatar = document.getElementById('profileAvatar');
+                const profileCardName = document.getElementById('profileCardName');
+                const profileCardEmail = document.getElementById('profileCardEmail');
+                const profileCardRole = document.getElementById('profileCardRole');
 
-        const profileNameInput = document.getElementById('profileName');
-        const profileEmailInput = document.getElementById('profileEmail');
-        const profileRoleInput = document.getElementById('profileRole');
+                const modalProfile = document.getElementById('modalProfile');
+                const modalTitle = document.getElementById('modalProfileTitle');
+                const passwordFields = document.getElementById('passwordFields');
+                const editProfileBtn = document.getElementById('editProfileBtn');
+                const changePasswordBtn = document.getElementById('changePasswordBtn');
+                const btnCloseProfileModal = document.getElementById('btnCloseProfileModal');
+                const btnCloseProfileX = document.getElementById('btnCloseProfileX');
+                const modalProfileForm = document.getElementById('modalProfileForm');
 
-        const profileCard = {
-            name: document.getElementById('profileCardName').textContent,
-            email: document.getElementById('profileCardEmail').textContent,
-            role: document.getElementById('profileCardRole').textContent
-        };
+                const profileNameInput = document.getElementById('profileName');
+                const profileEmailInput = document.getElementById('profileEmail');
+                const profileRoleInput = document.getElementById('profileRole');
 
-        const accessToken = localStorage.getItem('accessToken');
-        const ID_USER = localStorage.getItem('idUser');
-        const API_BASE = 'https://web-gdss.vercel.app/api';
+                const currentPasswordInput = document.getElementById('currentPassword');
+                const newPasswordInput = document.getElementById('newPassword');
+                const confirmPasswordInput = document.getElementById('confirmPassword');
 
-        async function loadUserRole() {
-            try {
-                const userRes = await fetch(`${API_BASE}/user/find?id_user=${ID_USER}`, {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                // helper: parse JWT payload (safe client-side)
+                function parseJwt(token) {
+                    try {
+                        const payload = token.split('.')[1];
+                        const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+                        return JSON.parse(decodeURIComponent(escape(decoded)));
+                    } catch (e) {
+                        return null;
+                    }
+                }
+
+                // helper: format date to "04 November 2025"
+                function formatDateISO(iso) {
+                    try {
+                        const d = new Date(iso);
+                        if (isNaN(d)) return iso;
+                        const opts = { day: '2-digit', month: 'long', year: 'numeric' };
+                        return d.toLocaleDateString('id-ID', opts);
+                    } catch (e) {
+                        return iso;
+                    }
+                }
+
+                // small UI helpers for loading state (follow your remembered style)
+                function setButtonLoading(btn, loading = true, label = 'Mengirim…') {
+                    if (!btn) return;
+                    if (loading) {
+                        btn.disabled = true;
+                        btn.dataset.normalHtml = btn.innerHTML;
+                        btn.classList.add('opacity-70', 'cursor-not-allowed');
+                        btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+          <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span>${label}</span>
+      `;
+                    } else {
+                        btn.disabled = false;
+                        if (btn.dataset.normalHtml) btn.innerHTML = btn.dataset.normalHtml;
+                        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    }
+                }
+
+                // If id user not in localStorage, try decode from token
+                if (!ID_USER && accessToken) {
+                    const payload = parseJwt(accessToken);
+                    if (payload && payload.id_user) ID_USER = payload.id_user;
+                    // try alternate claim names
+                    if (!ID_USER && payload && payload.id) ID_USER = payload.id;
+                }
+
+                if (!accessToken) {
+                    console.warn('No accessToken found in localStorage. API calls will fail.');
+                }
+
+                // Load user data and render to UI
+                async function loadProfile() {
+                    if (!ID_USER) {
+                        console.error('ID_USER not found. Set localStorage.idUser or login to set token with id_user.');
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${API_BASE}/user/find?id_user=${encodeURIComponent(ID_USER)}`, {
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        });
+
+                        if (!res.ok) {
+                            console.error('Gagal load profile:', res.status);
+                            return;
+                        }
+
+                        const data = await res.json();
+
+                        // map fields (try multiple possible field names)
+                        const nama = data.nama || data.name || data.fullname || data.nama_lengkap || '';
+                        const email = data.email || '';
+                        const peran = data.peran || data.role || data.peran_user || '';
+                        const avatar = data.avatar || data.foto || null;
+                        const createdAt = data.createdAt || data.created_at || data.tanggal_bergabung || null;
+
+                        profileCardName.textContent = nama || '—';
+                        profileCardEmail.textContent = email || '—';
+                        profileCardRole.textContent = peran || '—';
+                        document.getElementById('profileCardJoined').textContent = formatDateISO(createdAt);
+
+                        if (avatar) {
+                            profileAvatar.src = avatar;
+                        } else {
+                            // keep default src already in HTML if no avatar
+                        }
+
+                        if (createdAt) {
+                            // replace the static tanggal bergabung element if present
+                            const dateNode = Array.from(document.querySelectorAll('p')).find(p => p.textContent.trim().match(/\d{4}/));
+                            // Instead of guessing: find the card area and update the fourth p if structure unchanged
+                            const createdEls = document.querySelectorAll('section.bg-white p.font-semibold');
+                            if (createdEls && createdEls.length >= 4) {
+                                createdEls[3].textContent = formatDateISO(createdAt);
+                            } else {
+                                // fallback: try to find exact label
+                                const dateLabel = Array.from(document.querySelectorAll('h2')).find(h => /Tanggal Bergabung/i.test(h.textContent));
+                                if (dateLabel && dateLabel.nextElementSibling) {
+                                    dateLabel.nextElementSibling.textContent = formatDateISO(createdAt);
+                                }
+                            }
+                        }
+
+                        // Hide/show menu based on role (admin detection)
+                        const isAdmin = peran && peran.toLowerCase() === 'admin';
+                        const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+                        const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+                        const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+
+                        if (isAdmin && formPenilaian && hasilIndividu) {
+                            try { formPenilaian.remove(); hasilIndividu.remove(); } catch (e) { }
+                        }
+                        if (!isAdmin && dataKriteria) {
+                            try { dataKriteria.remove(); } catch (e) { }
+                        }
+
+                    } catch (err) {
+                        console.error('Error loadProfile', err);
+                    }
+                }
+
+                async function updateProfile(e) {
+                    e.preventDefault();
+                    const btn = modalProfileForm.querySelector('button[type="submit"]');
+                    setButtonLoading(btn, true, 'Mengirim…');
+
+                    const payload = {
+                        id_user: ID_USER,
+                        nama: profileNameInput.value.trim(),
+                        email: profileEmailInput.value.trim(),
+                        peran: profileRoleInput.value
+                    };
+
+                    try {
+                        const res = await fetch(`${API_BASE}/user`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${accessToken}`
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const text = await res.text();
+                        let data;
+
+                        try {
+                            data = JSON.parse(text);
+                        } catch (err) {
+                            // fallback if response is "OK"
+                            if (text.trim().toUpperCase() === "OK") {
+                                data = { success: true, message: "Profil berhasil diperbarui" };
+                            } else {
+                                throw new Error(text);
+                            }
+                        }
+
+                        if (!data.success) {
+                            showAlert(data.message || 'Gagal memperbarui profil', 'error');
+                            setButtonLoading(btn, false);
+                            return;
+                        }
+
+                        profileCardName.textContent = payload.nama;
+                        profileCardEmail.textContent = payload.email;
+                        profileCardRole.textContent = payload.peran;
+
+                        showAlert('Data profil berhasil diperbarui!', 'success');
+                        closeProfileModal();
+
+                    } catch (err) {
+                        console.error(err);
+                        showAlert('Terjadi kesalahan server', 'error');
+                    } finally {
+                        setButtonLoading(btn, false);
+                    }
+                }
+
+
+                async function updatePassword(e) {
+                    e.preventDefault();
+
+                    const btn = modalProfileForm.querySelector('button[type="submit"]');
+                    setButtonLoading(btn, true, 'Mengirim…');
+
+                    const token = localStorage.getItem("accessToken");
+                    const newPassword = newPasswordInput.value.trim();
+                    const currentPassword = currentPasswordInput.value.trim();
+
+                    try {
+                        const response = await fetch("https://web-gdss.vercel.app/api/user/password", {
+                            method: "POST",
+                            headers: {
+                                "Authorization": `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                id_user: localStorage.getItem("idUser"),   // FIX disini
+                                password: newPassword,
+                            }),
+                        });
+
+                        const result = await response.json();
+
+                        if (!result.success) {
+                            showAlert(result.message || "Gagal mengubah password", "error");
+                            return;
+                        }
+
+                        showAlert("Password berhasil diperbarui!", "success");
+                        closeProfileModal();
+
+                    } catch (err) {
+                        console.error(err);
+                        showAlert("Terjadi kesalahan server", "error");
+                    } finally {
+                        setButtonLoading(btn, false);
+                    }
+                }
+
+                modalProfileForm.addEventListener("submit", (e) => {
+                    const title = modalTitle.textContent.trim();
+
+                    if (title === "Edit Profil") updateProfile(e);
+                    else if (title === "Ubah Password") updatePassword(e); // now OK
                 });
-                
-                const userData = await userRes.json();
-                const isAdmin = userData.peran && userData.peran.toLowerCase() === "admin";
 
-                const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-                const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
-                const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
 
-                // Hide Form Penilaian & Hasil Individu untuk Admin
-                if (isAdmin && formPenilaian && hasilIndividu) {
-                    formPenilaian.remove();
-                    hasilIndividu.remove();
+
+                // Modal controls (existing logic kept)
+                function closeProfileModal() {
+                    modalProfile.classList.add('hidden');
+                    modalProfile.classList.remove('flex');
+                    modalProfileForm.reset();
+
+                    profileNameInput.closest('div').classList.remove('hidden');
+                    profileEmailInput.closest('div').classList.remove('hidden');
+                    profileRoleInput.closest('div').classList.remove('hidden');
+                    feather.replace();
                 }
 
-                // Hide Data Kriteria untuk Non-Admin
-                if (!isAdmin && dataKriteria) {
-                    dataKriteria.remove();
+                editProfileBtn.addEventListener('click', () => {
+                    modalTitle.textContent = 'Edit Profil';
+                    passwordFields.classList.add('hidden');
+
+                    // Aktifkan required untuk edit profil
+                    profileNameInput.required = true;
+                    profileEmailInput.required = true;
+                    profileRoleInput.required = true;
+
+                    // Nonaktifkan required password
+                    currentPasswordInput.required = false;
+                    newPasswordInput.required = false;
+                    confirmPasswordInput.required = false;
+
+                    // tampilkan field profil
+                    profileNameInput.closest('div').classList.remove('hidden');
+                    profileEmailInput.closest('div').classList.remove('hidden');
+                    profileRoleInput.closest('div').classList.remove('hidden');
+
+                    modalProfile.classList.remove('hidden');
+                    modalProfile.classList.add('flex');
+                });
+
+
+                changePasswordBtn.addEventListener('click', () => {
+                    modalTitle.textContent = 'Ubah Password';
+                    passwordFields.classList.remove('hidden');
+
+                    // Nonaktifkan required profil
+                    profileNameInput.required = false;
+                    profileEmailInput.required = false;
+                    profileRoleInput.required = false;
+
+                    // Aktifkan required password
+                    currentPasswordInput.required = true;
+                    newPasswordInput.required = true;
+                    confirmPasswordInput.required = true;
+
+                    // sembunyikan field profil
+                    profileNameInput.closest('div').classList.add('hidden');
+                    profileEmailInput.closest('div').classList.add('hidden');
+                    profileRoleInput.closest('div').classList.add('hidden');
+
+                    modalProfile.classList.remove('hidden');
+                    modalProfile.classList.add('flex');
+                });
+
+
+                btnCloseProfileModal.addEventListener('click', closeProfileModal);
+                btnCloseProfileX.addEventListener('click', closeProfileModal);
+
+                // // form submit handler: branch by modal title
+                // modalProfileForm.addEventListener('submit', (e) => {
+                //     if (modalTitle.textContent === 'Edit Profil') {
+                //         updateProfile(e);
+                //     } else if (modalTitle.textContent === 'Ubah Password') {
+                //         updatePassword(e);
+                //     } else {
+                //         e.preventDefault();
+                //     }
+                // });
+
+                document.addEventListener('DOMContentLoaded', () => {
+
+                    profileCardName.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>';
+                    profileCardEmail.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>';
+                    profileCardRole.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>';
+                    document.getElementById('profileCardJoined').innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i>';
+
+                    feather.replace(); // penting! supaya loader jadi icon feather
+                    loadProfile();
+                });
+                function closeProfileModal() {
+                    modalProfile.classList.add('hidden');
+                    modalProfile.classList.remove('flex');
+                    modalProfileForm.reset();
+
+                    passwordFields.classList.add('hidden');
+                    modalTitle.textContent = 'Edit Profil';
+
+                    setTimeout(() => {
+                        setButtonLoading(modalProfileForm.querySelector('button[type="submit"]'), false);
+                    }, 200);
                 }
-            } catch (error) {
-                console.error("Gagal mendapatkan peran user", error);
-            }
-        }
 
-        loadUserRole();
+                editProfileBtn.addEventListener('click', () => {
+                    modalTitle.textContent = 'Edit Profil';
+                    passwordFields.classList.add('hidden');
 
+                    profileNameInput.value = profileCardName.textContent.trim();
+                    profileEmailInput.value = profileCardEmail.textContent.trim();
+                    profileRoleInput.value = profileCardRole.textContent.trim();
 
-        editProfileBtn.addEventListener('click', () => {
-            modalProfile.classList.remove('hidden');
-            modalProfile.classList.add('flex');
-            modalTitle.textContent = 'Edit Profil';
-            passwordFields.classList.add('hidden');
+                    modalProfile.classList.remove('hidden');
+                    modalProfile.classList.add('flex');
+                });
 
-            profileNameInput.closest('div').classList.remove('hidden');
-            profileEmailInput.closest('div').classList.remove('hidden');
-            profileRoleInput.closest('div').classList.remove('hidden');
+                changePasswordBtn.addEventListener('click', () => {
+                    modalTitle.textContent = 'Ubah Password';
+                    passwordFields.classList.remove('hidden');
 
-            profileNameInput.value = profileCard.name;
-            profileEmailInput.value = profileCard.email;
-            profileRoleInput.value = profileCard.role;
+                    modalProfile.classList.remove('hidden');
+                    modalProfile.classList.add('flex');
+                });
 
-            feather.replace();
-        });
+                btnCloseProfileModal.addEventListener('click', closeProfileModal);
+                btnCloseProfileX.addEventListener('click', closeProfileModal);
 
-        changePasswordBtn.addEventListener('click', () => {
-            modalProfile.classList.remove('hidden');
-            modalProfile.classList.add('flex');
-            modalTitle.textContent = 'Ubah Password';
-            passwordFields.classList.remove('hidden');
+                modalProfileForm.addEventListener('submit', (e) => {
+                    if (!passwordFields.classList.contains('hidden')) {
+                        return updatePassword(e);
+                    }
+                    return updateProfile(e);
+                });
 
-            profileNameInput.closest('div').classList.add('hidden');
-            profileEmailInput.closest('div').classList.add('hidden');
-            profileRoleInput.closest('div').classList.add('hidden');
+                feather.replace();
+                loadProfile();
 
-            modalProfileForm.reset();
+            })();
 
-            feather.replace();
-        });
-
-        function closeProfileModal() {
-            modalProfile.classList.add('hidden');
-            modalProfile.classList.remove('flex');
-            modalProfileForm.reset();
-
-            profileNameInput.closest('div').classList.remove('hidden');
-            profileEmailInput.closest('div').classList.remove('hidden');
-            profileRoleInput.closest('div').classList.remove('hidden');
-        }
-
-        btnCloseProfileModal.addEventListener('click', closeProfileModal);
-        btnCloseProfileX.addEventListener('click', closeProfileModal);
-
-        modalProfileForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            if (modalTitle.textContent === 'Edit Profil') {
-                profileCard.name = profileNameInput.value;
-                profileCard.email = profileEmailInput.value;
-                profileCard.role = profileRoleInput.value;
-
-                document.getElementById('profileCardName').textContent = profileCard.name;
-                document.getElementById('profileCardEmail').textContent = profileCard.email;
-                document.getElementById('profileCardRole').textContent = profileCard.role;
-
-                showAlert('Data **profil** berhasil diperbarui!', 'success');
-            } else if (modalTitle.textContent === 'Ubah Password') {
-                showAlert('**Password** berhasil diubah!', 'success');
-            }
-
-            closeProfileModal();
-        });
     </script>
 </body>
 
