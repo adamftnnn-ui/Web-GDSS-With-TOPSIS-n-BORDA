@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwiZW1haWwiOiJhcmhhbUBnbWFpbC5jb20iLCJpYXQiOjE3NjQ1MjU4MjMsImV4cCI6MTc2NDUyOTQyM30.OUbxQJAHEEtbYZrnbGaNBL9Fg2dtBrOGzZwkah2J9pc
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6IkRlY2lzaW9uIE1ha2VyIDEiLCJlbWFpbCI6ImFyaGFtQGdtYWlsLmNvbSIsInBlcmFuIjoiS2VwYWxhIERpbmFzIFBhcml3aXNhdGEiLCJ0Z2xfYmVyZ2FidW5nIjoiMjAyNS0xMS0wOVQxMzo1MTozOC41MDFaIiwiaWF0IjoxNzY1MTE4NjU0LCJleHAiOjE3NjUxMjIyNTR9.wM_klSG96zIvHh2tN9JePYfDPEKMQb311ZclVwznBHc
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -198,6 +198,10 @@ Content-Type: application/json
 
 ### Get Inisial User
 GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
+Authorization: Bearer {{accessToken}}
+
+### Get All Decision Maker
+http://localhost:5000/api/user/find/dm
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User

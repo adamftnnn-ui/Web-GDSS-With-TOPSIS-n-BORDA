@@ -23,6 +23,16 @@ const getAllUser = async (req, res) => {
   }
 };
 
+const getAllDm=async(req,res)=>{
+  const response=await User.find({peran:{$ne:'Admin'}})
+
+  if(!response){
+    return res.status(500).json({message:'Tidak ada decision maker'})
+  }
+
+  res.status(200).json(response)
+}
+
 const getUserById = async (req, res) => {
   const { id_user } = req.query;
 
@@ -179,4 +189,5 @@ module.exports = {
   getTotalUser,
   deleteUser,
   getInisialUser,
+  getAllDm
 };
