@@ -7,7 +7,7 @@ function topsisJS(data) {
     const rows = X.length;
     const cols = X[0].length;
   
-    // ❗ Cek semua nilai = 0 (error yang sama seperti Python)
+    // Cek semua nilai apakah ada yang 0 
     let allZero = true;
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
