@@ -123,8 +123,8 @@
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
             const DM_LIST_URL = `${API_PROD_URL}/user/find/dm`;
-            const PENILAIAN_ALL_URL = `${API_PROD_URL}/penilaian`; 
 
+            // Map untuk menyimpan detail DM (Nama & Peran) berdasarkan ID
             let dmDataMap = {};
 
             function parseJwt(token) {
@@ -145,12 +145,13 @@
             const isAdmin = tokenPayload?.peran === 'Admin';
 
             // --- ADMIN LOGIC ---
+            // Sembunyikan menu jika Admin (Opsional, sesuai logika sebelumnya)
             const formPenilaianLink = document.querySelector('a[href="form-penilaian.html"]');
             const dataKriteriaLink = document.querySelector('a[href="data-kriteria.html"]');
             
             if (isAdmin) {
                 if (formPenilaianLink) formPenilaianLink.remove();
-                dmSelector.classList.remove('hidden'); 
+                dmSelector.classList.remove('hidden'); // Tampilkan Dropdown khusus Admin
             } else {
                 if (dataKriteriaLink) dataKriteriaLink.remove();
             }
@@ -176,26 +177,32 @@
             }
 
             // --- LOAD DM LIST (ADMIN ONLY) ---
+            // Fungsi ini mengambil daftar semua Decision Maker dari API
             async function loadAllDM() {
                 if (!isAdmin) return;
 
                 try {
                     const listDM = await fetchWithToken(DM_LIST_URL);
-                    dmSelector.innerHTML = `<option value="">-- Pilih Jabatan --</option>`;
+                    dmSelector.innerHTML = `<option value="">-- Pilih Decision Maker --</option>`;
                     
                     if (Array.isArray(listDM)) {
                         listDM.forEach(dm => {
+                            // API field: _id atau id_user, nama, peran
                             const id = dm.id_user || dm._id;
+                            
+                            // Simpan mapping Role/Jabatan dari database
                             dmDataMap[id] = {
                                 nama: dm.nama,
-                                peran: dm.peran 
+                                peran: dm.peran // Ini jabatan asli (cth: Kepala Dinas)
                             };
+
                             const opt = document.createElement('option');
                             opt.value = id;
-                            opt.textContent = dm.peran; 
+                            opt.textContent = `${dm.nama} (${dm.peran})`; // Tampilkan Nama + Jabatan di dropdown
                             dmSelector.appendChild(opt);
                         });
 
+                        // Default: Load user pertama jika ada
                         if (listDM.length > 0) {
                             const firstId = listDM[0].id_user || listDM[0]._id;
                             dmSelector.value = firstId;
@@ -207,6 +214,7 @@
                     dmSelector.innerHTML = `<option value="">Gagal memuat data</option>`;
                 }
 
+                // Event Listener saat Admin memilih nama berbeda
                 dmSelector.addEventListener('change', () => {
                     const selectedId = dmSelector.value;
                     if (selectedId) {
@@ -215,37 +223,6 @@
                         loadTopsisResults(selectedId);
                     }
                 });
-            }
-
-            // --- FUNGSI AMBIL TANGGAL ASLI ---
-            async function getRealAssessmentDate(userId) {
-                try {
-                    const allPenilaian = await fetchWithToken(PENILAIAN_ALL_URL);
-                    if (Array.isArray(allPenilaian)) {
-                        // Filter penilaian milik user ini
-                        const userPenilaian = allPenilaian.filter(p => {
-                            const pUserId = (typeof p.id_user === 'object' && p.id_user) ? p.id_user._id : p.id_user;
-                            return pUserId === userId;
-                        });
-
-                        // Ambil tanggal terakhir
-                        if (userPenilaian.length > 0) {
-                            // Sort DESC by updatedAt (atau createdAt jika tanggal_penilaian null)
-                            // Prioritaskan field tanggal_penilaian
-                            userPenilaian.sort((a, b) => {
-                                const dateA = a.tanggal_penilaian ? new Date(a.tanggal_penilaian) : new Date(a.updatedAt);
-                                const dateB = b.tanggal_penilaian ? new Date(b.tanggal_penilaian) : new Date(b.updatedAt);
-                                return dateB - dateA;
-                            });
-                            
-                            return userPenilaian[0].tanggal_penilaian || userPenilaian[0].updatedAt;
-                        }
-                    }
-                    return null;
-                } catch (e) {
-                    console.warn("Gagal mengambil tanggal asli:", e);
-                    return null;
-                }
             }
 
             // --- LOGOUT ---
@@ -264,25 +241,26 @@
             }
 
             // --- RENDER FUNCTIONS ---
-            function renderHeaderCards(metadata, activeUserId, realDateStr) {
+            function renderHeaderCards(metadata, activeUserId) {
                 document.getElementById('totalAlternatif').textContent = metadata.total_alternatif || '0';
                 document.getElementById('totalKriteria').textContent = metadata.total_kriteria || '0';
                 
+                // LOGIKA JABATAN:
+                // Tampilkan Jabatan Asli (Peran) di kotak info
                 let displayRole = 'Tidak diketahui';
+                
                 if (isAdmin && activeUserId && dmDataMap[activeUserId]) {
+                    // Jika Admin melihat data orang lain, ambil peran dari DM Data Map
                     displayRole = dmDataMap[activeUserId].peran; 
                 } else if (!isAdmin) {
+                    // Jika User biasa, ambil peran dari Token loginnya sendiri
                     displayRole = tokenPayload.peran; 
                 }
+
                 document.getElementById('namaDM').textContent = displayRole;
 
-                // --- LOGIKA TANGGAL BARU ---
                 let tanggal = 'Belum Menilai';
-                if (realDateStr) {
-                    tanggal = new Date(realDateStr).toLocaleDateString('id-ID', {
-                        day: '2-digit', month: 'long', year: 'numeric'
-                    });
-                } else if (metadata.timestamp_id) {
+                if (metadata.timestamp_id) {
                     tanggal = new Date(metadata.timestamp_id).toLocaleDateString('id-ID', {
                         day: '2-digit', month: 'long', year: 'numeric'
                     });
@@ -356,17 +334,15 @@
                 const activeId = targetUserId || ID_USER;
 
                 try {
+                    // Panggil API TOPSIS
                     const data = await fetchWithToken(`${API_PROD_URL}/penilaian/topsis/${activeId}`);
-                    // Fetch tanggal secara parallel
-                    const realDateStr = await getRealAssessmentDate(activeId);
-
                     console.log("Data TOPSIS:", data);
-                    console.log("Tanggal Asli:", realDateStr);
 
                     hasilContainer.innerHTML = '';
 
+                    // Cek jika data kosong / user belum menilai
                     if (!data || !data.peringkat || !data.skor_akhir) {
-                        renderHeaderCards({ total_alternatif: 0, total_kriteria: 0, timestamp_id: null }, activeId, null);
+                        renderHeaderCards({ total_alternatif: 0, total_kriteria: 0, timestamp_id: null }, activeId);
                         loadingContainer.style.display = 'none';
                         hasilContainer.style.display = 'block';
                         hasilContainer.innerHTML = `<section class="bg-white p-6 rounded-xl text-center text-gray-500">Belum ada data penilaian untuk pengguna ini.</section>`;
@@ -376,16 +352,16 @@
                     const altNames = Object.keys(data.peringkat);
                     const kriteria_headers = data.matriks_keputusan_ternormalisasi[0].map((_, i) => `C${i + 1}`);
 
-                    // Fallback timestamp
-                    let fallbackTimestamp = null;
+                    // Safe check date from MongoDB _id
+                    let safeTimestamp = null;
                     if (data._id) {
-                        fallbackTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
+                        safeTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
                     }
 
                     const metadata = {
                         total_alternatif: altNames.length,
                         total_kriteria: kriteria_headers.length,
-                        timestamp_id: fallbackTimestamp
+                        timestamp_id: safeTimestamp
                     };
 
                     const matriks_normalisasi = {};
@@ -401,9 +377,7 @@
                     });
                     hasil_akhir.sort((a, b) => a.peringkat - b.peringkat);
 
-                    // PASSING TANGGAL ASLI KE RENDER
-                    renderHeaderCards(metadata, activeId, realDateStr);
-                    
+                    renderHeaderCards(metadata, activeId);
                     renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
                     renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
 
@@ -426,10 +400,13 @@
                 }
             }
 
+            // --- INITIALIZE ---
             if (isAdmin) {
-                loadAllDM(); 
+                // Admin: Load daftar nama dulu
+                loadAllDM();
             } else {
-                loadTopsisResults(); 
+                // User Biasa: Langsung load hasil sendiri
+                loadTopsisResults();
             }
             
             feather.replace();

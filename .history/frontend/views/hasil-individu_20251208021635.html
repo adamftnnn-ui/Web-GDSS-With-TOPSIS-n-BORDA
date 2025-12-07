@@ -123,7 +123,6 @@
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
             const DM_LIST_URL = `${API_PROD_URL}/user/find/dm`;
-            const PENILAIAN_ALL_URL = `${API_PROD_URL}/penilaian`; 
 
             let dmDataMap = {};
 
@@ -186,12 +185,15 @@
                     if (Array.isArray(listDM)) {
                         listDM.forEach(dm => {
                             const id = dm.id_user || dm._id;
+                            
                             dmDataMap[id] = {
                                 nama: dm.nama,
                                 peran: dm.peran 
                             };
+
                             const opt = document.createElement('option');
                             opt.value = id;
+                            // REVISI: Hanya menampilkan Peran/Jabatan saja
                             opt.textContent = dm.peran; 
                             dmSelector.appendChild(opt);
                         });
@@ -217,37 +219,6 @@
                 });
             }
 
-            // --- FUNGSI AMBIL TANGGAL ASLI ---
-            async function getRealAssessmentDate(userId) {
-                try {
-                    const allPenilaian = await fetchWithToken(PENILAIAN_ALL_URL);
-                    if (Array.isArray(allPenilaian)) {
-                        // Filter penilaian milik user ini
-                        const userPenilaian = allPenilaian.filter(p => {
-                            const pUserId = (typeof p.id_user === 'object' && p.id_user) ? p.id_user._id : p.id_user;
-                            return pUserId === userId;
-                        });
-
-                        // Ambil tanggal terakhir
-                        if (userPenilaian.length > 0) {
-                            // Sort DESC by updatedAt (atau createdAt jika tanggal_penilaian null)
-                            // Prioritaskan field tanggal_penilaian
-                            userPenilaian.sort((a, b) => {
-                                const dateA = a.tanggal_penilaian ? new Date(a.tanggal_penilaian) : new Date(a.updatedAt);
-                                const dateB = b.tanggal_penilaian ? new Date(b.tanggal_penilaian) : new Date(b.updatedAt);
-                                return dateB - dateA;
-                            });
-                            
-                            return userPenilaian[0].tanggal_penilaian || userPenilaian[0].updatedAt;
-                        }
-                    }
-                    return null;
-                } catch (e) {
-                    console.warn("Gagal mengambil tanggal asli:", e);
-                    return null;
-                }
-            }
-
             // --- LOGOUT ---
             async function forceLogout() {
                 localStorage.removeItem('accessToken');
@@ -264,25 +235,22 @@
             }
 
             // --- RENDER FUNCTIONS ---
-            function renderHeaderCards(metadata, activeUserId, realDateStr) {
+            function renderHeaderCards(metadata, activeUserId) {
                 document.getElementById('totalAlternatif').textContent = metadata.total_alternatif || '0';
                 document.getElementById('totalKriteria').textContent = metadata.total_kriteria || '0';
                 
                 let displayRole = 'Tidak diketahui';
+                
                 if (isAdmin && activeUserId && dmDataMap[activeUserId]) {
                     displayRole = dmDataMap[activeUserId].peran; 
                 } else if (!isAdmin) {
                     displayRole = tokenPayload.peran; 
                 }
+
                 document.getElementById('namaDM').textContent = displayRole;
 
-                // --- LOGIKA TANGGAL BARU ---
                 let tanggal = 'Belum Menilai';
-                if (realDateStr) {
-                    tanggal = new Date(realDateStr).toLocaleDateString('id-ID', {
-                        day: '2-digit', month: 'long', year: 'numeric'
-                    });
-                } else if (metadata.timestamp_id) {
+                if (metadata.timestamp_id) {
                     tanggal = new Date(metadata.timestamp_id).toLocaleDateString('id-ID', {
                         day: '2-digit', month: 'long', year: 'numeric'
                     });
@@ -357,16 +325,12 @@
 
                 try {
                     const data = await fetchWithToken(`${API_PROD_URL}/penilaian/topsis/${activeId}`);
-                    // Fetch tanggal secara parallel
-                    const realDateStr = await getRealAssessmentDate(activeId);
-
                     console.log("Data TOPSIS:", data);
-                    console.log("Tanggal Asli:", realDateStr);
 
                     hasilContainer.innerHTML = '';
 
                     if (!data || !data.peringkat || !data.skor_akhir) {
-                        renderHeaderCards({ total_alternatif: 0, total_kriteria: 0, timestamp_id: null }, activeId, null);
+                        renderHeaderCards({ total_alternatif: 0, total_kriteria: 0, timestamp_id: null }, activeId);
                         loadingContainer.style.display = 'none';
                         hasilContainer.style.display = 'block';
                         hasilContainer.innerHTML = `<section class="bg-white p-6 rounded-xl text-center text-gray-500">Belum ada data penilaian untuk pengguna ini.</section>`;
@@ -376,16 +340,15 @@
                     const altNames = Object.keys(data.peringkat);
                     const kriteria_headers = data.matriks_keputusan_ternormalisasi[0].map((_, i) => `C${i + 1}`);
 
-                    // Fallback timestamp
-                    let fallbackTimestamp = null;
+                    let safeTimestamp = null;
                     if (data._id) {
-                        fallbackTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
+                        safeTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
                     }
 
                     const metadata = {
                         total_alternatif: altNames.length,
                         total_kriteria: kriteria_headers.length,
-                        timestamp_id: fallbackTimestamp
+                        timestamp_id: safeTimestamp
                     };
 
                     const matriks_normalisasi = {};
@@ -401,9 +364,7 @@
                     });
                     hasil_akhir.sort((a, b) => a.peringkat - b.peringkat);
 
-                    // PASSING TANGGAL ASLI KE RENDER
-                    renderHeaderCards(metadata, activeId, realDateStr);
-                    
+                    renderHeaderCards(metadata, activeId);
                     renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
                     renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
 

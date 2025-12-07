@@ -161,7 +161,7 @@ DELETE http://localhost:5000/api/kriteria?id_kriteria=692559d5341a5e194f7131f6
 Authorization: Bearer {{accessToken}}
 
 ### Get All Penilaian
-GET http://localhost:5000/api/penilaian
+GET http://web-gdss.vercel.app/api/penilaian
 Authorization: Bearer {{accessToken}}
 
 ### Get All Users
@@ -201,11 +201,11 @@ GET https://web-gdss.vercel.app/api/user/find/peran/69109c6a6a0c7a5786f4c696
 Authorization: Bearer {{accessToken}}
 
 ### Get All Decision Maker
-http://localhost:5000/api/user/find/dm
+http://web-gdss.vercel.app/api/user/find/dm
 Authorization: Bearer {{accessToken}}
 
 ### Perhitungan Topsis By Id User
-GET http://localhost:5000/api/penilaian/topsis/6910cb902e5b13934a3a9b67
+GET http://web-gdss.vercel.app/api/penilaian/topsis/6910cb902e5b13934a3a9b67
 Authorization: Bearer {{accessToken}}
 
 
