@@ -26,7 +26,7 @@ POST https://web-gdss.vercel.app/api/auth/logout
 POST https://web-gdss.vercel.app/api/auth/refresh
 
 ### Token
-@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwibmFtYSI6Ik5hY2hzeWFzIEFyaGFtIE11bXRheiIsImVtYWlsIjoiYXJoYW1AZ21haWwuY29tIiwicGVyYW4iOiJEZWNpc2lvbiBNYWtlciAxIiwidGdsX2JlcmdhYnVuZyI6IjIwMjUtMTEtMDlUMTM6NTE6MzguNTAxWiIsImlhdCI6MTc2NDMzMzQ0MywiZXhwIjoxNzY0MzM3MDQzfQ.GDxBlwW-2-cVvbC_8klyfQIK1q2bsR5Fi9uB8wMiJig
+@accessToken= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c2VyIjoiNjkxMDljNmE2YTBjN2E1Nzg2ZjRjNjk2IiwiZW1haWwiOiJhcmhhbUBnbWFpbC5jb20iLCJpYXQiOjE3NjQ1MjU4MjMsImV4cCI6MTc2NDUyOTQyM30.OUbxQJAHEEtbYZrnbGaNBL9Fg2dtBrOGzZwkah2J9pc
 
 ### Dashboard
 GET https://web-gdss.vercel.app/api/
@@ -79,8 +79,6 @@ Content-Type: application/json
     "id_user":"69109c6a6a0c7a5786f4c696",
     "password":"password2"
 }
-
-
 
 ### Get Total Alternatif
 GET https://web-gdss.vercel.app/api/alternatif/total
@@ -175,7 +173,7 @@ GET https://web-gdss.vercel.app/api/alternatif
 Authorization: Bearer {{accessToken}}
 
 ### Add Penilaian
-POST http://localhost:5000/api/penilaian
+POST https://web-gdss.vercel.app/api/penilaian
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
