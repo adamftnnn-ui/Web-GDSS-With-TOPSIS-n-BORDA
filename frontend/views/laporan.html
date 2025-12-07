@@ -526,11 +526,11 @@
             }
 
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-            const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            // const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
             const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
-            if (isAdmin && formPenilaian && hasilIndividu) {
+            if (isAdmin && formPenilaian) {
                 formPenilaian.remove();
-                hasilIndividu.remove();
+                // hasilIndividu.remove();
             }
             if (!isAdmin && dataKriteria) {
                 dataKriteria.remove();

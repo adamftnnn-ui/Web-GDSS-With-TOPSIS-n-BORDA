@@ -274,12 +274,12 @@
                 const isAdmin = userData.peran && userData.peran.toLowerCase() === "admin";
 
                 const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-                const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+                // const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
                 const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
 
-                if (isAdmin && formPenilaian && hasilIndividu) {
+                if (isAdmin && formPenilaian) {
                     formPenilaian.remove();
-                    hasilIndividu.remove();
+                    // hasilIndividu.remove();
                 }
 
                 if (!isAdmin && dataKriteria) {
@@ -298,20 +298,24 @@
                 });
                 const allAlternatif = await altResponse.json();
 
+                console.log("Alternatif:", allAlternatif); // cek struktur
+
                 if (!Array.isArray(allAlternatif) || allAlternatif.length === 0) {
                     bar.style.width = '0%';
                     barText.textContent = '0% penilaian telah selesai.';
                 } else {
-                    const penilaianPromises = allAlternatif.map(a =>
-                        fetch(`${API_BASE}/penilaian/individu?id_user=${ID_USER}&id_alternatif=${a.id_alternatif}`, {
+
+                    const penilaianPromises = allAlternatif.map(a => {
+                        const idAlt = a.id_alternatif || a._id || a.id;
+                        return fetch(`${API_BASE}/penilaian/individu?id_user=${ID_USER}&id_alternatif=${idAlt}`, {
                             headers: { 'Authorization': `Bearer ${accessToken}` }
-                        }).then(r => r.json())
-                    );
+                        }).then(r => r.json());
+                    });
 
                     const penilaianResults = await Promise.all(penilaianPromises);
+
                     const dinilai = penilaianResults.filter(r => r && Object.keys(r).length > 0).length;
-                    const totalAlternatif = allAlternatif.length;
-                    const progress = totalAlternatif ? (dinilai / totalAlternatif) * 100 : 0;
+                    const progress = (dinilai / allAlternatif.length) * 100;
 
                     bar.style.width = `${progress}%`;
                     barText.textContent = `${progress.toFixed(0)}% penilaian telah selesai.`;
@@ -319,6 +323,7 @@
             } catch (error) {
                 console.error("Gagal menghitung progress penilaian:", error);
             }
+
 
         });
     </script>

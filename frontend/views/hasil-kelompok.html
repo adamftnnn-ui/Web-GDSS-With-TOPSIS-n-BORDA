@@ -184,11 +184,11 @@
             }
 
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-            const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
+            // const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
             const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
-            if (isAdmin && formPenilaian && hasilIndividu) {
+            if (isAdmin && formPenilaian) {
                 formPenilaian.remove();
-                hasilIndividu.remove();
+                // hasilIndividu.remove();
             }
             if (!isAdmin && dataKriteria) {
                 dataKriteria.remove();
@@ -310,7 +310,7 @@
                         const score = (m - rank) + 1;
                         bodyHTML += `<td class="px-4 py-3 text-center">${score}</td>`;
                     });
-                    bodyHTML += `<td class="px-4 py-3 text-center ${textClass}">${item.total_skor.toFixed(4)}</td>
+                    bodyHTML += `<td class="px-4 py-3 text-center ${textClass}">${(item.total_skor ?? 0).toFixed(4)}</td>
                                  <td class="px-4 py-3 text-center rounded-r-lg ${textClass}">${item.peringkat}</td>
                                  </tr>`;
                 });
