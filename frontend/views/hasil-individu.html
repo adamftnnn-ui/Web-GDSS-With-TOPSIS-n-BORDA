@@ -404,14 +404,14 @@
                     // PASSING TANGGAL ASLI KE RENDER
                     renderHeaderCards(metadata, activeId, realDateStr);
                     
-                    renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
-                    renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
-
-                    const grid = document.createElement('div');
+                                        const grid = document.createElement('div');
                     grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
                     grid.appendChild(renderJarak(jarak_solusi));
                     grid.appendChild(renderRanking(hasil_akhir));
                     hasilContainer.appendChild(grid);
+                    
+                    renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
+                    renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
 
                     renderChart(hasil_akhir);
 
