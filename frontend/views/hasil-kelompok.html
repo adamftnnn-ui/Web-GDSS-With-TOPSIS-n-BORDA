@@ -59,37 +59,43 @@
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Kelompok (BORDA)</h1>
-            <button id="btnUpdateBorda"
-                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                <i data-feather="save" class="w-4 h-4"></i><span>Update Borda</span>
+            <button id="btnUpdateBorda" class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="refresh-cw" class="w-4 h-4"></i><span>Update Borda</span>
             </button>
         </header>
-        <div id="loadingContainer">
+        
+        <div id="emptyState" class="flex flex-col items-center justify-center h-64 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100 mt-6">
+            <i data-feather="bar-chart" class="w-12 h-12 text-gray-300 mb-3"></i>
+            <p class="text-lg font-medium">Data hasil perhitungan belum dimuat.</p>
+            <p class="text-sm">Silakan klik tombol <strong>"Update Borda"</strong> di kanan atas untuk menampilkan hasil terbaru.</p>
+        </div>
+
+        <div id="loadingContainer" class="hidden mt-6">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <p class="text-center text-gray-500 py-8">
                     <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
-                    <span class="ml-2">Memuat hasil perhitungan kelompok...</span>
+                    <span class="ml-2">Sedang menghitung & memuat data terbaru...</span>
                 </p>
             </section>
         </div>
 
-        <div id="hasilContainer" class="hidden space-y-6">
-            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-separate border-spacing-y-2">
-                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
-                        <tbody id="skorBordaTableBody" class="text-gray-700 text-sm"></tbody>
-                    </table>
-                </div>
-            </section>
-
+        <div id="hasilContainer" class="hidden space-y-6 mt-6">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Alternatif per Decision Maker</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-separate border-spacing-y-2">
                         <thead id="rankingDmTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
                         <tbody id="rankingDmTableBody" class="text-gray-700 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
+                        <tbody id="skorBordaTableBody" class="text-gray-700 text-sm"></tbody>
                     </table>
                 </div>
             </section>
@@ -114,8 +120,10 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
-            const currentUser = parseJwt(accessToken);
-            const isAdmin = currentUser?.peran === 'Admin';
+            const btnUpdateBorda = document.getElementById('btnUpdateBorda');
+            
+            // Variabel Global untuk Chart
+            let bordaChartInstance = null;
 
             function parseJwt(token) {
                 if (!token) return null;
@@ -127,6 +135,11 @@
                 return JSON.parse(jsonPayload);
             }
 
+            const currentUser = parseJwt(accessToken);
+            const isAdmin = currentUser?.peran === 'Admin';
+            
+            // Elements
+            const emptyState = document.getElementById('emptyState');
             const loadingContainer = document.getElementById('loadingContainer');
             const hasilContainer = document.getElementById('hasilContainer');
 
@@ -136,16 +149,13 @@
                 return;
             }
 
+            // Sembunyikan menu non-admin jika user adalah admin
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
-            const dataDecisionMakerLink = document.querySelector('a[href="data-decision-maker.html"]');
-            const dataAlternatifLink = document.querySelector('a[href="data-alternatif.html"]');
-
-            if (isAdmin && formPenilaian) {
-                formPenilaian.remove();
-            }
-            if (!isAdmin && dataKriteria && dataDecisionMakerLink && dataAlternatifLink) {
-                dataKriteria.remove(), dataDecisionMakerLink.remove(), dataAlternatifLink.remove();
+            if (isAdmin) {
+                if(formPenilaian) formPenilaian.remove();
+            } else {
+                if(dataKriteria) dataKriteria.remove();
             }
 
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
@@ -180,19 +190,21 @@
             }
 
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-            logoutButton.addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    await fetch(LOGOUT_URL, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    });
-                } catch (error) {
-                    console.warn("Logout lokal.", error);
-                } finally {
-                    forceLogout();
-                }
-            });
+            if(logoutButton){
+                logoutButton.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await fetch(LOGOUT_URL, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        });
+                    } catch (error) {
+                        console.warn("Logout lokal.", error);
+                    } finally {
+                        forceLogout();
+                    }
+                });
+            }
 
             function renderRankingDM(rankingData, dmHeaders, altNames) {
                 const thead = document.getElementById('rankingDmTableHead');
@@ -242,6 +254,8 @@
 
             function renderBordaChart(bordaData) {
                 const container = document.getElementById('bordaChartContainer');
+                
+                // Reset canvas
                 container.innerHTML = '<canvas id="bordaChartCanvas"></canvas>';
                 container.classList.remove('bg-gray-100');
 
@@ -250,7 +264,11 @@
                 const labels = sortedData.map(item => item.nama);
                 const scores = sortedData.map(item => item.total_skor);
 
-                new Chart(ctx, {
+                if(bordaChartInstance) {
+                    bordaChartInstance.destroy();
+                }
+
+                bordaChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -289,8 +307,6 @@
                 if (skorLain.length > 0) {
                     const skorRunnerUp = Math.max(...skorLain.map(item => item.total_skor));
                     const runnerUp = skorLain.filter(item => item.total_skor === skorRunnerUp);
-                    
-                    // PERBAIKAN: Gunakan item.nama bukan item.alternatif
                     const namaRunnerUp = runnerUp.map(item => `<strong>${item.nama}</strong>`).join(' dan ');
                     runnerUpText = `, diikuti oleh ${namaRunnerUp} dengan total ${skorRunnerUp.toFixed(4)} poin`;
                 }
@@ -298,9 +314,12 @@
                 p.innerHTML = `Berdasarkan hasil agregasi menggunakan metode <strong>BORDA</strong>, ${pemenang.length > 1 ? 'terdapat <strong>' + pemenang.length + ' alternatif terbaik</strong>' : 'alternatif terbaik'} wisata kuliner kelompok adalah ${namaPemenang} yang ${pemenang.length > 1 ? 'sama-sama mendapatkan' : 'mendapatkan'} total skor tertinggi (<strong>${skorTertinggi.toFixed(4)} poin</strong>)${runnerUpText}.`;
             }
 
+            // Fungsi Utama Load Data
             async function loadBordaResults() {
                 try {
                     const data = await fetchWithToken(BORDA_URL);
+                    console.log("Data Borda Diterima:", data);
+
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
                         return;
@@ -333,8 +352,8 @@
                     renderBordaChart(bordaDataProcessed);
                     renderKesimpulan(bordaDataProcessed);
 
-                    loadingContainer.style.display = 'none';
-                    hasilContainer.style.display = 'block';
+                    loadingContainer.classList.add('hidden'); // Sembunyikan loading
+                    hasilContainer.classList.remove('hidden'); // Tampilkan hasil
                     feather.replace();
 
                 } catch (error) {
@@ -347,7 +366,40 @@
                     loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-red-500 py-8">${errorMsg}</p></section>`;
                 }
             }
-            loadBordaResults();
+
+            // --- EVENT LISTENER TOMBOL UPDATE BORDA ---
+            btnUpdateBorda.addEventListener('click', async () => {
+                const originalContent = btnUpdateBorda.innerHTML;
+                
+                // Ubah UI: Empty state hilang, Loading muncul, Tombol disabled
+                emptyState.classList.add('hidden');
+                hasilContainer.classList.add('hidden');
+                loadingContainer.classList.remove('hidden');
+                
+                btnUpdateBorda.disabled = true;
+                btnUpdateBorda.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i><span>Updating...</span>';
+                feather.replace();
+
+                try {
+                    await loadBordaResults();
+                    // Jika sukses: Loading hilang, Hasil muncul (diurus dalam loadBordaResults)
+                    showAlert('Data Borda berhasil diperbarui!', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showAlert('Gagal memperbarui data.', 'error');
+                    // Jika gagal, kembalikan ke empty state
+                    loadingContainer.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                } finally {
+                    btnUpdateBorda.disabled = false;
+                    btnUpdateBorda.innerHTML = originalContent;
+                    feather.replace();
+                }
+            });
+
+            // --- HAPUS PEMANGGILAN OTOMATIS SAAT LOAD ---
+            // loadBordaResults();  <-- HAPUS INI
+            feather.replace();
         });
     </script>
 </body>
