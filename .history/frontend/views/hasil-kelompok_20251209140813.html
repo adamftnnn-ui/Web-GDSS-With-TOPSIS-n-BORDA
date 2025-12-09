@@ -59,11 +59,11 @@
     <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
         <header class="flex items-center justify-between pb-4 border-b border-gray-200">
             <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Kelompok (BORDA)</h1>
-            <button id="btnUpdateBorda"
-                class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
-                <i data-feather="save" class="w-4 h-4"></i><span>Update Borda</span>
+            <button id="btnUpdateBorda" class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 active:scale-[0.98] text-sm font-medium">
+                <i data-feather="refresh-cw" class="w-4 h-4"></i><span>Update Borda</span>
             </button>
         </header>
+        
         <div id="loadingContainer">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <p class="text-center text-gray-500 py-8">
@@ -75,21 +75,21 @@
 
         <div id="hasilContainer" class="hidden space-y-6">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-separate border-spacing-y-2">
-                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
-                        <tbody id="skorBordaTableBody" class="text-gray-700 text-sm"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Alternatif per Decision Maker</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-separate border-spacing-y-2">
                         <thead id="rankingDmTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
                         <tbody id="rankingDmTableBody" class="text-gray-700 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Perhitungan Skor BORDA</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-2">
+                        <thead id="skorBordaTableHead" class="text-gray-600 text-xs uppercase tracking-wider"></thead>
+                        <tbody id="skorBordaTableBody" class="text-gray-700 text-sm"></tbody>
                     </table>
                 </div>
             </section>
@@ -114,8 +114,10 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
-            const currentUser = parseJwt(accessToken);
-            const isAdmin = currentUser?.peran === 'Admin';
+            const btnUpdateBorda = document.getElementById('btnUpdateBorda');
+            
+            // Variabel Global untuk Chart agar bisa di-destroy saat update
+            let bordaChartInstance = null;
 
             function parseJwt(token) {
                 if (!token) return null;
@@ -127,6 +129,8 @@
                 return JSON.parse(jsonPayload);
             }
 
+            const currentUser = parseJwt(accessToken);
+            const isAdmin = currentUser?.peran === 'Admin';
             const loadingContainer = document.getElementById('loadingContainer');
             const hasilContainer = document.getElementById('hasilContainer');
 
@@ -136,17 +140,14 @@
                 return;
             }
 
-            // const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
-            // const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
-            // const dataDecisionMakerLink = document.querySelector('a[href="data-decision-maker.html"]');
-            // const dataAlternatifLink = document.querySelector('a[href="data-alternatif.html"]');
-
-            // if (isAdmin && formPenilaian) {
-            //     formPenilaian.remove();
-            // }
-            // if (!isAdmin && dataKriteria && dataDecisionMakerLink && dataAlternatifLink) {
-            //     dataKriteria.remove(), dataDecisionMakerLink.remove(), dataAlternatifLink.remove();
-            // }
+            // Sembunyikan menu non-admin jika user adalah admin
+            const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
+            const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+            if (isAdmin) {
+                if(formPenilaian) formPenilaian.remove();
+            } else {
+                if(dataKriteria) dataKriteria.remove();
+            }
 
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
             const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
@@ -180,19 +181,21 @@
             }
 
             const logoutButton = document.querySelector('nav a[href="index.html"]');
-            logoutButton.addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    await fetch(LOGOUT_URL, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    });
-                } catch (error) {
-                    console.warn("Logout lokal.", error);
-                } finally {
-                    forceLogout();
-                }
-            });
+            if(logoutButton){
+                logoutButton.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try {
+                        await fetch(LOGOUT_URL, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        });
+                    } catch (error) {
+                        console.warn("Logout lokal.", error);
+                    } finally {
+                        forceLogout();
+                    }
+                });
+            }
 
             function renderRankingDM(rankingData, dmHeaders, altNames) {
                 const thead = document.getElementById('rankingDmTableHead');
@@ -242,6 +245,8 @@
 
             function renderBordaChart(bordaData) {
                 const container = document.getElementById('bordaChartContainer');
+                
+                // Pastikan canvas di-reset agar tidak ada chart yang menumpuk
                 container.innerHTML = '<canvas id="bordaChartCanvas"></canvas>';
                 container.classList.remove('bg-gray-100');
 
@@ -250,7 +255,12 @@
                 const labels = sortedData.map(item => item.nama);
                 const scores = sortedData.map(item => item.total_skor);
 
-                new Chart(ctx, {
+                // Destroy instance lama jika ada
+                if(bordaChartInstance) {
+                    bordaChartInstance.destroy();
+                }
+
+                bordaChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
@@ -289,8 +299,6 @@
                 if (skorLain.length > 0) {
                     const skorRunnerUp = Math.max(...skorLain.map(item => item.total_skor));
                     const runnerUp = skorLain.filter(item => item.total_skor === skorRunnerUp);
-                    
-                    // PERBAIKAN: Gunakan item.nama bukan item.alternatif
                     const namaRunnerUp = runnerUp.map(item => `<strong>${item.nama}</strong>`).join(' dan ');
                     runnerUpText = `, diikuti oleh ${namaRunnerUp} dengan total ${skorRunnerUp.toFixed(4)} poin`;
                 }
@@ -298,17 +306,22 @@
                 p.innerHTML = `Berdasarkan hasil agregasi menggunakan metode <strong>BORDA</strong>, ${pemenang.length > 1 ? 'terdapat <strong>' + pemenang.length + ' alternatif terbaik</strong>' : 'alternatif terbaik'} wisata kuliner kelompok adalah ${namaPemenang} yang ${pemenang.length > 1 ? 'sama-sama mendapatkan' : 'mendapatkan'} total skor tertinggi (<strong>${skorTertinggi.toFixed(4)} poin</strong>)${runnerUpText}.`;
             }
 
+            // Fungsi Utama Load Data
             async function loadBordaResults() {
                 try {
                     const data = await fetchWithToken(BORDA_URL);
+                    console.log("Data Borda Diterima:", data);
+
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
+                        hasilContainer.classList.add('hidden');
                         return;
                     }
 
                     const payload = data[0];
                     if (!payload.ranking_alternatif_per_decision_maker || !payload.perhitungan_skor_borda || payload.ranking_alternatif_per_decision_maker.length === 0) {
                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Data Borda tidak lengkap atau tidak ada penilaian.</p></section>`;
+                        hasilContainer.classList.add('hidden');
                         return;
                     }
 
@@ -333,8 +346,8 @@
                     renderBordaChart(bordaDataProcessed);
                     renderKesimpulan(bordaDataProcessed);
 
-                    loadingContainer.style.display = 'none';
-                    hasilContainer.style.display = 'block';
+                    loadingContainer.classList.add('hidden'); // Sembunyikan loading
+                    hasilContainer.classList.remove('hidden'); // Tampilkan hasil
                     feather.replace();
 
                 } catch (error) {
@@ -347,6 +360,31 @@
                     loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-red-500 py-8">${errorMsg}</p></section>`;
                 }
             }
+
+            // --- EVENT LISTENER TOMBOL UPDATE BORDA ---
+            btnUpdateBorda.addEventListener('click', async () => {
+                const originalContent = btnUpdateBorda.innerHTML;
+                
+                // Ubah tampilan tombol jadi loading
+                btnUpdateBorda.disabled = true;
+                btnUpdateBorda.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i><span>Updating...</span>';
+                feather.replace();
+
+                try {
+                    await loadBordaResults();
+                    showAlert('Data Borda berhasil diperbarui!', 'success');
+                } catch (error) {
+                    console.error(error);
+                    showAlert('Gagal memperbarui data.', 'error');
+                } finally {
+                    // Kembalikan tampilan tombol
+                    btnUpdateBorda.disabled = false;
+                    btnUpdateBorda.innerHTML = originalContent;
+                    feather.replace();
+                }
+            });
+
+            // Load data pertama kali
             loadBordaResults();
         });
     </script>
