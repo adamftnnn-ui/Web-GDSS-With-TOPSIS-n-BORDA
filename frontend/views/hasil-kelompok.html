@@ -158,7 +158,7 @@
             if (isAdmin) {
                 if(formPenilaian) formPenilaian.remove();
             } else {
-                if(dataKriteria && dataDecisionMaker && dataAlternatif) dataKriteria.remove(), dataKriteria.remove(), dataKriteria.remove();
+                if(dataKriteria && dataDecisionMaker && dataAlternatif) dataKriteria.remove(), dataDecisionMaker.remove(), dataAlternatif.remove();
             }
 
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
