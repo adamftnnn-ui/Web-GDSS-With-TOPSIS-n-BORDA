@@ -210,7 +210,7 @@ Authorization: Bearer {{accessToken}}
 
 
 ### Perhitungan Borda
-GET http://web-gdss.vercel.app/api/penilaian/borda
+GET GET http://web-gdss.vercel.app/api/penilaian/borda
 Authorization: Bearer {{accessToken}}
 
 ### Get Penilaian By Id User And Id Alternatif

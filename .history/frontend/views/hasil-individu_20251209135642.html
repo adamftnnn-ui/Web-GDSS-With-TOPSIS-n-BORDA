@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GDSS - Hasil Individu (TOPSIS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#2563EB',
+                        'primary-light': '#EFF6FF',
+                    },
+                    fontSize: {
+                        'xs': '.75rem',
+                        'sm': '.875rem',
+                        'base': '1rem',
+                        'lg': '1.125rem',
+                        'xl': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="alert.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex text-sm antialiased">
+
+    <aside class="w-56 bg-white shadow-lg flex flex-col px-4 py-5 space-y-6 border-r border-gray-100 h-screen">
+        <div class="flex items-center space-x-2">
+            <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">G</div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">GDSS</h2>
+        </div>
+        <nav class="flex flex-col space-y-1">
+            <a href="dashboard.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="home" class="w-4"></i><span>Dashboard</span></a>
+            <a href="data-decision-maker.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="user-check" class="w-4"></i><span>Data Decision Maker</span></a>
+            <a href="data-alternatif.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="folder" class="w-4"></i><span>Data Alternatif</span></a>
+            <a href="data-kriteria.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="sliders" class="w-4"></i><span>Data Kriteria</span></a>
+            <a href="form-penilaian.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="edit-3" class="w-4"></i><span>Form Penilaian</span></a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-light text-primary font-medium transition"><i data-feather="bar-chart-2" class="w-4"></i><span>Hasil Individu</span></a>
+            <a href="hasil-kelompok.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="users" class="w-4"></i><span>Hasil Kelompok</span></a>
+            <a href="laporan.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="file-text" class="w-4"></i><span>Laporan</span></a>
+        </nav>
+        <div class="mt-auto border-t pt-4 border-gray-100">
+            <nav class="flex flex-col space-y-1">
+                <a href="profil.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"><i data-feather="user" class="w-4"></i><span>Profil Saya</span></a>
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition"><i data-feather="log-out" class="w-4"></i><span>Logout</span></a>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 px-8 py-6 space-y-6 overflow-y-auto h-screen">
+        <header class="flex items-center justify-between pb-4 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Hasil Individu (TOPSIS)</h1>
+            
+            <select id="dmSelector" class="hidden bg-white border border-gray-300 px-4 py-2 rounded-lg shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary hover:border-gray-400 transition cursor-pointer">
+                <option value="">Memuat DM...</option>
+            </select>
+        </header>
+
+        <section id="infoSection" class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Decision Maker</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Total Alternatif</h3>
+                    <p id="totalAlternatif" class="text-2xl font-semibold text-gray-800">...</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Kriteria Penilaian</h3>
+                    <p id="totalKriteria" class="text-2xl font-semibold text-gray-800">...</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Peran / Jabatan</h3>
+                    <p id="namaDM" class="text-lg font-semibold text-gray-800 break-words">...</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                    <h3 class="text-gray-600 text-xs font-medium uppercase tracking-wider mb-1">Tanggal Penilaian</h3>
+                    <p id="tanggalPenilaian" class="text-2xl font-semibold text-gray-800">...</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="hasilContainer" class="space-y-6"></div>
+
+        <div id="loadingContainer" class="space-y-6">
+            <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Memuat Hasil Perhitungan</h2>
+                <p class="text-center text-gray-500 py-8">
+                    <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
+                    <span class="ml-2">Sedang mengambil data dari server...</span>
+                </p>
+            </section>
+        </div>
+        <div class="h-10"></div>
+    </main>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const accessToken = localStorage.getItem('accessToken');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const hasilContainer = document.getElementById('hasilContainer');
+            const infoSection = document.getElementById('infoSection');
+            const dmSelector = document.getElementById('dmSelector');
+
+            hasilContainer.style.display = 'none';
+
+            if (!accessToken) {
+                console.warn("Tidak ada accessToken.");
+                localStorage.removeItem('accessToken');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const API_PROD_URL = 'https://web-gdss.vercel.app/api';
+            const LOGOUT_URL = `${API_PROD_URL}/auth/logout`;
+            const DM_LIST_URL = `${API_PROD_URL}/user/find/dm`;
+            const PENILAIAN_ALL_URL = `${API_PROD_URL}/penilaian`; 
+
+            let dmDataMap = {};
+
+            function parseJwt(token) {
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    return JSON.parse(jsonPayload);
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            const tokenPayload = parseJwt(accessToken);
+            const ID_USER = tokenPayload ? tokenPayload.id_user : null;
+            const isAdmin = tokenPayload?.peran === 'Admin';
+
+            // --- ADMIN LOGIC ---
+            const formPenilaianLink = document.querySelector('a[href="form-penilaian.html"]');
+            const dataKriteriaLink = document.querySelector('a[href="data-kriteria.html"]');
+            
+            if (isAdmin) {
+                if (formPenilaianLink) formPenilaianLink.remove();
+                dmSelector.classList.remove('hidden'); 
+            } else {
+                if (dataKriteriaLink) dataKriteriaLink.remove();
+            }
+
+            if (!ID_USER) {
+                loadingContainer.innerHTML = '<p class="text-red-500 text-center p-8">Error: ID User tidak valid.</p>';
+                return;
+            }
+
+            // --- FETCH HELPER ---
+            async function fetchWithToken(url, options = {}) {
+                const headers = { 'Authorization': `Bearer ${accessToken}` };
+                if (options.body) headers['Content-Type'] = 'application/json';
+                const config = { ...options, headers: { ...headers, ...options.headers } };
+
+                const response = await fetch(url, config);
+                if (response.status === 401 || response.status === 403) throw new Error('Unauthorized');
+
+                const text = await response.text();
+                if (!text) return null;
+                try { return JSON.parse(text); }
+                catch (e) { throw new Error("Respons server bukan JSON."); }
+            }
+
+            // --- LOAD DM LIST (ADMIN ONLY) ---
+            async function loadAllDM() {
+                if (!isAdmin) return;
+
+                try {
+                    const listDM = await fetchWithToken(DM_LIST_URL);
+                    dmSelector.innerHTML = `<option value="">-- Pilih Jabatan --</option>`;
+                    
+                    if (Array.isArray(listDM)) {
+                        listDM.forEach(dm => {
+                            const id = dm.id_user || dm._id;
+                            dmDataMap[id] = {
+                                nama: dm.nama,
+                                peran: dm.peran 
+                            };
+                            const opt = document.createElement('option');
+                            opt.value = id;
+                            opt.textContent = dm.peran; 
+                            dmSelector.appendChild(opt);
+                        });
+
+                        if (listDM.length > 0) {
+                            const firstId = listDM[0].id_user || listDM[0]._id;
+                            dmSelector.value = firstId;
+                            loadTopsisResults(firstId);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Gagal load DM list', err);
+                    dmSelector.innerHTML = `<option value="">Gagal memuat data</option>`;
+                }
+
+                dmSelector.addEventListener('change', () => {
+                    const selectedId = dmSelector.value;
+                    if (selectedId) {
+                        loadingContainer.style.display = 'block';
+                        hasilContainer.style.display = 'none';
+                        loadTopsisResults(selectedId);
+                    }
+                });
+            }
+
+            // --- FUNGSI AMBIL TANGGAL ASLI ---
+            async function getRealAssessmentDate(userId) {
+                try {
+                    const allPenilaian = await fetchWithToken(PENILAIAN_ALL_URL);
+                    if (Array.isArray(allPenilaian)) {
+                        // Filter penilaian milik user ini
+                        const userPenilaian = allPenilaian.filter(p => {
+                            const pUserId = (typeof p.id_user === 'object' && p.id_user) ? p.id_user._id : p.id_user;
+                            return pUserId === userId;
+                        });
+
+                        // Ambil tanggal terakhir
+                        if (userPenilaian.length > 0) {
+                            // Sort DESC by updatedAt (atau createdAt jika tanggal_penilaian null)
+                            // Prioritaskan field tanggal_penilaian
+                            userPenilaian.sort((a, b) => {
+                                const dateA = a.tanggal_penilaian ? new Date(a.tanggal_penilaian) : new Date(a.updatedAt);
+                                const dateB = b.tanggal_penilaian ? new Date(b.tanggal_penilaian) : new Date(b.updatedAt);
+                                return dateB - dateA;
+                            });
+                            
+                            return userPenilaian[0].tanggal_penilaian || userPenilaian[0].updatedAt;
+                        }
+                    }
+                    return null;
+                } catch (e) {
+                    console.warn("Gagal mengambil tanggal asli:", e);
+                    return null;
+                }
+            }
+
+            // --- LOGOUT ---
+            async function forceLogout() {
+                localStorage.removeItem('accessToken');
+                window.location.href = 'index.html';
+            }
+            const logoutButton = document.querySelector('nav a[href="index.html"]');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    try { await fetch(LOGOUT_URL, { method: 'POST', headers: { 'Authorization': `Bearer ${accessToken}` } }); }
+                    catch (error) { }
+                    finally { forceLogout(); }
+                });
+            }
+
+            // --- RENDER FUNCTIONS ---
+            function renderHeaderCards(metadata, activeUserId, realDateStr) {
+                document.getElementById('totalAlternatif').textContent = metadata.total_alternatif || '0';
+                document.getElementById('totalKriteria').textContent = metadata.total_kriteria || '0';
+                
+                let displayRole = 'Tidak diketahui';
+                if (isAdmin && activeUserId && dmDataMap[activeUserId]) {
+                    displayRole = dmDataMap[activeUserId].peran; 
+                } else if (!isAdmin) {
+                    displayRole = tokenPayload.peran; 
+                }
+                document.getElementById('namaDM').textContent = displayRole;
+
+                // --- LOGIKA TANGGAL BARU ---
+                let tanggal = 'Belum Menilai';
+                if (realDateStr) {
+                    tanggal = new Date(realDateStr).toLocaleDateString('id-ID', {
+                        day: '2-digit', month: 'long', year: 'numeric'
+                    });
+                } else if (metadata.timestamp_id) {
+                    tanggal = new Date(metadata.timestamp_id).toLocaleDateString('id-ID', {
+                        day: '2-digit', month: 'long', year: 'numeric'
+                    });
+                }
+                document.getElementById('tanggalPenilaian').textContent = tanggal;
+            }
+
+            function renderMatriks(title, kriteriaHeaders, matriksData) {
+                const section = document.createElement('section');
+                section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
+                let headersHTML = kriteriaHeaders.map(h => `<th class="px-4 py-2 text-center">${h}</th>`).join('');
+                let bodyHTML = '';
+                for (const altNama in matriksData) {
+                    const nilai = matriksData[altNama];
+                    const nilaiHTML = nilai.map(n => `<td class="text-center">${n.toFixed(4)}</td>`).join('');
+                    bodyHTML += `<tr class="bg-gray-50 hover:bg-blue-50 transition-all"><td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td>${nilaiHTML}</tr>`;
+                }
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">${title}</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Alternatif</th>${headersHTML}</tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
+                hasilContainer.appendChild(section);
+            }
+
+            function renderJarak(jarakData) {
+                const section = document.createElement('section');
+                section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
+                let bodyHTML = '';
+                for (const altNama in jarakData) {
+                    const jarak = jarakData[altNama];
+                    bodyHTML += `<tr class="bg-gray-50 hover:bg-blue-50 transition-all"><td class="px-4 py-3 font-medium rounded-l-lg">${altNama}</td><td class="px-4 py-3 text-center">${jarak.D_plus.toFixed(4)}</td><td class="px-4 py-3 text-center rounded-r-lg">${jarak.D_minus.toFixed(4)}</td></tr>`;
+                }
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Jarak ke Solusi Ideal (D⁺ & D⁻)</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Alternatif</th><th class="px-4 py-2 text-center">D⁺</th><th class="px-4 py-2 text-center">D⁻</th></tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
+                return section;
+            }
+
+            function renderRanking(rankingData) {
+                const section = document.createElement('section');
+                section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
+                let bodyHTML = '';
+                rankingData.forEach((item, index) => {
+                    const rowClass = index === 0 ? "bg-primary-light hover:bg-blue-100 font-semibold" : "bg-gray-50 hover:bg-blue-50";
+                    bodyHTML += `<tr class="${rowClass} transition-all"><td class="px-4 py-3 rounded-l-lg">${item.peringkat}</td><td class="px-4 py-3">${item.nama}</td><td class="px-4 py-3 text-center rounded-r-lg">${item.nilai.toFixed(4)}</td></tr>`;
+                });
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Akhir</h2><div class="overflow-x-auto"><table class="w-full text-left border-separate border-spacing-y-2"><thead class="text-gray-600 text-xs uppercase tracking-wider"><tr><th class="px-4 py-2">Rank</th><th class="px-4 py-2">Alternatif</th><th class="px-4 py-2 text-center">Nilai (Vᵢ)</th></tr></thead><tbody class="text-gray-700 text-sm">${bodyHTML}</tbody></table></div>`;
+                return section;
+            }
+
+            let currentChart = null; 
+            function renderChart(rankingData) {
+                const section = document.createElement('section');
+                section.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-100';
+                section.innerHTML = `<h2 class="text-lg font-semibold text-gray-900 mb-4">Visualisasi</h2><div class="w-full h-64"><canvas id="topsisChart"></canvas></div>`;
+                hasilContainer.appendChild(section);
+
+                const sortedData = [...rankingData].sort((a, b) => b.nilai - a.nilai);
+                
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+
+                currentChart = new Chart(document.getElementById('topsisChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: sortedData.map(i => i.nama),
+                        datasets: [{ label: 'Nilai Vᵢ', data: sortedData.map(i => i.nilai), backgroundColor: '#2563EB' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+                });
+            }
+
+            // --- MAIN FUNCTION ---
+            async function loadTopsisResults(targetUserId = null) {
+                const activeId = targetUserId || ID_USER;
+
+                try {
+                    const data = await fetchWithToken(`${API_PROD_URL}/penilaian/topsis/${activeId}`);
+                    // Fetch tanggal secara parallel
+                    const realDateStr = await getRealAssessmentDate(activeId);
+
+                    console.log("Data TOPSIS:", data);
+                    console.log("Tanggal Asli:", realDateStr);
+
+                    hasilContainer.innerHTML = '';
+
+                    if (!data || !data.peringkat || !data.skor_akhir) {
+                        renderHeaderCards({ total_alternatif: 0, total_kriteria: 0, timestamp_id: null }, activeId, null);
+                        loadingContainer.style.display = 'none';
+                        hasilContainer.style.display = 'block';
+                        hasilContainer.innerHTML = `<section class="bg-white p-6 rounded-xl text-center text-gray-500">Belum ada data penilaian untuk pengguna ini.</section>`;
+                        return;
+                    }
+
+                    const altNames = Object.keys(data.peringkat);
+                    const kriteria_headers = data.matriks_keputusan_ternormalisasi[0].map((_, i) => `C${i + 1}`);
+
+                    // Fallback timestamp
+                    let fallbackTimestamp = null;
+                    if (data._id) {
+                        fallbackTimestamp = new Date(parseInt(data._id.substring(0, 8), 16) * 1000);
+                    }
+
+                    const metadata = {
+                        total_alternatif: altNames.length,
+                        total_kriteria: kriteria_headers.length,
+                        timestamp_id: fallbackTimestamp
+                    };
+
+                    const matriks_normalisasi = {};
+                    const matriks_terbobot = {};
+                    const jarak_solusi = {};
+                    const hasil_akhir = [];
+
+                    altNames.forEach((nama, i) => {
+                        matriks_normalisasi[nama] = data.matriks_keputusan_ternormalisasi[i];
+                        matriks_terbobot[nama] = data.matriks_keputusan_ternormalisasi_terbobot[i];
+                        jarak_solusi[nama] = { D_plus: data.d_positif[i], D_minus: data.d_negatif[i] };
+                        hasil_akhir.push({ peringkat: data.peringkat[nama], nama: nama, nilai: data.skor_akhir[i] });
+                    });
+                    hasil_akhir.sort((a, b) => a.peringkat - b.peringkat);
+
+                    // PASSING TANGGAL ASLI KE RENDER
+                    renderHeaderCards(metadata, activeId, realDateStr);
+                    
+                    renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
+                    renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6';
+                    grid.appendChild(renderJarak(jarak_solusi));
+                    grid.appendChild(renderRanking(hasil_akhir));
+                    hasilContainer.appendChild(grid);
+
+                    renderChart(hasil_akhir);
+
+                    hasilContainer.style.display = 'block';
+                    loadingContainer.style.display = 'none';
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    let msg = `Gagal: ${error.message}`;
+                    if (error.message === 'Unauthorized') { msg = "Sesi habis. Login kembali."; forceLogout(); }
+                    loadingContainer.innerHTML = `<p class="text-center text-red-500 p-8">${msg}</p>`;
+                }
+            }
+
+            if (isAdmin) {
+                loadAllDM(); 
+            } else {
+                loadTopsisResults();
+            }
+            
+            feather.replace();
+        });
+    </script>
+</body>
+
+</html>

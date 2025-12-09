@@ -64,22 +64,16 @@
             </button>
         </header>
         
-        <div id="emptyState" class="flex flex-col items-center justify-center h-64 text-gray-500 bg-white rounded-xl shadow-sm border border-gray-100 mt-6">
-            <i data-feather="bar-chart" class="w-12 h-12 text-gray-300 mb-3"></i>
-            <p class="text-lg font-medium">Data hasil perhitungan belum dimuat.</p>
-            <p class="text-sm">Silakan klik tombol <strong>"Update Borda"</strong> di kanan atas untuk menampilkan hasil terbaru.</p>
-        </div>
-
-        <div id="loadingContainer" class="hidden mt-6">
+        <div id="loadingContainer">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <p class="text-center text-gray-500 py-8">
                     <i data-feather="loader" class="w-6 h-6 animate-spin inline-block"></i>
-                    <span class="ml-2">Sedang menghitung & memuat data terbaru...</span>
+                    <span class="ml-2">Memuat hasil perhitungan kelompok...</span>
                 </p>
             </section>
         </div>
 
-        <div id="hasilContainer" class="hidden space-y-6 mt-6">
+        <div id="hasilContainer" class="hidden space-y-6">
             <section class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Ranking Alternatif per Decision Maker</h2>
                 <div class="overflow-x-auto">
@@ -122,7 +116,7 @@
             const accessToken = localStorage.getItem('accessToken');
             const btnUpdateBorda = document.getElementById('btnUpdateBorda');
             
-            // Variabel Global untuk Chart
+            // Variabel Global untuk Chart agar bisa di-destroy saat update
             let bordaChartInstance = null;
 
             function parseJwt(token) {
@@ -137,9 +131,6 @@
 
             const currentUser = parseJwt(accessToken);
             const isAdmin = currentUser?.peran === 'Admin';
-            
-            // Elements
-            const emptyState = document.getElementById('emptyState');
             const loadingContainer = document.getElementById('loadingContainer');
             const hasilContainer = document.getElementById('hasilContainer');
 
@@ -255,7 +246,7 @@
             function renderBordaChart(bordaData) {
                 const container = document.getElementById('bordaChartContainer');
                 
-                // Reset canvas
+                // Pastikan canvas di-reset agar tidak ada chart yang menumpuk
                 container.innerHTML = '<canvas id="bordaChartCanvas"></canvas>';
                 container.classList.remove('bg-gray-100');
 
@@ -264,6 +255,7 @@
                 const labels = sortedData.map(item => item.nama);
                 const scores = sortedData.map(item => item.total_skor);
 
+                // Destroy instance lama jika ada
                 if(bordaChartInstance) {
                     bordaChartInstance.destroy();
                 }
@@ -322,12 +314,14 @@
 
                     if (!data || !Array.isArray(data) || data.length === 0) {
                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Belum ada data penilaian yang cukup untuk dihitung (BORDA).</p></section>`;
+                        hasilContainer.classList.add('hidden');
                         return;
                     }
 
                     const payload = data[0];
                     if (!payload.ranking_alternatif_per_decision_maker || !payload.perhitungan_skor_borda || payload.ranking_alternatif_per_decision_maker.length === 0) {
                         loadingContainer.innerHTML = `<section class="bg-white p-6 rounded-xl shadow-md border border-gray-100"><p class="text-center text-gray-500 py-8">Data Borda tidak lengkap atau tidak ada penilaian.</p></section>`;
+                        hasilContainer.classList.add('hidden');
                         return;
                     }
 
@@ -371,35 +365,27 @@
             btnUpdateBorda.addEventListener('click', async () => {
                 const originalContent = btnUpdateBorda.innerHTML;
                 
-                // Ubah UI: Empty state hilang, Loading muncul, Tombol disabled
-                emptyState.classList.add('hidden');
-                hasilContainer.classList.add('hidden');
-                loadingContainer.classList.remove('hidden');
-                
+                // Ubah tampilan tombol jadi loading
                 btnUpdateBorda.disabled = true;
                 btnUpdateBorda.innerHTML = '<i data-feather="loader" class="w-4 h-4 animate-spin"></i><span>Updating...</span>';
                 feather.replace();
 
                 try {
                     await loadBordaResults();
-                    // Jika sukses: Loading hilang, Hasil muncul (diurus dalam loadBordaResults)
                     showAlert('Data Borda berhasil diperbarui!', 'success');
                 } catch (error) {
                     console.error(error);
                     showAlert('Gagal memperbarui data.', 'error');
-                    // Jika gagal, kembalikan ke empty state
-                    loadingContainer.classList.add('hidden');
-                    emptyState.classList.remove('hidden');
                 } finally {
+                    // Kembalikan tampilan tombol
                     btnUpdateBorda.disabled = false;
                     btnUpdateBorda.innerHTML = originalContent;
                     feather.replace();
                 }
             });
 
-            // --- HAPUS PEMANGGILAN OTOMATIS SAAT LOAD ---
-            // loadBordaResults();  <-- HAPUS INI
-            feather.replace();
+            // Load data pertama kali
+            loadBordaResults();
         });
     </script>
 </body>
