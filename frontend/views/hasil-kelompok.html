@@ -152,10 +152,13 @@
             // Sembunyikan menu non-admin jika user adalah admin
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+            const dataDecisionMaker = document.querySelector('a[href="data-decision-maker.html"]');
+            const dataAlternatif = document.querySelector('a[href="data-alternatif.html"]');
+
             if (isAdmin) {
                 if(formPenilaian) formPenilaian.remove();
             } else {
-                if(dataKriteria) dataKriteria.remove();
+                if(dataKriteria && dataDecisionMaker && dataAlternatif) dataKriteria.remove(), dataKriteria.remove(), dataKriteria.remove();
             }
 
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';
