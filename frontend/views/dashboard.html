@@ -276,14 +276,19 @@
                 const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
                 // const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
                 const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+                const dataDecisionMaker = document.querySelector('a[href="data-decision-maker.html"]');
+                const dataAlternatif = document.querySelector('a[href="data-alternatif.html"]');
+
 
                 if (isAdmin && formPenilaian) {
                     formPenilaian.remove();
                     // hasilIndividu.remove();
                 }
 
-                if (!isAdmin && dataKriteria) {
+                if (!isAdmin && dataKriteria && dataDecisionMaker && dataAlternatif) {
                     dataKriteria.remove();
+                    dataDecisionMaker.remove();
+                    dataAlternatif.remove();
                 }
 
 

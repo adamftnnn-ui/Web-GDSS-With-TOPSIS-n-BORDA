@@ -528,12 +528,17 @@
             const formPenilaian = document.querySelector('a[href="form-penilaian.html"]');
             // const hasilIndividu = document.querySelector('a[href="hasil-individu.html"]');
             const dataKriteria = document.querySelector('a[href="data-kriteria.html"]');
+                                    const dataDecisionMakerLink = document.querySelector('a[href="data-decision-maker.html"]');
+            const dataAlternatifLink = document.querySelector('a[href="data-alternatif.html"]');
+            
             if (isAdmin && formPenilaian) {
                 formPenilaian.remove();
                 // hasilIndividu.remove();
             }
-            if (!isAdmin && dataKriteria) {
+            if (!isAdmin && dataKriteria && dataDecisionMakerLink && dataAlternatifLink) {
                 dataKriteria.remove();
+                dataDecisionMakerLink.remove();
+                dataAlternatifLink.remove();
             }
 
             const API_PROD_URL = 'https://web-gdss.vercel.app/api';

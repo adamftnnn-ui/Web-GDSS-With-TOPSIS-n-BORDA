@@ -136,7 +136,9 @@
             const userData = parseJwt(accessToken);
             const isAdmin = userData?.peran?.toLowerCase() === 'admin';
             const dataKriteriaLink = document.querySelector('a[href="data-kriteria.html"]');
-            if (!isAdmin && dataKriteriaLink) dataKriteriaLink.remove();
+            const dataDecisionMakerLink = document.querySelector('a[href="data-decision-maker.html"]');
+            const dataAlternatifLink = document.querySelector('a[href="data-alternatif.html"]');
+            if (!isAdmin && dataKriteriaLink && dataDecisionMakerLink && dataAlternatifLink) dataKriteriaLink.remove(), dataDecisionMakerLink.remove(), dataAlternatifLink.remove();
 
             if (!accessToken) { window.location.href = "index.html"; return; }
 

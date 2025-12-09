@@ -147,12 +147,14 @@
             // --- ADMIN LOGIC ---
             const formPenilaianLink = document.querySelector('a[href="form-penilaian.html"]');
             const dataKriteriaLink = document.querySelector('a[href="data-kriteria.html"]');
+            const dataDecisionMakerLink = document.querySelector('a[href="data-decision-maker.html"]');
+            const dataAlternatifLink = document.querySelector('a[href="data-alternatif.html"]');
             
             if (isAdmin) {
                 if (formPenilaianLink) formPenilaianLink.remove();
                 dmSelector.classList.remove('hidden'); 
             } else {
-                if (dataKriteriaLink) dataKriteriaLink.remove();
+                if (dataKriteriaLink && dataDecisionMakerLink && dataAlternatifLink) dataKriteriaLink.remove(), dataDecisionMakerLink.remove(), dataAlternatifLink.remove();
             }
 
             if (!ID_USER) {
@@ -409,7 +411,7 @@
                     grid.appendChild(renderJarak(jarak_solusi));
                     grid.appendChild(renderRanking(hasil_akhir));
                     hasilContainer.appendChild(grid);
-                    
+
                     renderMatriks('Matriks Normalisasi (R)', kriteria_headers, matriks_normalisasi);
                     renderMatriks('Matriks Terbobot (Y)', kriteria_headers, matriks_terbobot);
 
